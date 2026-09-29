@@ -1,0 +1,13 @@
+{
+  "name": "Stroke",
+  "short_name": "Stroke",
+  "description": "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon.png", "sizes": "1024x1024", "type": "image/png" }
+  ]
+}

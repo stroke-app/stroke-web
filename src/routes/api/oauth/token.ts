@@ -5,7 +5,7 @@ import { env } from "#/env/server";
 /**
  * OAuth token-exchange proxy for the Stroke desktop app.
  *
- * Neon, Supabase, and PlanetScale are *confidential* OAuth clients: their token
+ * Neon, Supabase, PlanetScale, Prisma, and Railway are *confidential* OAuth clients: their token
  * endpoints require a client_secret that must never ship inside the distributed
  * desktop binary. The desktop app does the PKCE dance in the browser, then POSTs
  * the {provider, code, code_verifier, client_id, redirect_uri} here. We inject
@@ -41,6 +41,12 @@ function providerConfig(key: string): ProviderCfg | null {
         tokenUrl: "https://auth.prisma.io/token",
         secret: env.PRISMA_CLIENT_SECRET,
         auth: "post",
+      };
+    case "railway":
+      return {
+        tokenUrl: "https://backboard.railway.com/oauth/token",
+        secret: env.RAILWAY_CLIENT_SECRET,
+        auth: "basic",
       };
     default:
       return null;

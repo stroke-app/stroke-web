@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeftIcon } from "lucide-react";
 
-import { BrushStroke, SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { DocsNav, NextLinks, PageBody, PageHeader, PageShell, SideNav } from "#/components/page";
 import { seo } from "#/lib/seo";
 
 export const Route = createFileRoute("/docs/mcp")({
@@ -11,6 +10,10 @@ export const Route = createFileRoute("/docs/mcp")({
       description:
         "Connect Stroke's built-in MCP server to Claude, Cursor, and other agents so they can read your schema and run queries, with your database credentials staying on your machine.",
       path: "/docs/mcp",
+      breadcrumbs: [
+        { name: "Docs", path: "/docs" },
+        { name: "MCP for agents", path: "/docs/mcp" },
+      ],
     }),
   component: McpPage,
 });
@@ -34,6 +37,21 @@ const CLAUDE_CONFIG = `{
 const CLAUDE_PATHS = `macOS    ~/Library/Application Support/Claude/claude_desktop_config.json
 Windows  %APPDATA%\\Claude\\claude_desktop_config.json`;
 
+function slug(title: string) {
+  return title
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+}
+
+const SECTIONS = [
+  "Turn on the MCP server",
+  "Connect Claude Desktop",
+  "Connect Cursor and others",
+  "What agents can do",
+  "Staying in control",
+];
+
 function Section({
   number,
   title,
@@ -44,12 +62,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <section id={slug(title)} className="scroll-mt-20">
       <h2 className="flex items-baseline gap-3 text-lg font-semibold tracking-tight">
-        <span className="font-mono text-sm text-copper">{number}</span>
+        <span className="text-sm font-medium text-copper tabular-nums">{number}</span>
         {title}
       </h2>
-      <div className="mt-3 space-y-3 text-sm leading-[1.75] text-pretty text-muted-foreground [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-foreground [&_code]:rounded [&_code]:bg-muted/60 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[13px] [&_strong]:font-medium [&_strong]:text-foreground">
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-pretty text-muted-foreground [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-foreground [&_code]:rounded [&_code]:bg-muted/60 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[13px] [&_strong]:font-medium [&_strong]:text-foreground">
         {children}
       </div>
     </section>
@@ -58,28 +76,24 @@ function Section({
 
 function McpPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-      <main className="mx-auto max-w-2xl px-6 py-16 md:py-20">
-        <Link
-          to="/docs"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeftIcon className="size-3.5" />
-          Docs
-        </Link>
-        <p className="mt-6 font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Docs · MCP
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">MCP for agents</h1>
-        <BrushStroke className="mt-4 h-2 w-20" />
-        <p className="mt-6 text-[15px] leading-[1.75] text-pretty text-muted-foreground">
-          Stroke ships a built-in MCP (Model Context Protocol) server. Point an agent at it and it
-          can read your schema and run queries against a database you already trust, with the
-          connection and credentials staying on your machine.
-        </p>
-
-        <div className="mt-12 space-y-10">
+    <PageShell>
+      <PageHeader
+        eyebrow="Docs"
+        title="MCP for agents"
+        description="Stroke ships a built-in MCP (Model Context Protocol) server. Point an agent at it and it can read your schema and run queries against a database you already trust, with the connection and credentials staying on your machine."
+      />
+      <PageBody
+        aside={
+          <div className="space-y-8">
+            <DocsNav />
+            <SideNav
+              title="On this page"
+              items={SECTIONS.map((t) => ({ label: t, hash: slug(t) }))}
+            />
+          </div>
+        }
+      >
+        <div className="space-y-12">
           <Section number="01" title="Turn on the MCP server">
             <p>
               Open <strong>Stroke → MCP</strong>, pick the connection you want to expose, and toggle
@@ -129,15 +143,12 @@ function McpPage() {
           </Section>
         </div>
 
-        <div className="mt-14 rounded-lg border border-border/50 p-5 text-sm text-muted-foreground">
-          New to Stroke?{" "}
-          <Link to="/docs" className="text-foreground underline underline-offset-2">
-            Start with the setup guide
-          </Link>
-          .
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
+        <NextLinks>
+          <Link to="/docs">← Getting started</Link>
+          <Link to="/features">All features →</Link>
+          <Link to="/download">Download →</Link>
+        </NextLinks>
+      </PageBody>
+    </PageShell>
   );
 }

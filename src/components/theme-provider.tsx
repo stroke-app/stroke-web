@@ -29,6 +29,13 @@ const ThemeProviderContext = createContext<ThemeProviderState>({
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
+
+  // Every color transition would fire at once and smear the swap, so
+  // switch them off for one frame.
+  const pause = document.createElement("style");
+  pause.textContent = "*,*::before,*::after{transition:none!important}";
+  document.head.appendChild(pause);
+
   root.classList.remove("light", "dark");
 
   const resolved =
@@ -40,6 +47,10 @@ function applyTheme(theme: Theme) {
 
   root.classList.add(resolved);
   root.style.colorScheme = resolved;
+
+  // Force a reflow so the new colors land with transitions off.
+  void window.getComputedStyle(root).opacity;
+  requestAnimationFrame(() => pause.remove());
 }
 
 export function ThemeProvider({

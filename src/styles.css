@@ -6,9 +6,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Geist Mono, self-hosted (SIL OFL 1.1). Used only for real code: commands,
+   SQL, config, versions. Labels and eyebrows stay in Geist Sans. */
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/geist-mono-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: "Geist Variable", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,79 +65,181 @@
 }
 
 :root {
-  /* Neutrals carry a whisper of the copper hue (chroma only; lightness is kept
-     identical to the base scale, so every contrast ratio is unchanged). */
+  /* Clean, neutral light theme: a white page, cards a breath off white, and
+     black-alpha hairlines that adapt to whatever surface they sit on. Grays
+     carry no hue, so the amber accent is the only color on the page.
+     Measured on white: foreground 19.8:1, muted-foreground 5.5:1 (5.0:1 on
+     --muted), copper 5.0:1 (4.6:1 on --muted). */
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0.006 55);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0.006 55);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0.006 55);
-  --primary: oklch(0.205 0.006 55);
-  --primary-foreground: oklch(0.985 0.002 85);
-  --secondary: oklch(0.97 0.004 75);
-  --secondary-foreground: oklch(0.205 0.006 55);
-  --muted: oklch(0.97 0.004 75);
-  --muted-foreground: oklch(0.556 0.01 60);
-  --accent: oklch(0.97 0.004 75);
-  --accent-foreground: oklch(0.205 0.006 55);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.17 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0 0);
+  --secondary-foreground: oklch(0.17 0 0);
+  --muted: oklch(0.965 0 0);
+  --muted-foreground: oklch(0.52 0 0);
+  --accent: oklch(0.965 0 0);
+  --accent-foreground: oklch(0.17 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0.004 75);
-  --input: oklch(0.922 0.004 75);
-  --ring: oklch(0.708 0.006 65);
+  --border: oklch(0 0 0 / 9%);
+  --input: oklch(0 0 0 / 13%);
+  --ring: oklch(0.7 0.1 70);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.99 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.17 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --copper: oklch(0.57 0.13 42);
+  --sidebar-accent: oklch(0.965 0 0);
+  --sidebar-accent-foreground: oklch(0.17 0 0);
+  --sidebar-border: oklch(0 0 0 / 9%);
+  --sidebar-ring: oklch(0.7 0.1 70);
+  /* The dark theme's amber (#ffc107), dropped to a lightness that holds text
+     contrast on white. */
+  --copper: oklch(0.55 0.125 62);
+  --spot-line: oklch(0 0 0 / 0.28);
+  --spot-glow: oklch(0 0 0 / 0.04);
 }
 
 .dark {
-  /* Black theme: a clean neutral scale on #161616, carried by a vivid amber
-     accent (#ffc107). Surfaces step up 0.2 -> 0.226 -> 0.269 for elevation. */
-  --background: oklch(0.2 0 0);
+  /* True black, the way Resend does it: the page is #000, cards sit barely
+     above it, and structure comes from faint alpha borders and a spotlight on
+     the top edge rather than drop shadows. */
+  --background: oklch(0 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.226 0 0);
+  --card: oklch(0.075 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.226 0 0);
+  --popover: oklch(0.11 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.2 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: oklch(0.96 0 0);
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.16 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.715 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.14 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.16 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 14%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.075 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.16 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  /* Amber accent (#ffc107) — vivid on the #161616 black. */
+  /* Amber accent (#ffc107), vivid on black. */
   --copper: oklch(0.844 0.172 84.9);
+  --spot-line: oklch(1 0 0 / 0.55);
+  --spot-glow: oklch(1 0 0 / 0.07);
+}
+
+/* Spotlight: a short bright highlight on a card's top border with a soft
+   light falling beneath it. Decoration only, so it lives in pseudo-elements;
+   the card needs no extra markup. --spot-x moves the highlight along the edge. */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before,
+.spotlight::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: var(--spot-x, 62%);
+  translate: -50% 0;
+}
+.spotlight::before {
+  top: 0;
+  width: min(34%, 22rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--spot-line), transparent);
+}
+.spotlight::after {
+  top: 0;
+  z-index: -1;
+  width: min(44%, 30rem);
+  height: 14rem;
+  background: radial-gradient(50% 100% at 50% 0%, var(--spot-glow), transparent);
+}
+
+/* Views switcher: the active tab's progress line fills over the dwell time,
+   then its animationend advances to the next view. Off with reduced motion,
+   so the section never plays by itself for people who asked for less. */
+@keyframes view-progress {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+.view-progress {
+  animation-name: view-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .view-progress {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Screenshot lightbox (FeatureShot): a native <dialog> that scales up from
+   0.96 and fades, over a dimmed, blurred backdrop. */
+.lightbox,
+.lightbox::backdrop {
+  transition:
+    opacity 200ms cubic-bezier(0.2, 0, 0, 1),
+    scale 200ms cubic-bezier(0.2, 0, 0, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.lightbox::backdrop {
+  background: oklch(0 0 0 / 0.82);
+  backdrop-filter: blur(6px);
+}
+.lightbox:not([open]),
+.lightbox:not([open])::backdrop {
+  opacity: 0;
+}
+.lightbox:not([open]) {
+  scale: 0.96;
+}
+@starting-style {
+  .lightbox[open],
+  .lightbox[open]::backdrop {
+    opacity: 0;
+  }
+  .lightbox[open] {
+    scale: 0.96;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox,
+  .lightbox::backdrop {
+    transition: none;
+  }
+}
+html:has(dialog.lightbox[open]) {
+  overflow: hidden;
 }
 
 /* Signature brush stroke: draws itself under the hero headline on load. */
@@ -201,9 +317,22 @@
   }
   html {
     @apply font-sans antialiased;
+    scroll-padding-top: 4.5rem;
+    /* Keep the scrollbar's space reserved, so locking scroll (the image
+       lightbox sets overflow: hidden) doesn't shift the page sideways. */
+    scrollbar-gutter: stable;
     font-synthesis: none;
     font-optical-sizing: auto;
     text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: from-font;
   }
   ::selection {
     background-color: --alpha(var(--color-copper) / 25%);

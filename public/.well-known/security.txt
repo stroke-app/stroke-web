@@ -1,0 +1,6 @@
+Contact: https://github.com/broisnischal/stroke-web/security/advisories/new
+Contact: mailto:nischaldahal01395@gmail.com
+Expires: 2027-09-28T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://stroke.click/.well-known/security.txt
+Policy: https://github.com/broisnischal/stroke-web/blob/master/SECURITY.md

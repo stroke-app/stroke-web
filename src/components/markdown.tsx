@@ -4,18 +4,27 @@ import type { ReactNode } from "react";
  * Minimal markdown renderer for GitHub release notes. Supports headings,
  * lists, fenced code blocks, blockquotes, bold, inline code, and links.
  * Renders to React elements, so no HTML injection is possible.
+ *
+ * With `repoUrl`, bare commit ids (7 to 40 hex characters) and `#123`
+ * references link to that repository's commits and issues, as on GitHub.
  */
-export function Markdown({ text }: { text: string }) {
+export function Markdown({ text, repoUrl }: { text: string; repoUrl?: string }) {
   return (
     <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-      {parseBlocks(text)}
+      {parseBlocks(text, repoUrl)}
     </div>
   );
 }
 
-const INLINE_RE = /(`[^`]+`)|(\*\*[^*]+\*\*)|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+// A commit id must mix digits and letters, so ordinary words like "decade"
+// or numbers like "2026091" are left alone.
+const INLINE_RE =
+  /(`[^`]+`)|(\*\*[^*]+\*\*)|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\b((?=[0-9a-f]*\d)(?=[0-9a-f]*[a-f])[0-9a-f]{7,40})\b|(?<![\w/&])#(\d+)\b/g;
 
-function renderInline(text: string): ReactNode[] {
+const REF_LINK =
+  "font-mono text-[12px] text-foreground underline decoration-border underline-offset-2 hover:decoration-foreground";
+
+function renderInline(text: string, repoUrl?: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   let last = 0;
   let key = 0;
@@ -37,6 +46,23 @@ function renderInline(text: string): ReactNode[] {
           {m[2].slice(2, -2)}
         </strong>,
       );
+    } else if (m[5] || m[6]) {
+      const label = m[5] ? m[5].slice(0, 7) : `#${m[6]}`;
+      nodes.push(
+        repoUrl ? (
+          <a
+            key={key++}
+            href={m[5] ? `${repoUrl}/commit/${m[5]}` : `${repoUrl}/issues/${m[6]}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={REF_LINK}
+          >
+            {label}
+          </a>
+        ) : (
+          m[0]
+        ),
+      );
     } else if (m[3] && m[4]) {
       nodes.push(
         <a
@@ -56,7 +82,7 @@ function renderInline(text: string): ReactNode[] {
   return nodes;
 }
 
-function parseBlocks(text: string): ReactNode[] {
+function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
   const lines = text.replaceAll("\r\n", "\n").split("\n");
   const blocks: ReactNode[] = [];
   let key = 0;
@@ -102,13 +128,10 @@ function parseBlocks(text: string): ReactNode[] {
     const heading = /^(#{1,6})\s+(.*)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
-      const content = renderInline(heading[2]);
+      const content = renderInline(heading[2], repoUrl);
       blocks.push(
         level <= 3 ? (
-          <h3
-            key={key++}
-            className="pt-5 font-mono text-[11px] font-semibold tracking-widest text-foreground/70 uppercase first:pt-0"
-          >
+          <h3 key={key++} className="pt-5 text-[13px] font-semibold text-foreground first:pt-0">
             {content}
           </h3>
         ) : (
@@ -136,7 +159,7 @@ function parseBlocks(text: string): ReactNode[] {
                 className="mt-[9px] size-1 shrink-0 rounded-full bg-copper"
                 aria-hidden="true"
               />
-              <span>{renderInline(item)}</span>
+              <span>{renderInline(item, repoUrl)}</span>
             </li>
           ))}
         </ul>,
@@ -153,7 +176,7 @@ function parseBlocks(text: string): ReactNode[] {
       }
       blocks.push(
         <blockquote key={key++} className="border-l-2 border-border pl-3 text-[13px] italic">
-          {renderInline(quoted.join(" "))}
+          {renderInline(quoted.join(" "), repoUrl)}
         </blockquote>,
       );
       continue;
@@ -170,7 +193,7 @@ function parseBlocks(text: string): ReactNode[] {
       para.push(lines[i]);
       i++;
     }
-    blocks.push(<p key={key++}>{renderInline(para.join(" "))}</p>);
+    blocks.push(<p key={key++}>{renderInline(para.join(" "), repoUrl)}</p>);
   }
 
   return blocks;

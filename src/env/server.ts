@@ -24,6 +24,7 @@ export const env = createEnv({
     NEON_CLIENT_SECRET: z.string().optional(),
     PLANETSCALE_CLIENT_SECRET: z.string().optional(),
     PRISMA_CLIENT_SECRET: z.string().optional(),
+    RAILWAY_CLIENT_SECRET: z.string().optional(),
 
     // PostHog personal API key (server-side API / feature-flag local eval), optional
     POSTHOG_PERSONAL_API_KEY: z.string().optional(),

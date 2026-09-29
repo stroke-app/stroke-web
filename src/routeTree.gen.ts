@@ -13,6 +13,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as GiveawayRouteImport } from './routes/giveaway'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as ChangelogRouteImport } from './routes/changelog'
@@ -21,8 +23,11 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
+import { Route as DownloadOsRouteImport } from './routes/download_.$os'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
+import { Route as CommitShaRouteImport } from './routes/commit.$sha'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
+import { Route as ApiTagsRouteImport } from './routes/api/tags'
 import { Route as ApiReleasesRouteImport } from './routes/api/releases'
 import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
 import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
@@ -51,6 +56,7 @@ import { Route as ApiAdminReviewsListRouteImport } from './routes/api/admin/revi
 import { Route as ApiAdminLicenseUnrevokeRouteImport } from './routes/api/admin/license/unrevoke'
 import { Route as ApiAdminLicenseRevokeRouteImport } from './routes/api/admin/license/revoke'
 import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/license/info'
+import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giveaway/draw'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -70,6 +76,16 @@ const RoadmapRoute = RoadmapRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiveawayRoute = GiveawayRouteImport.update({
+  id: '/giveaway',
+  path: '/giveaway',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeaturesRoute = FeaturesRouteImport.update({
@@ -110,14 +126,29 @@ const IngestSplatRoute = IngestSplatRouteImport.update({
   path: '/ingest/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DownloadOsRoute = DownloadOsRouteImport.update({
+  id: '/download_/$os',
+  path: '/download/$os',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsMcpRoute = DocsMcpRouteImport.update({
   id: '/docs/mcp',
   path: '/docs/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommitShaRoute = CommitShaRouteImport.update({
+  id: '/commit/$sha',
+  path: '/commit/$sha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
   id: '/api/telemetry',
   path: '/api/telemetry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTagsRoute = ApiTagsRouteImport.update({
+  id: '/api/tags',
+  path: '/api/tags',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReleasesRoute = ApiReleasesRouteImport.update({
@@ -261,12 +292,19 @@ const ApiAdminLicenseInfoRoute = ApiAdminLicenseInfoRouteImport.update({
   path: '/api/admin/license/info',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminGiveawayDrawRoute = ApiAdminGiveawayDrawRouteImport.update({
+  id: '/api/admin/giveaway/draw',
+  path: '/api/admin/giveaway/draw',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/giveaway': typeof GiveawayRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -277,8 +315,11 @@ export interface FileRoutesByFullPath {
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/releases': typeof ApiReleasesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
@@ -296,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/api/oauth/token': typeof ApiOauthTokenRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app/': typeof AuthAppIndexRoute
+  '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -309,6 +351,8 @@ export interface FileRoutesByTo {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/giveaway': typeof GiveawayRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -318,8 +362,11 @@ export interface FileRoutesByTo {
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/releases': typeof ApiReleasesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/docs': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
@@ -337,6 +384,7 @@ export interface FileRoutesByTo {
   '/api/oauth/token': typeof ApiOauthTokenRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app': typeof AuthAppIndexRoute
+  '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -353,6 +401,8 @@ export interface FileRoutesById {
   '/changelog': typeof ChangelogRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
+  '/giveaway': typeof GiveawayRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -363,8 +413,11 @@ export interface FileRoutesById {
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
   '/api/releases': typeof ApiReleasesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/download_/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/_auth/app/billing': typeof AuthAppBillingRoute
@@ -382,6 +435,7 @@ export interface FileRoutesById {
   '/api/oauth/token': typeof ApiOauthTokenRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/_auth/app/': typeof AuthAppIndexRoute
+  '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -397,6 +451,8 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/giveaway'
+    | '/pricing'
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
@@ -407,8 +463,11 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/api/changelog'
     | '/api/releases'
+    | '/api/tags'
     | '/api/telemetry'
+    | '/commit/$sha'
     | '/docs/mcp'
+    | '/download/$os'
     | '/ingest/$'
     | '/docs/'
     | '/app/billing'
@@ -426,6 +485,7 @@ export interface FileRouteTypes {
     | '/api/oauth/token'
     | '/api/webhooks/$provider'
     | '/app/'
+    | '/api/admin/giveaway/draw'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -439,6 +499,8 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/giveaway'
+    | '/pricing'
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
@@ -448,8 +510,11 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/api/changelog'
     | '/api/releases'
+    | '/api/tags'
     | '/api/telemetry'
+    | '/commit/$sha'
     | '/docs/mcp'
+    | '/download/$os'
     | '/ingest/$'
     | '/docs'
     | '/app/billing'
@@ -467,6 +532,7 @@ export interface FileRouteTypes {
     | '/api/oauth/token'
     | '/api/webhooks/$provider'
     | '/app'
+    | '/api/admin/giveaway/draw'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -482,6 +548,8 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/download'
     | '/features'
+    | '/giveaway'
+    | '/pricing'
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
@@ -492,8 +560,11 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/api/changelog'
     | '/api/releases'
+    | '/api/tags'
     | '/api/telemetry'
+    | '/commit/$sha'
     | '/docs/mcp'
+    | '/download_/$os'
     | '/ingest/$'
     | '/docs/'
     | '/_auth/app/billing'
@@ -511,6 +582,7 @@ export interface FileRouteTypes {
     | '/api/oauth/token'
     | '/api/webhooks/$provider'
     | '/_auth/app/'
+    | '/api/admin/giveaway/draw'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -527,6 +599,8 @@ export interface RootRouteChildren {
   ChangelogRoute: typeof ChangelogRoute
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
+  GiveawayRoute: typeof GiveawayRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RoadmapRoute: typeof RoadmapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -534,8 +608,11 @@ export interface RootRouteChildren {
   AdminReviewsRoute: typeof AdminReviewsRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
   ApiReleasesRoute: typeof ApiReleasesRoute
+  ApiTagsRoute: typeof ApiTagsRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
+  CommitShaRoute: typeof CommitShaRoute
   DocsMcpRoute: typeof DocsMcpRoute
+  DownloadOsRoute: typeof DownloadOsRoute
   IngestSplatRoute: typeof IngestSplatRoute
   DocsIndexRoute: typeof DocsIndexRoute
   ApiAiModelsRoute: typeof ApiAiModelsRoute
@@ -548,6 +625,7 @@ export interface RootRouteChildren {
   ApiLicenseTrialRoute: typeof ApiLicenseTrialRoute
   ApiOauthTokenRoute: typeof ApiOauthTokenRoute
   ApiWebhooksProviderRoute: typeof ApiWebhooksProviderRoute
+  ApiAdminGiveawayDrawRoute: typeof ApiAdminGiveawayDrawRoute
   ApiAdminLicenseInfoRoute: typeof ApiAdminLicenseInfoRoute
   ApiAdminLicenseRevokeRoute: typeof ApiAdminLicenseRevokeRoute
   ApiAdminLicenseUnrevokeRoute: typeof ApiAdminLicenseUnrevokeRoute
@@ -585,6 +663,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/giveaway': {
+      id: '/giveaway'
+      path: '/giveaway'
+      fullPath: '/giveaway'
+      preLoaderRoute: typeof GiveawayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/features': {
@@ -643,6 +735,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IngestSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/download_/$os': {
+      id: '/download_/$os'
+      path: '/download/$os'
+      fullPath: '/download/$os'
+      preLoaderRoute: typeof DownloadOsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/mcp': {
       id: '/docs/mcp'
       path: '/docs/mcp'
@@ -650,11 +749,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commit/$sha': {
+      id: '/commit/$sha'
+      path: '/commit/$sha'
+      fullPath: '/commit/$sha'
+      preLoaderRoute: typeof CommitShaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/telemetry': {
       id: '/api/telemetry'
       path: '/api/telemetry'
       fullPath: '/api/telemetry'
       preLoaderRoute: typeof ApiTelemetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tags': {
+      id: '/api/tags'
+      path: '/api/tags'
+      fullPath: '/api/tags'
+      preLoaderRoute: typeof ApiTagsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/releases': {
@@ -853,6 +966,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLicenseInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/giveaway/draw': {
+      id: '/api/admin/giveaway/draw'
+      path: '/api/admin/giveaway/draw'
+      fullPath: '/api/admin/giveaway/draw'
+      preLoaderRoute: typeof ApiAdminGiveawayDrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -909,6 +1029,8 @@ const rootRouteChildren: RootRouteChildren = {
   ChangelogRoute: ChangelogRoute,
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
+  GiveawayRoute: GiveawayRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RoadmapRoute: RoadmapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -916,8 +1038,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReviewsRoute: AdminReviewsRoute,
   ApiChangelogRoute: ApiChangelogRoute,
   ApiReleasesRoute: ApiReleasesRoute,
+  ApiTagsRoute: ApiTagsRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
+  CommitShaRoute: CommitShaRoute,
   DocsMcpRoute: DocsMcpRoute,
+  DownloadOsRoute: DownloadOsRoute,
   IngestSplatRoute: IngestSplatRoute,
   DocsIndexRoute: DocsIndexRoute,
   ApiAiModelsRoute: ApiAiModelsRoute,
@@ -930,6 +1055,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLicenseTrialRoute: ApiLicenseTrialRoute,
   ApiOauthTokenRoute: ApiOauthTokenRoute,
   ApiWebhooksProviderRoute: ApiWebhooksProviderRoute,
+  ApiAdminGiveawayDrawRoute: ApiAdminGiveawayDrawRoute,
   ApiAdminLicenseInfoRoute: ApiAdminLicenseInfoRoute,
   ApiAdminLicenseRevokeRoute: ApiAdminLicenseRevokeRoute,
   ApiAdminLicenseUnrevokeRoute: ApiAdminLicenseUnrevokeRoute,

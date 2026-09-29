@@ -1,3 +1,4 @@
+# Everything public is open to search engines and AI crawlers alike.
 User-agent: *
 Allow: /
 Disallow: /app
@@ -5,5 +6,10 @@ Disallow: /admin
 Disallow: /login
 Disallow: /signup
 Disallow: /api/
+Disallow: /ingest/
+Disallow: /commit/
+
+# A plain-text map of the site for language models lives at /llms.txt
+# (full text at /llms-full.txt).
 
 Sitemap: https://stroke.click/sitemap.xml

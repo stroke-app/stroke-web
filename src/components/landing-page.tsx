@@ -5,35 +5,55 @@ import {
   SiDuckdb,
   SiMariadb,
   SiMysql,
+  SiPlanetscale,
   SiPostgresql,
+  SiPrisma,
   SiRedis,
   SiSqlite,
+  SiSupabase,
   SiTurso,
 } from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
+  ArrowRightIcon,
   BotIcon,
+  BracesIcon,
+  ChartLineIcon,
   CheckIcon,
+  ChevronDownIcon,
   CodeIcon,
-  GitPullRequestIcon,
   DatabaseIcon,
+  GitForkIcon,
+  GitPullRequestIcon,
+  Grid3x3Icon,
   KeyboardIcon,
   LayoutDashboardIcon,
+  MapIcon,
+  ListChecksIcon,
+  ListIcon,
+  MousePointerClickIcon,
   NetworkIcon,
   PencilLineIcon,
   PlugIcon,
+  ReplaceIcon,
   SearchIcon,
-  TablePropertiesIcon,
   StarIcon,
+  StickyNoteIcon,
+  TablePropertiesIcon,
   TerminalIcon,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import { AppWindow, VideoDemo } from "#/components/app-window";
+import { VideoDemo } from "#/components/app-window";
 import { SmartDownloadButton } from "#/components/download-button";
+import { FeatureShot } from "#/components/feature-shot";
+import { GiveawayCard } from "#/components/giveaway";
+import { Eyebrow, WRAP } from "#/components/page";
 import { BrushStroke, REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { buttonVariants } from "#/components/ui/button";
 import { useAuth } from "#/lib/auth/hooks";
+import { useLatestRelease } from "#/lib/releases";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
 
@@ -43,10 +63,12 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <Demo />
         <Pillars />
-        <Databases />
+        <Connect />
         <Features />
+        <Views />
+        <Editing />
+        <Demo />
         <Reviews />
         <Pricing />
         <Faq />
@@ -58,18 +80,61 @@ export function LandingPage() {
   );
 }
 
+function SectionHeader({
+  eyebrow,
+  title,
+  children,
+  center = false,
+  as: Heading = "h2",
+}: {
+  eyebrow: string;
+  title: React.ReactNode;
+  children?: React.ReactNode;
+  center?: boolean;
+  as?: "h1" | "h2";
+}) {
+  return (
+    <div className={cn("max-w-2xl", center && "mx-auto text-center")}>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <Heading className="mt-3 text-3xl leading-[1.1] font-medium tracking-[-0.035em] text-balance sm:text-[2.75rem]">
+        {title}
+      </Heading>
+      {children && (
+        <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReleasePill() {
+  const { data: release } = useLatestRelease();
+  return (
+    <Link
+      to="/changelog"
+      className="group inline-flex h-7 items-center gap-2 rounded-full border border-border/60 bg-muted/30 pr-2.5 pl-1 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+    >
+      <span className="rounded-full bg-copper/15 px-2 py-0.5 text-[11px] font-medium text-copper">
+        New
+      </span>
+      {release ? `${release.tag_name} is out` : "See what's new"}
+      <ArrowRightIcon className="size-3 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
 function Hero() {
   return (
-    <section className="border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-16 md:py-24">
-        <div className="max-w-2xl">
-          <p className="animate-fade-up flex items-center gap-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
-            <span className="inline-block h-px w-6 bg-copper" aria-hidden="true" />
-            Native app · Rust + Tauri
-          </p>
+    <section className="relative isolate overflow-hidden">
+      <div className={cn(WRAP, "pt-16 pb-20 md:pt-28 md:pb-28")}>
+        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+          <div className="animate-fade-up">
+            <ReleasePill />
+          </div>
 
           <h1
-            className="animate-fade-up mt-6 text-[1.9rem] leading-[1.05] font-semibold tracking-[-0.03em] text-balance min-[430px]:text-[2.5rem] sm:text-6xl"
+            className="animate-fade-up mt-7 text-[2.1rem] leading-[1.02] font-medium tracking-[-0.045em] text-balance min-[430px]:text-[2.6rem] sm:text-6xl md:text-[4.25rem]"
             style={{ animationDelay: "80ms" }}
           >
             The database studio for{" "}
@@ -84,87 +149,45 @@ function Hero() {
           </h1>
 
           <p
-            className="animate-fade-up mt-7 max-w-xl text-[15px] leading-[1.7] text-pretty text-muted-foreground"
+            className="animate-fade-up mt-8 max-w-xl text-lg leading-[1.6] text-pretty text-muted-foreground"
             style={{ animationDelay: "160ms" }}
           >
-            Stroke is a fast desktop client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse,
-            DuckDB, and more. Browse schemas, edit data inline, and write SQL, while your AI agents
-            query the same database through the built-in MCP server. Built in Rust and Tauri, so it
-            launches instantly and stays out of your way.
+            Fast, elegant, and designed for engineers and analysts who care about their tools.
+            Rethink how you query, explore, and work with data.
           </p>
 
           <div
-            className="animate-fade-up mt-8 flex flex-wrap items-start gap-2.5"
+            className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-3"
             style={{ animationDelay: "240ms" }}
           >
-            <SmartDownloadButton size="default" variant="default" />
-            <a href="#pricing" className={buttonVariants({ variant: "ghost", size: "default" })}>
+            <SmartDownloadButton size="lg" variant="default" alternates={false} />
+            <Link to="/pricing" className={buttonVariants({ variant: "outline", size: "lg" })}>
               $9.99 · Own it forever
-            </a>
+            </Link>
           </div>
 
           <p
-            className="animate-fade-up mt-2 text-xs text-muted-foreground"
+            className="animate-fade-up mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground sm:gap-x-2"
             style={{ animationDelay: "300ms" }}
           >
-            Runs on macOS, Windows, and Linux. Free to try, no account needed.
+            <span>macOS, Windows, and Linux</span>
+            <span aria-hidden="true" className="hidden sm:inline">
+              ·
+            </span>
+            <span>Free to try, no account needed</span>
+            <span aria-hidden="true" className="hidden sm:inline">
+              ·
+            </span>
+            <Link
+              to="/download"
+              className="underline-offset-4 hover:text-foreground hover:underline"
+            >
+              Other downloads
+            </Link>
           </p>
         </div>
 
-        <div className="animate-fade-up" style={{ animationDelay: "380ms" }}>
-          <AppWindow className="mt-14 md:mt-20" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Demo() {
-  return (
-    <section className="border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-16 md:py-20">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          See it in action
-        </p>
-        <h2 className="mt-3 max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-          A quick tour of Stroke
-        </h2>
-        <VideoDemo
-          videoId="xmeVKZShJtQ"
-          title="A quick tour of the Stroke database client"
-          className="mt-10"
-        />
-      </div>
-    </section>
-  );
-}
-
-const PILLARS = [
-  {
-    title: "Built in Rust and Tauri",
-    body: "Stroke is a native app, not another Electron build hauling a whole browser around. It launches in an instant, stays light no matter how large your tables get, and never makes your fans spin.",
-  },
-  {
-    title: "Made for agents and people",
-    body: "Stroke ships an MCP server, so Claude, Cursor, or any agent can read your schema and run queries in one click. The same schema-aware AI chat lives right inside the app for you.",
-  },
-  {
-    title: "Yours, not rented",
-    body: "$9.99 buys the app outright. No subscription, no renewals, no locked features. Try everything free, and pay when you decide to keep it.",
-  },
-];
-
-function Pillars() {
-  return (
-    <section className="border-b border-border/40">
-      <div className="mx-auto grid max-w-4xl grid-cols-1 divide-y divide-border/40 md:grid-cols-3 md:divide-x md:divide-y-0">
-        {PILLARS.map((p) => (
-          <div key={p.title} className="flex flex-col gap-3 px-6 py-10 md:px-8">
-            <BrushStroke className="h-1.5 w-10" />
-            <h3 className="text-base font-semibold tracking-tight">{p.title}</h3>
-            <p className="text-sm leading-relaxed text-pretty text-muted-foreground">{p.body}</p>
-          </div>
-        ))}
+        <Databases />
       </div>
     </section>
   );
@@ -186,38 +209,421 @@ const DATABASES = [
 
 function Databases() {
   return (
-    <section className="border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Supported databases
-        </p>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Ten engines today, from a local SQLite file to ClickHouse. SQLite and DuckDB also run
-          in-memory.
-        </p>
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border/50 bg-border/50 sm:grid-cols-3 lg:grid-cols-4">
-          {DATABASES.map((db) => (
-            <div
-              key={db.name}
-              className={cn(
-                "flex items-center gap-2.5 bg-background px-4 py-3.5",
-                "soon" in db && db.soon ? "opacity-60" : "",
-              )}
-            >
-              <db.Icon className="size-4 shrink-0 text-muted-foreground/60" />
-              <span className="truncate text-sm font-medium">{db.name}</span>
-              {"soon" in db && db.soon && (
-                <span className="ml-auto font-mono text-[10px] tracking-wide text-copper uppercase">
-                  soon
-                </span>
-              )}
-            </div>
-          ))}
+    <div className="mx-auto mt-16 max-w-5xl">
+      <p className="text-center text-sm text-muted-foreground">
+        Ten engines today, from a local SQLite file to ClickHouse
+      </p>
+      <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+        {DATABASES.map((db) => (
+          <li
+            key={db.name}
+            className={cn(
+              "flex items-center gap-2 text-sm text-muted-foreground",
+              "soon" in db && db.soon && "opacity-60",
+            )}
+          >
+            <db.Icon className="size-4 shrink-0" />
+            <span className="font-medium">{db.name}</span>
+            {"soon" in db && db.soon && (
+              <span className="rounded-full bg-copper/12 px-1.5 py-px text-[11px] font-medium text-copper">
+                Soon
+              </span>
+            )}
+          </li>
+        ))}
+        <li>
           <Link
             to="/roadmap"
-            className="flex items-center gap-2.5 bg-background px-4 py-3.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
           >
             More on the roadmap →
+          </Link>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+function NeonMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="2.5" />
+      <path d="M8.5 16V8l7 8V8" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const PROVIDERS = [
+  { name: "Neon", Icon: NeonMark, color: "#00e599" },
+  { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e" },
+  { name: "Prisma Postgres", Icon: SiPrisma, color: "#6366f1" },
+  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
+  { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor", soon: true },
+] as const;
+
+const CONNECT_STEPS = [
+  {
+    title: "Sign in with your provider",
+    body: "Authorize Stroke once from the connection screen.",
+  },
+  { title: "Pick a database", body: "Every database on your account shows up, ready to open." },
+  { title: "You're connected", body: "No connection strings to find, copy, or paste." },
+];
+
+function Connect() {
+  return (
+    <section id="connect" className="scroll-mt-16">
+      <div
+        className={cn(
+          WRAP,
+          "grid grid-cols-1 items-center gap-12 py-24 md:py-32 lg:grid-cols-2 lg:gap-20",
+        )}
+      >
+        <div>
+          <SectionHeader eyebrow="Connect" title="Sign in. Pick a database. You're in.">
+            <p>
+              Sign in with your database provider and see every database on your account, then
+              connect in one click. Everything else still takes a plain connection string.
+            </p>
+          </SectionHeader>
+          <ol className="mt-10 space-y-5">
+            {CONNECT_STEPS.map((step, i) => (
+              <li key={step.title} className="flex gap-4">
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border text-xs font-medium tabular-nums">
+                  {i + 1}
+                </span>
+                <span className="pt-0.5">
+                  <span className="block text-sm font-medium">{step.title}</span>
+                  <span className="mt-0.5 block text-sm text-muted-foreground">{step.body}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="relative">
+          <div className="spotlight rounded-3xl border border-white/10 bg-[#050505] p-6 text-white [--spot-glow:oklch(1_0_0/0.07)] [--spot-line:oklch(1_0_0/0.55)] sm:p-8">
+            <p className="text-xs font-medium text-white/50">Connect with a provider</p>
+            <ul className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {PROVIDERS.map((p) => (
+                <li
+                  key={p.name}
+                  className={cn(
+                    "flex h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm font-medium",
+                    "soon" in p && p.soon && "text-white/40",
+                  )}
+                >
+                  <p.Icon className="size-4.5 shrink-0" style={{ color: p.color }} />
+                  {p.name}
+                  {"soon" in p && p.soon && (
+                    <span className="ml-auto text-xs font-normal text-white/35">Soon</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 border-t border-white/8 pt-4 text-xs leading-relaxed text-white/45">
+              Or paste a connection string for any of the ten engines Stroke supports.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const PILLARS = [
+  {
+    title: "Fast from the first click",
+    body: "Stroke opens in an instant and stays light no matter how large your tables get. It never makes your fans spin.",
+  },
+  {
+    title: "Made for agents and people",
+    body: "Stroke ships an MCP server, so Claude, Cursor, or any agent can read your schema and run queries in one click. The same schema-aware AI chat lives right inside the app for you.",
+  },
+  {
+    title: "Yours, not rented",
+    body: "$9.99 buys the app outright. No subscription, no renewals, no locked features. Try everything free, and pay when you decide to keep it.",
+  },
+];
+
+function Pillars() {
+  return (
+    <section className="border-b border-border/40">
+      <div
+        className={cn(
+          WRAP,
+          "grid grid-cols-1 divide-y divide-border/40 md:grid-cols-3 md:divide-x md:divide-y-0",
+        )}
+      >
+        {PILLARS.map((p, i) => (
+          <div
+            key={p.title}
+            className="flex flex-col gap-3 py-12 md:px-10 md:py-16 md:first:pl-0 md:last:pr-0"
+          >
+            <span className="text-sm font-medium text-copper tabular-nums">0{i + 1}</span>
+            <h3 className="text-base font-semibold tracking-tight">{p.title}</h3>
+            <p className="text-sm leading-relaxed text-pretty text-muted-foreground">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Tile({
+  icon: Icon,
+  title,
+  desc,
+  className,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "spotlight flex flex-col rounded-3xl border border-border bg-card p-7 transition-colors duration-150 hover:border-foreground/20 sm:p-8",
+        className,
+      )}
+    >
+      <Icon className="size-4 text-copper" strokeWidth={1.5} />
+      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
+      <p className="mt-1.5 max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
+        {desc}
+      </p>
+      {children && <div className="mt-6 flex flex-1 flex-col justify-end">{children}</div>}
+    </div>
+  );
+}
+
+/** A small app-like panel that frames the illustrations inside feature tiles. */
+function Panel({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "overflow-hidden rounded-lg border border-border/60 bg-background font-mono text-[11.5px] leading-relaxed",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-1.5 border-b border-border/50 px-3 py-2">
+        <span className="size-2 rounded-full bg-border" />
+        <span className="size-2 rounded-full bg-border" />
+        <span className="size-2 rounded-full bg-border" />
+        <span className="ml-2 text-[10.5px] text-muted-foreground">{label}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+const K = ({ children }: { children: React.ReactNode }) => (
+  <span className="text-copper">{children}</span>
+);
+
+const CHART_SHOTS = [
+  {
+    key: "bar",
+    label: "Bar",
+    src: "/features/charts-bar.webp",
+    alt: "A bar chart of article views by publish date, built from a query result, with a tooltip showing 195,621 views for May 2023",
+  },
+  {
+    key: "area",
+    label: "Area",
+    src: "/features/charts-area.webp",
+    alt: "The same query as an area chart of article views over time, with a tooltip showing 34,730 views for May 2023",
+  },
+  {
+    key: "step",
+    label: "Step",
+    src: "/features/charts-step.webp",
+    alt: "The same query as a step chart of article views over time, with a tooltip showing 220,106 views for May 2023",
+  },
+] as const;
+
+/** Real chart screenshots from the app, switchable with a small toggle. */
+function ChartShowcase() {
+  const [active, setActive] = useState<(typeof CHART_SHOTS)[number]["key"]>("bar");
+
+  return (
+    <div>
+      <fieldset className="mb-3 inline-flex rounded-lg border border-border/60 bg-background p-0.5">
+        <legend className="sr-only">Chart type</legend>
+        {CHART_SHOTS.map((shot) => (
+          <button
+            key={shot.key}
+            type="button"
+            aria-pressed={active === shot.key}
+            onClick={() => setActive(shot.key)}
+            className={cn(
+              "h-7 rounded-md px-3 text-xs font-medium transition-colors duration-150",
+              active === shot.key
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {shot.label}
+          </button>
+        ))}
+      </fieldset>
+      {/* Both images share one grid cell, so they cross-fade in place. */}
+      <div className="grid">
+        {CHART_SHOTS.map((shot) => (
+          <div
+            key={shot.key}
+            inert={active !== shot.key}
+            className={cn(
+              "transition-opacity duration-150 ease-out [grid-area:1/1]",
+              active === shot.key ? "opacity-100" : "pointer-events-none opacity-0",
+            )}
+          >
+            <FeatureShot src={shot.src} width={1472} height={718} alt={shot.alt} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function McpIllustration() {
+  return (
+    <Panel label="claude_desktop_config.json">
+      <pre className="overflow-x-auto p-3 text-foreground/90">
+        {"{\n"}
+        {"  "}
+        <K>"mcpServers"</K>
+        {": {\n    "}
+        <K>"stroke"</K>
+        {": {\n      "}
+        <K>"url"</K>
+        {': "http://127.0.0.1:4319/mcp"\n    }\n  }\n}'}
+      </pre>
+    </Panel>
+  );
+}
+
+function Features() {
+  return (
+    <section id="features" className="scroll-mt-16">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <SectionHeader eyebrow="Features" title="Everything you need. Nothing you don't." />
+          <Link
+            to="/features"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "self-start md:self-auto",
+            )}
+          >
+            See all features
+            <ArrowRightIcon className="size-3.5" />
+          </Link>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-16 lg:grid-cols-6">
+          <Tile
+            icon={TerminalIcon}
+            title="SQL console"
+            desc="A full editor with schema-aware autocomplete, formatting, execution time, and one-click CSV or JSON export."
+            className="sm:col-span-2 lg:col-span-4"
+          >
+            <FeatureShot
+              src="/features/sql-console.webp"
+              width={1473}
+              height={689}
+              alt="The Stroke query editor running SELECT * FROM events LIMIT 10, with ten typed result rows below: 10 rows in 16ms"
+            />
+          </Tile>
+          <Tile
+            icon={PlugIcon}
+            title="Built-in MCP server"
+            desc="Expose your database to Claude, Cursor, and other MCP clients with one-click config."
+            className="lg:col-span-2"
+          >
+            <McpIllustration />
+          </Tile>
+          <Tile
+            icon={TablePropertiesIcon}
+            title="Schema explorer"
+            desc="Tables, views, materialized views, foreign tables, indexes, and enums, all with live row counts."
+            className="lg:col-span-2"
+          />
+          <Tile
+            icon={SearchIcon}
+            title="Powerful data grid"
+            desc="Paginated browsing, resizable columns, multi-column sort, full-text search, and a visual filter builder."
+            className="lg:col-span-2"
+          />
+          <Tile
+            icon={PencilLineIcon}
+            title="Inline editing"
+            desc="Type-aware editors for text, numbers, booleans, enums, dates, UUIDs, and JSON."
+            className="lg:col-span-2"
+          />
+          <Tile
+            icon={BotIcon}
+            title="AI chat"
+            desc="An assistant with direct database access that runs queries, explains schemas, and generates SQL."
+            className="lg:col-span-3"
+          >
+            <FeatureShot
+              src="/features/ai-chat.webp"
+              width={1120}
+              height={836}
+              alt="The Stroke AI chat, connected to the public schema with 6 tables, asking what you would like to explore, with suggestions like Row counts for all tables, Foreign key relationships, and Spot duplicate records"
+            />
+          </Tile>
+          <Tile
+            icon={KeyboardIcon}
+            title="Command palette"
+            desc="Hit Cmd/Ctrl+K to jump anywhere. Every core view has a shortcut."
+            className="lg:col-span-3"
+          >
+            <FeatureShot
+              src="/features/command-palette.webp"
+              width={1920}
+              height={1080}
+              alt="The Stroke command palette open over the app, listing views like Table data, Find in database, SQL editor, ORM Runner, ER Diagram, and Schema Explorer with their keyboard shortcuts"
+            />
+          </Tile>
+          <Tile
+            icon={LayoutDashboardIcon}
+            title="Charts & dashboards"
+            desc="Turn any query result into a chart in one click, then pin it to a dashboard you can revisit any time."
+            className="sm:col-span-2 lg:col-span-4"
+          >
+            <ChartShowcase />
+          </Tile>
+          <Tile
+            icon={NetworkIcon}
+            title="Schema diagrams"
+            desc="Auto-generated ERDs of your tables and relationships with foreign-key navigation."
+            className="lg:col-span-2"
+          />
+          <Link
+            to="/features"
+            className="group flex flex-col justify-between gap-4 rounded-3xl border border-dashed border-border p-7 transition-colors hover:border-copper/50 hover:bg-muted/20 sm:px-8 lg:col-span-6 lg:flex-row lg:items-center"
+          >
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Exports, shortcuts, and the rest of what ships in the app.
+            </p>
+            <span className="flex items-center gap-1.5 text-sm font-medium">
+              Every feature
+              <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
           </Link>
         </div>
       </div>
@@ -225,94 +631,385 @@ function Databases() {
   );
 }
 
-const FEATURES = [
+interface ViewInfo {
+  key: string;
+  label: string;
+  icon: React.ElementType;
+  title: string;
+  what: string;
+  why: string;
+  shot?: { src: string; width: number; height: number; alt: string };
+}
+
+const VIEWS: ViewInfo[] = [
   {
-    icon: TablePropertiesIcon,
-    title: "Schema explorer",
-    desc: "Tables, views, materialized views, foreign tables, indexes, and enums, all with live row counts.",
+    key: "table",
+    label: "Table view",
+    icon: Grid3x3Icon,
+    title: "Scan, sort, and edit rows",
+    what: "The grid: typed column headers, sort, filter, search, and inline editing, paging smoothly through a million rows.",
+    why: "Your everyday view, for scanning lots of rows or fixing values in place.",
+    shot: {
+      src: "/features/view-table.webp",
+      width: 1472,
+      height: 1040,
+      alt: "Table view of the events table: 1,000,000 rows with typed columns id, ts, device_id, and session",
+    },
   },
   {
-    icon: SearchIcon,
-    title: "Powerful data grid",
-    desc: "Paginated browsing, resizable columns, multi-column sort, full-text search, and a visual filter builder.",
+    key: "json",
+    label: "JSON view",
+    icon: BracesIcon,
+    title: "The rows as a JSON array",
+    what: "Every row as a JSON object, with a JSONPath bar ($.field, [0], .items[*].name) to pull out just the part you need, and a column picker to hide the rest.",
+    why: "When columns hold documents, or you want rows ready to paste into code, a fixture, or an API call.",
+    shot: {
+      src: "/features/view-json.webp",
+      width: 1472,
+      height: 1040,
+      alt: "JSON view of the vector_zoo table as a syntax-highlighted JSON array, with the JSONPath filter bar and the column visibility picker open",
+    },
   },
   {
-    icon: PencilLineIcon,
-    title: "Inline editing",
-    desc: "Type-aware editors for text, numbers, booleans, enums, dates, UUIDs, and JSON.",
+    key: "record",
+    label: "Record view",
+    icon: ListIcon,
+    title: "One row, top to bottom",
+    what: "A single row laid out field by field, each with its name and type.",
+    why: "Wide tables. A row with forty columns reads down the page instead of scrolling sideways.",
   },
   {
-    icon: TerminalIcon,
-    title: "SQL console",
-    desc: "Monaco editor with schema-aware autocomplete, formatting, execution time, and CSV/JSON export.",
+    key: "text",
+    label: "Text view",
+    icon: StickyNoteIcon,
+    title: "Copy-ready text in four formats",
+    what: "The result as CSV, TSV, Markdown, or JSON Lines, with one click to copy or download it.",
+    why: "Dropping a result into a README, a ticket, or a spreadsheet, or handing it to another tool.",
+    shot: {
+      src: "/features/view-text.webp",
+      width: 1472,
+      height: 1040,
+      alt: "Text view of the vector_zoo table as a Markdown table, with CSV, TSV, Markdown, and JSON Lines tabs and a Copy button",
+    },
   },
   {
-    icon: NetworkIcon,
-    title: "Schema diagrams",
-    desc: "Auto-generated ERDs of your tables and relationships with foreign-key navigation.",
+    key: "chart",
+    label: "Chart view",
+    icon: ChartLineIcon,
+    title: "See the shape of the data",
+    what: "Pick a category and a value column, optionally group by a third, then switch between bar, area, step, and more.",
+    why: "Trends, spikes, and gaps that never show up in a list of rows.",
+    shot: {
+      src: "/features/view-chart.webp",
+      width: 1472,
+      height: 1040,
+      alt: "Chart view of the events table: an area chart of amount over ts across 1,000 rows",
+    },
   },
   {
-    icon: LayoutDashboardIcon,
-    title: "Charts & dashboards",
-    desc: "Turn query results into charts and pin them to a dashboard you can revisit any time.",
+    key: "erd",
+    label: "ERD view",
+    icon: GitForkIcon,
+    title: "How the tables connect",
+    what: "The current table and the tables it references, with primary and foreign keys marked, 1:N and 1:1 links, zoom, and a minimap.",
+    why: "Before writing a join, or on your first day with an unfamiliar schema.",
+    shot: {
+      src: "/features/view-erd.webp",
+      width: 1472,
+      height: 1040,
+      alt: "ERD view of a Cloudflare D1 database: invoice_item linked by foreign keys to invoice and item, with a PK, FK, 1:N, and 1:1 legend and a minimap",
+    },
   },
   {
-    icon: BotIcon,
-    title: "AI chat",
-    desc: "An assistant with direct database access that runs queries, explains schemas, and generates SQL.",
-  },
-  {
-    icon: PlugIcon,
-    title: "Built-in MCP server",
-    desc: "Expose your database to Claude, Cursor, and other MCP clients with one-click config.",
-  },
-  {
-    icon: KeyboardIcon,
-    title: "Command palette",
-    desc: "Hit Cmd/Ctrl+K to jump anywhere. Every core view has a shortcut.",
+    key: "map",
+    label: "Map view",
+    icon: MapIcon,
+    title: "Geometry, on a map",
+    what: "Geometry columns plotted on a world map and clustered, so a million points stay readable, with the SRID and live coordinates shown.",
+    why: "Spatial data you would otherwise read as raw geometry. See where the points actually are.",
+    shot: {
+      src: "/features/view-map.webp",
+      width: 1472,
+      height: 1040,
+      alt: "Map view of the gps_pings table: 1,000,000 points in 89 clusters on a world map, SRID 4326",
+    },
   },
 ];
 
-function Features() {
+const COUNT_WORDS = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+];
+
+/** How long each view stays on stage while the section plays on its own. */
+const VIEW_DWELL_MS = 5000;
+
+function Views() {
+  // Only views with a real screenshot go on stage.
+  const views = VIEWS.filter((v) => v.shot);
+  const [active, setActive] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
+  const [hovered, setHovered] = useState(false);
+  const [inView, setInView] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const view = views[active];
+
+  useEffect(() => {
+    const el = section.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.35,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const choose = (i: number, focus = false) => {
+    const next = (i + views.length) % views.length;
+    setAutoplay(false);
+    setActive(next);
+    if (focus) tabs.current[next]?.focus();
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const keys: Record<string, number> = {
+      ArrowRight: active + 1,
+      ArrowDown: active + 1,
+      ArrowLeft: active - 1,
+      ArrowUp: active - 1,
+      Home: 0,
+      End: views.length - 1,
+    };
+    if (e.key in keys) {
+      e.preventDefault();
+      choose(keys[e.key], true);
+    }
+  };
+
+  const playing = autoplay && inView && !hovered;
+
   return (
-    <section id="features" className="scroll-mt-16 border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Features
-        </p>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
-          Everything you need. Nothing you don't.
-        </h2>
+    <section ref={section} id="views" className="relative isolate scroll-mt-16 overflow-hidden">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader
+          eyebrow="Views"
+          title={`One result, ${COUNT_WORDS[views.length] ?? views.length} ways to read it.`}
+          center
+        >
+          <p>
+            Switch how any table or query result is shown, without running it again. Each view is
+            built for a different question.
+          </p>
+        </SectionHeader>
 
-        <div className="mt-10 grid grid-cols-1 divide-y divide-border/40 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-3">
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className={cn(
-                "flex flex-col gap-2 py-6 sm:py-0 sm:pb-8",
-                i % 3 !== 2 ? "lg:border-r lg:border-border/40 lg:pr-8" : "",
-                i % 2 !== 1 ? "sm:border-r sm:border-border/40 sm:pr-8 lg:border-r-0" : "",
-                i % 3 === 2 ? "lg:border-r-0 lg:pl-8" : "",
-                i % 3 === 1 ? "lg:px-8" : "",
-                i >= 3 ? "sm:border-t sm:border-border/40 sm:pt-8" : "",
-                i >= 6 ? "lg:border-t lg:border-border/40 lg:pt-8" : "",
-              )}
-            >
-              <f.icon className="size-4 text-muted-foreground" strokeWidth={1.5} />
-              <h3 className="text-sm font-semibold">{f.title}</h3>
-              <p className="text-sm leading-relaxed text-pretty text-muted-foreground">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-10">
-          <Link
-            to="/features"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        {/* The switcher, styled after the app's own view menu. */}
+        <div className="mt-10 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Views"
+            className="flex max-w-full gap-1 overflow-x-auto rounded-full border border-border bg-card p-1"
           >
-            See all features →
-          </Link>
+            {views.map((v, i) => {
+              const selected = i === active;
+              return (
+                <button
+                  key={v.key}
+                  ref={(el) => {
+                    tabs.current[i] = el;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`view-tab-${v.key}`}
+                  aria-selected={selected}
+                  aria-controls="view-panel"
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => choose(i)}
+                  onKeyDown={onKeyDown}
+                  className={cn(
+                    "relative flex h-9 shrink-0 items-center gap-2 overflow-hidden rounded-full px-4 text-sm whitespace-nowrap transition-colors duration-150",
+                    selected
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  <v.icon className="size-4 shrink-0" strokeWidth={1.75} />
+                  {v.label.replace(" view", "")}
+                  {selected && autoplay && (
+                    <span
+                      key={`${v.key}-progress`}
+                      aria-hidden="true"
+                      onAnimationEnd={() => setActive((i + 1) % views.length)}
+                      style={{
+                        animationDuration: `${VIEW_DWELL_MS}ms`,
+                        animationPlayState: playing ? "running" : "paused",
+                      }}
+                      className="view-progress absolute inset-x-4 bottom-0.5 h-px origin-left rounded-full bg-copper"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* The stage: one app window, every view stacked in it, cross-fading in place. */}
+        <div
+          role="tabpanel"
+          id="view-panel"
+          aria-labelledby={`view-tab-${view.key}`}
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
+          onFocus={() => setHovered(true)}
+          onBlur={() => setHovered(false)}
+          className="mx-auto mt-8 max-w-5xl"
+        >
+          <div className="spotlight rounded-[1.5rem] border border-border [--spot-x:70%]">
+            <div className="overflow-hidden rounded-[calc(1.5rem-1px)] bg-[#050505]">
+              <div className="flex items-center gap-1.5 border-b border-white/8 px-4 py-2.5">
+                <span className="size-2.5 rounded-full bg-white/15" />
+                <span className="size-2.5 rounded-full bg-white/15" />
+                <span className="size-2.5 rounded-full bg-white/15" />
+                <span className="ml-3 flex items-center gap-1.5 text-xs text-white/55">
+                  <view.icon className="size-3.5" strokeWidth={1.75} />
+                  {view.label}
+                </span>
+              </div>
+              <div className="grid">
+                {views.map((v, i) =>
+                  v.shot ? (
+                    <div
+                      key={v.key}
+                      inert={i !== active}
+                      className={cn(
+                        "transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] [grid-area:1/1]",
+                        i === active
+                          ? "scale-100 opacity-100"
+                          : "pointer-events-none scale-[1.01] opacity-0",
+                      )}
+                    >
+                      <FeatureShot {...v.shot} flush />
+                    </div>
+                  ) : null,
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Caption: what it is and why you would reach for it. */}
+          <div
+            key={view.key}
+            className="animate-fade-up mt-6 grid gap-4 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] sm:gap-10"
+          >
+            <div>
+              <h3 className="text-lg font-semibold tracking-tight">{view.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-pretty text-muted-foreground">
+                {view.what}
+              </p>
+            </div>
+            <div className="border-l-2 border-copper/60 pl-4">
+              <p className="text-[13px] font-medium text-copper">Why use it</p>
+              <p className="mt-1 text-sm leading-relaxed text-pretty text-foreground/85">
+                {view.why}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Editing() {
+  return (
+    <section id="editing" className="scroll-mt-16">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader eyebrow="Editing" title="Change data without holding your breath.">
+          <p>
+            Nothing touches the database until you say so. Every change is previewed first, and
+            every action on a cell is one right-click away.
+          </p>
+        </SectionHeader>
+
+        <div className="mt-14 grid grid-cols-1 gap-4 md:mt-16 lg:grid-cols-6">
+          <Tile
+            icon={MousePointerClickIcon}
+            title="Everything is a right-click away"
+            desc="Filter by a value or exclude it, copy in another format, transform, duplicate, or preview the row as JSON, straight from the cell."
+            className="lg:col-span-2"
+          >
+            <FeatureShot
+              src="/features/context-menu.webp"
+              width={864}
+              height={715}
+              alt="The cell context menu with Open row, Preview cell, Preview row JSON, Pin column, Edit, Copy as, Filter, Transform, Duplicate row, and Delete row, and the Filter submenu open"
+            />
+          </Tile>
+          <Tile
+            icon={BracesIcon}
+            title="Open any row as JSON"
+            desc="Expand a row in place to read every field, switch between tree and raw, and copy any value with one click."
+            className="lg:col-span-4"
+          >
+            <FeatureShot
+              src="/features/row-json.webp"
+              width={1477}
+              height={516}
+              alt="Row 8 expanded inline as a JSON tree with id, doc_id, chunk, source, content, tokens, and embedding, with Tree and Raw toggles and copy buttons"
+            />
+          </Tile>
+          <Tile
+            icon={ListChecksIcon}
+            title="Every change waits for you"
+            desc="Edits, new rows, and deletes are staged and marked right in the grid. Review them, then apply them together, or reset and they never happened."
+            className="lg:col-span-4"
+          >
+            <FeatureShot
+              src="/features/staged-edits.webp"
+              width={1472}
+              height={750}
+              alt="Staged changes in the openai_docs table: a new row at the top, a row marked for deletion in red, and a cell being edited with Stage change"
+            />
+          </Tile>
+          <Tile
+            icon={ReplaceIcon}
+            title="Find and replace, previewed"
+            desc="Pick a column, match case, whole word, or a regex, and see every cell that will change, old value beside new, before you replace."
+            className="lg:col-span-2"
+          >
+            <FeatureShot
+              src="/features/find-replace.webp"
+              width={960}
+              height={1000}
+              alt="Find and replace on the label column of geom_zoo: point replaced with updated, previewing 8 cells that will change, with match case, regex, and whole word options"
+            />
+          </Tile>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Demo() {
+  return (
+    <section className="border-b border-border/40">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader eyebrow="See it in action" title="A quick tour of Stroke" center>
+          <p>Connect, browse, query, and hand the same database to an agent.</p>
+        </SectionHeader>
+        <VideoDemo
+          videoId="xmeVKZShJtQ"
+          title="A quick tour of the Stroke database client"
+          className="mx-auto mt-14 max-w-5xl md:mt-16"
+        />
       </div>
     </section>
   );
@@ -329,18 +1026,15 @@ function Reviews() {
   if (!reviews || reviews.length === 0) return null;
 
   return (
-    <section id="reviews" className="scroll-mt-16 border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Reviews</p>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
-          What people say about Stroke
-        </h2>
+    <section id="reviews" className="scroll-mt-16">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader eyebrow="Reviews" title="What people say about Stroke" />
 
-        <div className="mt-10 gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
+        <div className="mt-14 gap-4 [column-fill:_balance] sm:columns-2 md:mt-16 lg:columns-3">
           {reviews.map((r) => (
             <figure
               key={r.id}
-              className="mb-4 flex break-inside-avoid flex-col gap-4 rounded-lg border border-border/50 bg-muted/20 p-5 transition-colors hover:border-border hover:bg-muted/40"
+              className="mb-4 flex break-inside-avoid flex-col gap-4 rounded-3xl border border-border bg-card p-6 transition-colors duration-150 hover:border-foreground/20"
             >
               <blockquote className="text-sm leading-relaxed text-foreground/90">
                 “{r.body}”
@@ -366,6 +1060,87 @@ function Reviews() {
   );
 }
 
+function PerkList({ perks, accent = false }: { perks: string[]; accent?: boolean }) {
+  return (
+    <ul className="space-y-3 text-sm">
+      {perks.map((perk) => (
+        <li key={perk} className="flex items-start gap-3">
+          <span
+            className={cn(
+              "mt-px flex size-4.5 shrink-0 items-center justify-center rounded-full",
+              accent ? "bg-copper/15 text-copper" : "bg-foreground/8 text-foreground/70",
+            )}
+          >
+            <CheckIcon className="size-3" strokeWidth={2.5} />
+          </span>
+          <span className="text-pretty text-muted-foreground">{perk}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Plan({
+  name,
+  tag,
+  price,
+  suffix,
+  tagline,
+  cta,
+  note,
+  perks,
+  featured = false,
+}: {
+  name: string;
+  tag?: string;
+  price: string;
+  suffix: string;
+  tagline: string;
+  cta: React.ReactNode;
+  note: string;
+  perks: string[];
+  featured?: boolean;
+}) {
+  return (
+    <div className={cn("relative flex flex-col p-7 sm:p-8")}>
+      {featured && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-copper to-transparent"
+        />
+      )}
+      <div className="flex h-6 items-center justify-between gap-3">
+        <h3 className="text-sm font-medium">{name}</h3>
+        {tag && (
+          <span className="rounded-full border border-copper/30 bg-copper/10 px-2 py-0.5 text-[11px] font-medium text-copper">
+            {tag}
+          </span>
+        )}
+      </div>
+      <p className="mt-6 flex items-baseline gap-1.5">
+        <span className="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{price}</span>
+        <span className="text-sm text-muted-foreground">{suffix}</span>
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">{tagline}</p>
+
+      <div className="mt-7">{cta}</div>
+      <p className="mt-3 text-xs text-muted-foreground">{note}</p>
+
+      <div className="mt-7 border-t border-border/60 pt-6">
+        <p className="mb-4 text-xs font-medium text-muted-foreground">Includes</p>
+        <PerkList perks={perks} accent={featured} />
+      </div>
+    </div>
+  );
+}
+
+const FREE_PERKS = [
+  "Every feature unlocked while you evaluate",
+  "All ten engines, from Postgres to DuckDB",
+  "macOS, Windows & Linux",
+  "No sign-in required",
+];
+
 const LICENSE_PERKS = [
   "The app is yours forever, nothing to cancel",
   "A license key for up to 2 of your devices",
@@ -373,103 +1148,93 @@ const LICENSE_PERKS = [
   "Priority answers on support and feature requests",
 ];
 
-function Pricing() {
+const TEAM_PERKS = [
+  "Licenses everyone on your company's email domain",
+  "Each teammate gets their own key",
+  "No seats to manage, no per-user fees",
+];
+
+/** Pricing cards. Rendered on the landing page and as the /pricing page body. */
+export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
   const { user } = useAuth();
+  const buyTo = user ? "/app/billing" : "/login";
 
   return (
-    <section id="pricing" className="scroll-mt-16 border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Pricing</p>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
-          Pay once. Own it forever.
-        </h2>
-        <div className="mt-4 max-w-2xl space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section id="pricing" className="scroll-mt-16">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader eyebrow="Pricing" title="Pay once. Own it forever." center as={as}>
           <p>
             Most database clients now charge $100 or more a year, every year. I think a tool you use
             every day should be one you own, so Stroke costs{" "}
             <strong className="font-medium text-foreground">$9.99, once</strong>. That is the lowest
             price I can offer and still keep development going.
           </p>
-          <p>
-            There are no renewals, no upsells, and nothing to cancel. You buy Stroke and it is yours
-            on every platform, with every update included. Take your time deciding: the full app is
-            free to try.
-          </p>
-        </div>
+        </SectionHeader>
 
-        <div className="mt-10 grid grid-cols-1 overflow-hidden rounded-lg border border-border/50 md:grid-cols-2">
-          {/* Free */}
-          <div className="flex flex-col gap-5 border-b border-border/50 p-7 md:border-r md:border-b-0 md:p-9">
-            <div>
-              <h3 className="text-sm font-semibold">Try Stroke</h3>
-              <p className="mt-1 text-[13px] text-muted-foreground">Take your time deciding.</p>
-            </div>
-            <p className="text-4xl font-semibold tracking-tight">$0</p>
-            <ul className="space-y-2.5 text-sm text-muted-foreground">
-              {[
-                "Every feature unlocked while you evaluate",
-                "All ten engines, from Postgres to DuckDB",
-                "macOS, Windows & Linux",
-                "No account or sign-in required",
-              ].map((perk) => (
-                <li key={perk} className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-0.5 size-3.5 shrink-0" strokeWidth={2} />
-                  {perk}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-auto pt-2">
-              <SmartDownloadButton size="default" />
-            </div>
-          </div>
-
-          {/* License */}
-          <div className="flex flex-col gap-5 bg-muted/30 p-7 md:p-9">
-            <div>
-              <h3 className="text-sm font-semibold">Own Stroke</h3>
-              <p className="mt-1 text-[13px] text-muted-foreground">One payment. Yours for good.</p>
-            </div>
-            <p className="text-4xl font-semibold tracking-tight text-copper">
-              $9.99 <span className="text-base font-normal text-muted-foreground">once</span>
-            </p>
-            <ul className="space-y-2.5 text-sm text-muted-foreground">
-              {LICENSE_PERKS.map((perk) => (
-                <li key={perk} className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-copper" strokeWidth={2} />
-                  {perk}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-auto pt-2">
+        <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 divide-y divide-border overflow-hidden rounded-3xl border border-border bg-card md:mt-16 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+          <Plan
+            name="Try"
+            price="$0"
+            suffix="to start"
+            tagline="Take your time deciding."
+            cta={
+              <SmartDownloadButton
+                size="lg"
+                variant="outline"
+                alternates={false}
+                className="w-full"
+              />
+            }
+            note="No account or card needed."
+            perks={FREE_PERKS}
+          />
+          <Plan
+            name="Own"
+            tag="Pay once"
+            price="$9.99"
+            suffix="once"
+            tagline="One payment. Yours for good."
+            cta={
               <Link
-                to={user ? "/app/billing" : "/login"}
-                className={buttonVariants({ variant: "default", size: "default" })}
+                to={buyTo}
+                className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
               >
-                Buy Stroke for $9.99
+                Buy Stroke
               </Link>
-              <p className="mt-3 text-xs text-muted-foreground">
-                One-time payment. No recurring charges.
-              </p>
-            </div>
-          </div>
+            }
+            note="One-time payment. No recurring charges."
+            perks={LICENSE_PERKS}
+            featured
+          />
+          <Plan
+            name="Team"
+            price="$99"
+            suffix="once"
+            tagline="One purchase, whole company."
+            cta={
+              <Link
+                to={buyTo}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
+              >
+                Buy Team
+              </Link>
+            }
+            note="One-time payment. No per-seat billing."
+            perks={TEAM_PERKS}
+          />
         </div>
 
-        {/* Team / Enterprise */}
-        <div className="mt-5 flex flex-col items-start justify-between gap-4 rounded-lg border border-border/50 p-6 sm:flex-row sm:items-center">
-          <div>
-            <h3 className="text-sm font-semibold">Running a team?</h3>
-            <p className="mt-1 max-w-md text-[13px] text-muted-foreground">
-              One <strong className="font-medium text-foreground">$99</strong> purchase licenses
-              everyone on your company&apos;s email domain. Each teammate gets their own key, with
-              no seats to manage and no per-user fees.
-            </p>
-          </div>
-          <Link
-            to={user ? "/app/billing" : "/login"}
-            className={buttonVariants({ variant: "outline", size: "default" })}
-          >
-            Buy Team for $99
-          </Link>
+        <ul className="mx-auto mt-8 flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
+          {["No renewals", "No upsells", "Nothing to cancel", "Free to try"].map((item) => (
+            <li key={item} className="flex items-center gap-2">
+              <CheckIcon className="size-3.5 text-copper" strokeWidth={2.5} />
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mx-auto mt-14 max-w-5xl">
+          <GiveawayCard />
         </div>
       </div>
     </section>
@@ -486,6 +1251,14 @@ const FAQ_ITEMS = [
     a: "Most database clients rent themselves to you for $100 or more a year. I want owning Stroke to be an easy decision, so the price stays low enough that you never have to think twice about it. If Stroke saves you one afternoon, it has paid for itself.",
   },
   {
+    q: "Do I need an account to try it?",
+    a: "No. Download it, open it, and connect to a database. An account only comes in when you buy a license.",
+  },
+  {
+    q: "Which databases does Stroke support?",
+    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is next, and the roadmap lists what follows.",
+  },
+  {
     q: "Does Stroke see my database credentials or data?",
     a: "No. Stroke connects to your databases directly from your machine, and connection credentials are stored locally on your device. Query results never pass through our servers. See the Privacy Policy for the full picture.",
   },
@@ -493,112 +1266,137 @@ const FAQ_ITEMS = [
     q: "Can I move my license to a new machine?",
     a: "Yes. Your license covers 2 devices at once, and you can deactivate an old device from your dashboard whenever you switch machines. Refunds are covered in the Terms of Service.",
   },
+  {
+    q: "Is Stroke open source?",
+    a: "Yes. The whole app, Pro features included, is on GitHub. It is free to use personally or at work, just not for resale.",
+  },
 ];
 
-function Faq() {
+/** FAQ accordion. Rendered on the landing page and the /pricing page. */
+export function Faq() {
   return (
-    <section id="faq" className="scroll-mt-16 border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">FAQ</p>
-        <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-2">
-          {FAQ_ITEMS.map((item) => (
-            <div key={item.q}>
-              <h3 className="text-sm font-semibold">{item.q}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">
+    <section id="faq" className="scroll-mt-16">
+      <div
+        className={cn(
+          WRAP,
+          "grid grid-cols-1 gap-10 py-24 md:py-32 lg:grid-cols-[1fr_1.6fr] lg:gap-16",
+        )}
+      >
+        <div>
+          <SectionHeader eyebrow="FAQ" title="Questions, answered." />
+          <p className="mt-6 text-sm text-muted-foreground">
+            The fine print lives in the{" "}
+            <Link to="/terms" className="underline underline-offset-2 hover:text-foreground">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        </div>
+
+        <div className="divide-y divide-border/50 border-y border-border/50">
+          {FAQ_ITEMS.map((item, i) => (
+            <details key={item.q} className="group" open={i === 0}>
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-medium transition-colors hover:text-copper [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <p className="pb-5 text-sm leading-relaxed text-pretty text-muted-foreground">
                 {item.a}
               </p>
-            </div>
+            </details>
           ))}
         </div>
-        <p className="mt-8 text-xs text-muted-foreground">
-          The fine print lives in the{" "}
-          <Link to="/terms" className="underline underline-offset-2 hover:text-foreground">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
-            Privacy Policy
-          </Link>
-          .
-        </p>
       </div>
     </section>
   );
 }
 
+const OPEN_SOURCE_ITEMS = [
+  {
+    icon: CodeIcon,
+    title: "Read it",
+    body: "Every line is public. Build it yourself in three commands.",
+  },
+  {
+    icon: GitPullRequestIcon,
+    title: "Change it",
+    body: "Bugs, features and docs all welcome. CONTRIBUTING.md has the setup.",
+  },
+  {
+    icon: StarIcon,
+    title: "Star it",
+    body: "The cheapest way to help, and the one that reaches other people.",
+  },
+];
+
 function OpenSource() {
   return (
-    <section id="open-source" className="scroll-mt-16 border-b border-border/40">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Open source
-        </p>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
-          The whole thing is on GitHub.
-        </h2>
-        <div className="mt-4 max-w-2xl space-y-3 text-sm leading-relaxed text-muted-foreground">
-          <p>
-            Every line — the Rust backend, the UI, the Pro features. Stroke holds your database
-            credentials and connects to your production systems, and you should not have to take
-            anybody's word for what it does with them. Read it.
-          </p>
-          <p>
-            Free to use, personally or at work. Not for resale — that is what keeps it funded. If it
-            saves you an afternoon, a star genuinely helps other people find it.
-          </p>
+    <section id="open-source" className="scroll-mt-16">
+      <div
+        className={cn(WRAP, "grid grid-cols-1 items-center gap-12 py-24 md:py-32 lg:grid-cols-2")}
+      >
+        <div>
+          <SectionHeader eyebrow="Open source" title="The whole thing is on GitHub.">
+            <p>
+              Every line, Pro features included. Stroke holds your database credentials and connects
+              to your production systems, and you should not have to take anybody's word for what it
+              does with them. Read it.
+            </p>
+            <p>
+              Free to use, personally or at work. Not for resale, since that is what keeps it
+              funded. If it saves you an afternoon, a star genuinely helps other people find it.
+            </p>
+          </SectionHeader>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ size: "default" }), "gap-2")}
+            >
+              <StarIcon className="size-4" />
+              Star on GitHub
+            </a>
+            <a
+              href={`${REPO_URL}/blob/master/CONTRIBUTING.md`}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ variant: "outline", size: "default" }), "gap-2")}
+            >
+              <GitPullRequestIcon className="size-4" />
+              Contribute
+            </a>
+            <a
+              href={`${REPO_URL}/issues`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              Report a bug
+            </a>
+          </div>
         </div>
 
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ size: "default" }), "gap-2")}
-          >
-            <StarIcon className="size-4" />
-            Star on GitHub
-          </a>
-          <a
-            href={`${REPO_URL}/blob/master/CONTRIBUTING.md`}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(buttonVariants({ variant: "outline", size: "default" }), "gap-2")}
-          >
-            <GitPullRequestIcon className="size-4" />
-            Contribute
-          </a>
-          <a
-            href={`${REPO_URL}/issues`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            Report a bug
-          </a>
-        </div>
-
-        <ul className="mt-8 grid gap-4 text-sm sm:grid-cols-3">
-          {[
-            {
-              icon: CodeIcon,
-              title: "Read it",
-              body: "Rust and Svelte. Build it yourself in three commands.",
-            },
-            {
-              icon: GitPullRequestIcon,
-              title: "Change it",
-              body: "Bugs, features and docs all welcome — CONTRIBUTING.md has the setup.",
-            },
-            {
-              icon: StarIcon,
-              title: "Star it",
-              body: "The cheapest way to help, and the one that reaches other people.",
-            },
-          ].map((item) => (
-            <li key={item.title} className="rounded-lg border border-border/40 p-4">
-              <item.icon className="size-4 text-muted-foreground" />
-              <p className="mt-3 font-medium">{item.title}</p>
-              <p className="mt-1 leading-relaxed text-muted-foreground">{item.body}</p>
+        <ul className="grid gap-3">
+          {OPEN_SOURCE_ITEMS.map((item) => (
+            <li
+              key={item.title}
+              className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
+            >
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background">
+                <item.icon className="size-4 text-copper" strokeWidth={1.5} />
+              </span>
+              <span>
+                <span className="block text-sm font-medium">{item.title}</span>
+                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                  {item.body}
+                </span>
+              </span>
             </li>
           ))}
         </ul>
@@ -610,14 +1408,22 @@ function OpenSource() {
 function ClosingCta() {
   return (
     <section>
-      <div className="mx-auto flex max-w-4xl flex-col items-start gap-6 px-6 py-16 md:py-20">
-        <h2 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-          Try Stroke on your own database.
-        </h2>
-        <p className="-mt-2 text-sm text-muted-foreground">
-          Free to download. $9.99 whenever you decide to keep it.
-        </p>
-        <SmartDownloadButton size="default" />
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <div className="spotlight overflow-hidden rounded-3xl border border-border bg-card px-6 py-20 text-center [--spot-x:50%] sm:py-24">
+          <h2 className="text-2xl font-semibold tracking-tight text-balance sm:text-4xl">
+            Try Stroke on your own database.
+          </h2>
+          <BrushStroke className="mx-auto mt-4 h-2 w-24" />
+          <p className="mt-5 text-sm text-muted-foreground">
+            Free to download. $9.99 whenever you decide to keep it.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <SmartDownloadButton size="lg" variant="default" alternates={false} />
+            <Link to="/docs" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+              Read the docs
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

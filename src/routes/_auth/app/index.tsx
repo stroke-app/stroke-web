@@ -20,7 +20,7 @@ import { buttonVariants } from "#/components/ui/button";
 import { useAuth } from "#/lib/auth/hooks";
 import { billingQueryOptions, licenseQueryOptions } from "#/lib/billing/functions";
 
-const RELEASES_URL = "https://github.com/broisnischal/stroke/releases";
+const RELEASES_URL = "https://github.com/stroke-app/stroke/releases";
 
 export const Route = createFileRoute("/_auth/app/")({
   loader: ({ context }) => {

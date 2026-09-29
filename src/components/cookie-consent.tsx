@@ -29,7 +29,7 @@ export function CookieConsent() {
   return (
     <section
       aria-label="Cookie consent"
-      className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-xl border border-border/60 bg-background/95 p-4 shadow-lg backdrop-blur-sm sm:inset-x-auto sm:left-4"
+      className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-xl border border-border/60 bg-background/95 p-4 shadow-lg backdrop-blur-sm sm:inset-x-auto sm:right-4"
     >
       <p className="text-sm font-medium">Analytics cookies</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">

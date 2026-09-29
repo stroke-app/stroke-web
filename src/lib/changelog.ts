@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import { REPO_SLUG } from "./releases";
 
 /** Human-facing link to the changelog source on GitHub. */
-export const CHANGELOG_URL = `https://github.com/${REPO_SLUG}/blob/main/CHANGELOG.md`;
+export const CHANGELOG_URL = `https://github.com/${REPO_SLUG}/blob/master/CHANGELOG.md`;
 // Server-side proxy (src/routes/api/changelog.ts), cached, avoids rate limits.
 const CHANGELOG_API = "/api/changelog";
 
@@ -76,4 +76,32 @@ export const changelogQueryOptions = () =>
 
 export function useChangelog() {
   return useQuery(changelogQueryOptions());
+}
+
+export interface ReleaseTag {
+  name: string;
+  sha: string;
+}
+
+async function fetchTags(): Promise<ReleaseTag[]> {
+  const res = await fetch("/api/tags");
+  if (!res.ok) throw new Error(`Tags API responded with ${res.status}`);
+  const data: unknown = await res.json();
+  if (!Array.isArray(data)) throw new Error("Unexpected tags payload");
+  return data as ReleaseTag[];
+}
+
+/** The tag for a changelog version, whether the repo tags it "v2.2.0" or "2.2.0". */
+export function findTag(tags: ReleaseTag[] | undefined, version: string) {
+  return tags?.find((t) => t.name === `v${version}` || t.name === version) ?? null;
+}
+
+export function useReleaseTags() {
+  return useQuery({
+    queryKey: ["github-tags"],
+    queryFn: fetchTags,
+    staleTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 60,
+    retry: 1,
+  });
 }

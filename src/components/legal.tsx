@@ -1,4 +1,6 @@
-import { BrushStroke, SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { Children, isValidElement } from "react";
+
+import { PageBody, PageHeader, PageShell, SideNav } from "#/components/page";
 
 interface LegalPageProps {
   title: string;
@@ -7,21 +9,35 @@ interface LegalPageProps {
   children: React.ReactNode;
 }
 
+function sectionId(number: string) {
+  return `section-${number.replaceAll(/[^0-9a-z]+/gi, "")}`;
+}
+
 export function LegalPage({ title, updated, intro, children }: LegalPageProps) {
+  // The index comes straight from the LegalSection children, so a new section
+  // shows up in it without a second list to keep in sync.
+  const sections = Children.toArray(children).flatMap((child) =>
+    isValidElement<{ number: string; title: string }>(child) && child.type === LegalSection
+      ? [{ number: child.props.number, title: child.props.title }]
+      : [],
+  );
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-      <main className="mx-auto max-w-2xl px-6 py-16 md:py-20">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Last updated: {updated}
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
-        <BrushStroke className="mt-4 h-2 w-20" />
-        <p className="mt-6 text-[15px] leading-[1.75] text-muted-foreground">{intro}</p>
-        <div className="mt-10 space-y-10">{children}</div>
-      </main>
-      <SiteFooter />
-    </div>
+    <PageShell>
+      <PageHeader eyebrow={`Last updated ${updated}`} title={title} description={intro} />
+      <PageBody
+        aside={
+          sections.length > 0 && (
+            <SideNav
+              title="Sections"
+              items={sections.map((s) => ({ label: s.title, hash: sectionId(s.number) }))}
+            />
+          )
+        }
+      >
+        <div className="space-y-10">{children}</div>
+      </PageBody>
+    </PageShell>
   );
 }
 
@@ -35,12 +51,12 @@ export function LegalSection({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <section id={sectionId(number)} className="scroll-mt-20">
       <h2 className="flex items-baseline gap-3 text-lg font-semibold tracking-tight">
-        <span className="font-mono text-sm text-copper">{number}</span>
+        <span className="text-sm font-medium text-copper tabular-nums">{number}</span>
         {title}
       </h2>
-      <div className="mt-3 space-y-3 text-sm leading-[1.75] text-muted-foreground [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-foreground [&_strong]:font-medium [&_strong]:text-foreground">
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-foreground [&_strong]:font-medium [&_strong]:text-foreground">
         {children}
       </div>
     </section>

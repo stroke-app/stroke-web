@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-export const REPO_SLUG = "broisnischal/stroke";
+export const REPO_SLUG = "stroke-app/stroke";
 export const RELEASES_URL = `https://github.com/${REPO_SLUG}/releases`;
 // Server-side proxy (src/routes/api/releases.ts), cached and immune to
 // GitHub's per-visitor rate limits.

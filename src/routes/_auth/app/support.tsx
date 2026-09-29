@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_auth/app/support")({
   component: SupportPage,
 });
 
-const GITHUB_URL = "https://github.com/broisnischal/stroke";
+const GITHUB_URL = "https://github.com/stroke-app/stroke";
 const DISCORD_URL = "https://discord.gg/stroke";
 const EMAIL = "support@stroke.click";
 const DOCS_URL = "https://stroke.click/docs";
