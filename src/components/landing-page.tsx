@@ -1002,6 +1002,8 @@ function Editing() {
 // The launch video lives in the `stroke` R2 bucket, served at media.stroke.click
 // (R2 answers range requests, which Safari needs to play an mp4).
 const LAUNCH_MEDIA = "https://media.stroke.click/launch";
+// Bump when the files in R2 are replaced, so the CDN serves the new ones at once.
+const LAUNCH_VERSION = "?v=1";
 
 function Launch() {
   return (
@@ -1014,14 +1016,14 @@ function Launch() {
           </p>
         </SectionHeader>
         <LaunchVideo
-          src={`${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4`}
-          poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg`}
+          src={`${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4${LAUNCH_VERSION}`}
+          poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg${LAUNCH_VERSION}`}
           title="The Stroke launch video"
           className="mx-auto mt-14 max-w-5xl md:mt-16"
         />
         <p className="mt-5 text-center text-sm text-muted-foreground">
           <a
-            href={`${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4`}
+            href={`${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4${LAUNCH_VERSION}`}
             className="underline-offset-4 hover:text-foreground hover:underline"
           >
             Watch in 4K
