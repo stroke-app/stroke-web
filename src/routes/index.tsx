@@ -2,16 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LandingPage } from "#/components/landing-page";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
-import { seo, SITE_URL } from "#/lib/seo";
+import { jsonLd, seo, SITE_IDENTITY, SITE_URL } from "#/lib/seo";
 
-const STRUCTURED_DATA = {
-  "@context": "https://schema.org",
+const APP = {
   "@type": "SoftwareApplication",
+  "@id": `${SITE_URL}/#app`,
   name: "Stroke",
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  image: `${SITE_URL}/icon.png`,
+  screenshot: `${SITE_URL}/app-screenshot.png`,
   operatingSystem: "macOS, Windows, Linux",
   applicationCategory: "DeveloperApplication",
   description:
-    "A modern, minimal desktop database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more. Built in Rust and Tauri, with a built-in MCP server so AI agents can query your database.",
+    "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more, with a built-in MCP server for AI agents.",
   url: SITE_URL,
   downloadUrl: `${SITE_URL}/download`,
   offers: {
@@ -31,15 +34,10 @@ export const Route = createFileRoute("/")({
     ...seo({
       title: "Stroke · The database studio for agents and humans",
       description:
-        "A modern, minimal database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more. Browse schemas, edit data, and write SQL, while your AI agents query the same database through the built-in MCP server. Built in Rust and Tauri. Free to try, $9.99 to own it forever.",
+        "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, ClickHouse, DuckDB, and more, with a built-in MCP server for AI agents.",
       path: "/",
     }),
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(STRUCTURED_DATA),
-      },
-    ],
+    scripts: [jsonLd([...SITE_IDENTITY, APP])],
   }),
   component: LandingPage,
 });

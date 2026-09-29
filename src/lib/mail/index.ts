@@ -4,6 +4,7 @@ import { render } from "@react-email/render";
 import { env } from "#/env/server";
 
 import { sendTransactionalEmail } from "./client";
+import { GiveawayWinnerEmail } from "./templates/giveaway-winner";
 import { PaymentFailedEmail } from "./templates/payment-failed";
 import { PurchaseSuccessEmail } from "./templates/purchase-success";
 
@@ -70,6 +71,30 @@ export async function sendPaymentFailedEmail(input: PaymentFailedEmailInput): Pr
   return sendTransactionalEmail({
     to: input.to,
     subject: "Your Stroke payment didn't go through",
+    body: html,
+  });
+}
+
+export interface GiveawayWinnerEmailInput {
+  to: string;
+  name: string;
+  licenseKey: string;
+}
+
+/** Sent to the weekly giveaway winner with the license they won. */
+export async function sendGiveawayWinnerEmail(input: GiveawayWinnerEmailInput): Promise<boolean> {
+  const html = await render(
+    GiveawayWinnerEmail({
+      name: input.name,
+      licenseKey: input.licenseKey,
+      appUrl: billingUrl(),
+      downloadUrl: `${env.VITE_BASE_URL}/download`,
+    }),
+  );
+
+  return sendTransactionalEmail({
+    to: input.to,
+    subject: "You won this week's Stroke license",
     body: html,
   });
 }

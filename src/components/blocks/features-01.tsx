@@ -17,7 +17,7 @@ const features = [
     icon: ZapIcon,
     title: "Native speed, zero bloat",
     description:
-      "A Rust-based desktop client that opens instantly and stays responsive on tables of any size.",
+      "A desktop client that opens instantly and stays responsive on tables of any size.",
   },
 ];
 

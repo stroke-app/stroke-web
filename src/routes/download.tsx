@@ -1,35 +1,20 @@
-import { SiApple, SiLinux } from "@icons-pack/react-simple-icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  AppWindowIcon,
-  ArrowRightIcon,
-  BoxIcon,
-  CheckIcon,
-  CopyIcon,
-  CpuIcon,
-  MicrochipIcon,
-  PackageIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
-import { useState } from "react";
+import { ArrowRightIcon, TriangleAlertIcon } from "lucide-react";
 
-import { SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { SmartDownloadButton } from "#/components/download-button";
+import { CommandCard, OS_ROWS, TargetButton } from "#/components/download-targets";
+import { PageBody, PageHeader, PageShell } from "#/components/page";
 import { buttonVariants } from "#/components/ui/button";
 import {
   DOWNLOAD_TARGETS,
-  type DownloadTarget,
-  findAsset,
-  formatBytes,
   formatReleaseDate,
   type GitHubRelease,
-  type OS,
   type Platform,
   RELEASES_URL,
   useLatestRelease,
   usePlatform,
 } from "#/lib/releases";
 import { seo } from "#/lib/seo";
-import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/download")({
   head: () =>
@@ -38,72 +23,46 @@ export const Route = createFileRoute("/download")({
       description:
         "Download Stroke for macOS (Apple Silicon and Intel), Windows, and Linux, or install it with Homebrew or Scoop. Free to try, $9.99 to own it forever.",
       path: "/download",
+      breadcrumbs: [{ name: "Download", path: "/download" }],
     }),
   component: DownloadPage,
 });
-
-function WindowsLogo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M0 3.45 9.75 2.1v9.45H0zm10.95-1.5L24 0v11.55H10.95zM0 12.45h9.75v9.45L0 20.55zm10.95 0H24V24l-13.05-1.95z" />
-    </svg>
-  );
-}
-
-const OS_ROWS: { os: OS; name: string; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { os: "macos", name: "macOS", Icon: SiApple },
-  { os: "windows", name: "Windows", Icon: WindowsLogo },
-  { os: "linux", name: "Linux", Icon: SiLinux },
-];
-
-const TARGET_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  "mac-arm": CpuIcon,
-  "mac-intel": MicrochipIcon,
-  "win-exe": AppWindowIcon,
-  "win-msi": PackageIcon,
-  "linux-appimage": BoxIcon,
-  "linux-deb": PackageIcon,
-  "linux-rpm": PackageIcon,
-};
 
 function DownloadPage() {
   const { data: release } = useLatestRelease();
   const platform = usePlatform();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-      <main className="mx-auto max-w-4xl px-6 py-16 md:py-20">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Download
+    <PageShell>
+      <PageHeader
+        eyebrow="Download"
+        title="Download Stroke"
+        description="Native builds for macOS, Windows, and Linux. Free to try, no account needed."
+        actions={
+          <>
+            <SmartDownloadButton size="lg" variant="default" alternates={false} />
+            <Link to="/changelog" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              View changelog
+              <ArrowRightIcon className="size-4" />
+            </Link>
+          </>
+        }
+      >
+        <p className="mt-6 text-sm text-muted-foreground">
+          Version{" "}
+          {release ? (
+            <span className="font-mono text-foreground">{release.tag_name}</span>
+          ) : (
+            <span className="inline-block h-4 w-14 animate-pulse rounded bg-muted align-middle" />
+          )}
+          {release?.published_at && (
+            <span className="ml-2">released {formatReleaseDate(release.published_at)}</span>
+          )}
         </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Download Stroke</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Native builds for macOS, Windows, and Linux. Free to try, no account needed.
-        </p>
-
-        {/* Version row */}
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
-            Version{" "}
-            {release ? (
-              <span className="font-mono text-foreground">{release.tag_name}</span>
-            ) : (
-              <span className="inline-block h-4 w-14 animate-pulse rounded bg-muted align-middle" />
-            )}
-            {release?.published_at && (
-              <span className="ml-2 text-xs">
-                released {formatReleaseDate(release.published_at)}
-              </span>
-            )}
-          </p>
-          <Link to="/changelog" className={buttonVariants({ variant: "outline", size: "sm" })}>
-            View changelog
-            <ArrowRightIcon className="size-3.5" />
-          </Link>
-        </div>
-
+      </PageHeader>
+      <PageBody>
         {/* Platform rows */}
+        <h2 className="text-lg font-semibold tracking-tight">All platforms</h2>
         <div className="mt-4 divide-y divide-border/50 overflow-hidden rounded-lg border border-border/50">
           {OS_ROWS.map((row) => (
             <PlatformRow key={row.os} row={row} release={release} platform={platform} />
@@ -111,20 +70,20 @@ function DownloadPage() {
         </div>
 
         {/* Package managers */}
-        <section className="mt-10">
-          <h2 className="text-sm font-semibold">Prefer a package manager?</h2>
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold tracking-tight">Prefer a package manager?</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             These installs skip the security warnings below and update in place.
           </p>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <CommandCard
               label="macOS · Homebrew"
-              command="brew install --cask broisnischal/tap/stroke"
+              command="brew install --cask stroke-app/tap/stroke"
             />
             <CommandCard
               label="Windows · Scoop"
               command={
-                "scoop bucket add stroke https://github.com/broisnischal/stroke\nscoop install stroke"
+                "scoop bucket add stroke https://github.com/stroke-app/stroke\nscoop install stroke"
               }
             />
           </div>
@@ -163,44 +122,8 @@ function DownloadPage() {
           </a>
           .
         </p>
-      </main>
-      <SiteFooter />
-    </div>
-  );
-}
-
-function CommandCard({ label, command }: { label: string; command: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <div className="rounded-lg border border-border/50 p-4">
-      <div className="flex items-center justify-between gap-2">
-        <p className="font-mono text-[11px] tracking-widest text-muted-foreground uppercase">
-          {label}
-        </p>
-        <button
-          type="button"
-          onClick={copy}
-          aria-label={copied ? "Copied" : `Copy ${label} command`}
-          className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          {copied ? (
-            <CheckIcon className="size-3.5 text-copper" />
-          ) : (
-            <CopyIcon className="size-3.5" />
-          )}
-        </button>
-      </div>
-      <pre className="mt-2 overflow-x-auto font-mono text-[12px] leading-relaxed">
-        <code>{command}</code>
-      </pre>
-    </div>
+      </PageBody>
+    </PageShell>
   );
 }
 
@@ -217,10 +140,13 @@ function PlatformRow({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
-      <div className="flex items-center gap-3">
+      <Link to="/download/$os" params={{ os: row.os }} className="group flex items-center gap-3">
         <row.Icon className="size-4.5 text-muted-foreground/70" />
         <span className="text-sm font-medium">{row.name}</span>
-      </div>
+        <span className="text-xs text-muted-foreground transition-colors group-hover:text-foreground">
+          Install guide →
+        </span>
+      </Link>
       <div className="flex flex-wrap items-center gap-2">
         {release
           ? targets.map((target) => (
@@ -244,38 +170,5 @@ function PlatformRow({
             ))}
       </div>
     </div>
-  );
-}
-
-function TargetButton({
-  target,
-  release,
-  detected,
-}: {
-  target: DownloadTarget;
-  release: GitHubRelease;
-  detected: boolean;
-}) {
-  const asset = findAsset(release.assets, target);
-  if (!asset) return null;
-
-  const Icon = TARGET_ICONS[target.key];
-
-  return (
-    <a
-      href={asset.browser_download_url}
-      className={cn(
-        buttonVariants({ variant: "outline", size: "sm" }),
-        detected && "border-copper/60 text-foreground",
-      )}
-      title={asset.name}
-    >
-      {Icon && <Icon className="size-3.5 text-muted-foreground" />}
-      {target.label}
-      <span className="text-[11px] text-muted-foreground">{formatBytes(asset.size)}</span>
-      {detected && (
-        <span className="font-mono text-[10px] tracking-wide text-copper uppercase">for you</span>
-      )}
-    </a>
   );
 }

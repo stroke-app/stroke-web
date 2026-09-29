@@ -1,0 +1,33 @@
+# Stroke
+
+> Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. Stroke is a native desktop database client for macOS, Windows, and Linux, with a built-in MCP server so AI agents can query the same databases.
+
+Stroke connects to PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis support is next. Connections run directly from the user's machine; credentials and query results never pass through Stroke's servers. The full app is free to try with no account. A license costs $9.99 once (2 devices, every future update), and a Team license costs $99 once for everyone on a company email domain. The source is on GitHub.
+
+## Product
+
+- [Home](https://stroke.click/): overview, supported databases, pricing, FAQ
+- [Features](https://stroke.click/features): schema explorer, data grid, inline editing, SQL console, exports, diagrams, dashboards, AI chat, MCP server, command palette
+- [Pricing](https://stroke.click/pricing): free trial, $9.99 license, $99 Team license, FAQ
+- [Weekly giveaway](https://stroke.click/giveaway): one free lifetime license drawn at random every Monday; free to enter with a Stroke account
+- [Roadmap](https://stroke.click/roadmap): shipped, in progress, planned
+- [Changelog](https://stroke.click/changelog): release notes for every version, with commit links
+
+## Download
+
+- [All platforms](https://stroke.click/download)
+- [macOS](https://stroke.click/download/macos): Apple Silicon and Intel .dmg, or `brew install --cask stroke-app/tap/stroke`
+- [Windows](https://stroke.click/download/windows): EXE or MSI installer, or Scoop
+- [Linux](https://stroke.click/download/linux): AppImage, .deb, .rpm
+
+## Docs
+
+- [Getting started](https://stroke.click/docs): install, connect a database, activate a license, enable MCP
+- [MCP for agents](https://stroke.click/docs/mcp): turn on the MCP server and connect Claude Desktop, Cursor, or any MCP client
+
+## Optional
+
+- [Full text for LLMs](https://stroke.click/llms-full.txt)
+- [Source code](https://github.com/stroke-app/stroke)
+- [Privacy Policy](https://stroke.click/privacy)
+- [Terms of Service](https://stroke.click/terms)

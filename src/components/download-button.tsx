@@ -12,16 +12,26 @@ import {
   useLatestRelease,
   usePlatform,
 } from "#/lib/releases";
+import { cn } from "#/lib/utils";
 
 interface DownloadButtonProps {
   size?: "lg" | "default" | "sm";
   variant?: "default" | "outline";
+  /** Aligns the button and the alternate-download line beneath it. */
+  align?: "start" | "center";
+  /**
+   * Show the line of other formats (.deb/.rpm, the other Mac chip) under the
+   * button. Off where the button sits in a busy CTA row.
+   */
+  alternates?: boolean;
   className?: string;
 }
 
 export function SmartDownloadButton({
   size = "lg",
   variant = "outline",
+  align = "start",
+  alternates = true,
   className,
 }: DownloadButtonProps) {
   const platform = usePlatform();
@@ -33,7 +43,7 @@ export function SmartDownloadButton({
   const version = release?.tag_name;
 
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className={cn("flex flex-col gap-2", align === "center" ? "items-center" : "items-start")}>
       {platform && asset ? (
         <a
           href={asset.browser_download_url}
@@ -60,9 +70,11 @@ export function SmartDownloadButton({
         </Link>
       )}
       {/* Reserved line so the layout doesn't jump when the alternate link appears */}
-      <div className="min-h-4">
-        {platform && release && <AlternateDownloadLink platform={platform} release={release} />}
-      </div>
+      {alternates && (
+        <div className="min-h-4">
+          {platform && release && <AlternateDownloadLink platform={platform} release={release} />}
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { env } from "#/env/server";
 
-const GITHUB_API = "https://api.github.com/repos/broisnischal/stroke/releases?per_page=20";
+const GITHUB_API = "https://api.github.com/repos/stroke-app/stroke/releases?per_page=20";
 const CACHE_SECONDS = 300;
 
 /**

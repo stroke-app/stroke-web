@@ -30,7 +30,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     const base = seo({
       title: "Stroke · A fast, native desktop database client",
       description:
-        "A fast database GUI for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more. Browse schemas, edit data, write SQL, and let your AI agents query the database via MCP. Built in Rust and Tauri, it launches instantly.",
+        "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, ClickHouse, DuckDB, and more.",
       path: "/",
     });
     return {
@@ -40,8 +40,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         ...base.meta,
       ],
       links: [
-        { rel: "icon", type: "image/png", href: "/icon.png" },
-        { rel: "apple-touch-icon", href: "/icon.png" },
+        // Google's result favicon needs a square that's a multiple of 48px.
+        { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+        { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96.png" },
+        { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+        { rel: "manifest", href: "/site.webmanifest" },
         { rel: "stylesheet", href: appCss },
       ],
     };
@@ -57,7 +61,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
         {/* Rendered directly: TanStack head() dedupes meta by name, which
             would drop one of the two media-scoped theme-color tags. */}
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
         <HeadContent />
       </head>
       <body>

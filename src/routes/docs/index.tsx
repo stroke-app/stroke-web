@@ -2,17 +2,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon, BotIcon, DatabaseIcon, DownloadIcon, KeyRoundIcon } from "lucide-react";
 
 import { SmartDownloadButton } from "#/components/download-button";
-import { BrushStroke, REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { DocsNav, NextLinks, PageBody, PageHeader, PageShell, SideNav } from "#/components/page";
+import { REPO_URL } from "#/components/site-chrome";
 import { buttonVariants } from "#/components/ui/button";
 import { seo } from "#/lib/seo";
 
 export const Route = createFileRoute("/docs/")({
   head: () =>
     seo({
-      title: "Getting started · Stroke docs",
+      title: "Stroke Documentation · Getting started",
       description:
         "Install Stroke, activate your license, connect your first database, and let your AI agents query it through the built-in MCP server.",
       path: "/docs",
+      breadcrumbs: [{ name: "Docs", path: "/docs" }],
     }),
   component: DocsPage,
 });
@@ -91,21 +93,28 @@ const STEPS: Step[] = [
 
 function DocsPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-      <main className="mx-auto max-w-2xl px-6 py-16 md:py-20">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Docs</p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Getting started</h1>
-        <BrushStroke className="mt-4 h-2 w-20" />
-        <p className="mt-6 text-[15px] leading-[1.75] text-pretty text-muted-foreground">
-          Four steps from download to a database your agents can query. It takes about a minute.
-        </p>
-
-        <ol className="mt-12 space-y-10">
+    <PageShell>
+      <PageHeader
+        eyebrow="Docs"
+        title="Getting started"
+        description="Four steps from download to a database your agents can query. It takes about a minute."
+      />
+      <PageBody
+        aside={
+          <div className="space-y-8">
+            <DocsNav />
+            <SideNav
+              title="On this page"
+              items={STEPS.map((step, i) => ({ label: step.title, hash: `step-${i + 1}` }))}
+            />
+          </div>
+        }
+      >
+        <ol className="space-y-10">
           {STEPS.map((step, i) => (
-            <li key={step.title} className="flex gap-5">
+            <li key={step.title} id={`step-${i + 1}`} className="flex scroll-mt-20 gap-5">
               <div className="flex shrink-0 flex-col items-center">
-                <span className="flex size-9 items-center justify-center rounded-full border border-border/60 font-mono text-sm text-copper">
+                <span className="flex size-9 items-center justify-center rounded-full border border-border/60 text-sm font-medium text-copper tabular-nums">
                   {i + 1}
                 </span>
                 {i < STEPS.length - 1 && <span className="mt-2 w-px flex-1 bg-border/50" />}
@@ -115,7 +124,7 @@ function DocsPage() {
                   <step.icon className="size-4 text-muted-foreground" strokeWidth={1.5} />
                   {step.title}
                 </h2>
-                <div className="mt-2 text-sm leading-[1.75] text-pretty text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
+                <div className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
                   {step.body}
                 </div>
               </div>
@@ -123,33 +132,16 @@ function DocsPage() {
           ))}
         </ol>
 
-        <div className="mt-16 rounded-lg border border-border/50 p-5">
-          <h2 className="text-sm font-semibold">Keep exploring</h2>
-          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <Link to="/features" className="transition-colors hover:text-foreground">
-              All features →
-            </Link>
-            <Link to="/docs/mcp" className="transition-colors hover:text-foreground">
-              MCP for agents →
-            </Link>
-            <Link to="/roadmap" className="transition-colors hover:text-foreground">
-              Roadmap →
-            </Link>
-            <Link to="/changelog" className="transition-colors hover:text-foreground">
-              Changelog →
-            </Link>
-            <a
-              href={`${REPO_URL}/issues`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
-            >
-              Report an issue →
-            </a>
-          </div>
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
+        <NextLinks>
+          <Link to="/docs/mcp">MCP for agents →</Link>
+          <Link to="/features">All features →</Link>
+          <Link to="/roadmap">Roadmap →</Link>
+          <Link to="/changelog">Changelog →</Link>
+          <a href={`${REPO_URL}/issues`} target="_blank" rel="noopener noreferrer">
+            Report an issue →
+          </a>
+        </NextLinks>
+      </PageBody>
+    </PageShell>
   );
 }

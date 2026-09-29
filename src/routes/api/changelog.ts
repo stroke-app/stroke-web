@@ -4,7 +4,7 @@ import { env } from "#/env/server";
 
 // Contents API with the raw media type returns the file body directly, and
 // honours GITHUB_TOKEN for a higher rate limit. Reads from the default branch.
-const CHANGELOG_API = "https://api.github.com/repos/broisnischal/stroke/contents/CHANGELOG.md";
+const CHANGELOG_API = "https://api.github.com/repos/stroke-app/stroke/contents/CHANGELOG.md";
 const CACHE_SECONDS = 300;
 
 /**

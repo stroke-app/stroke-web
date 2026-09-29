@@ -1,0 +1,75 @@
+# Stroke: full reference for LLMs
+
+Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data.
+
+Stroke is a native desktop database client for macOS, Windows, and Linux. It launches quickly and stays light on large tables. It ships a built-in MCP (Model Context Protocol) server so AI agents such as Claude and Cursor can read the schema and run queries against a database the user already has open.
+
+Website: https://stroke.click
+Source: https://github.com/stroke-app/stroke
+
+## Supported databases
+
+PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, Cloudflare D1. SQLite and DuckDB also run in-memory. Redis is next on the roadmap.
+
+## Features
+
+- Schema explorer: tables, views, materialized views, foreign tables, indexes, and enums with live row counts.
+- Data grid: paginated browsing, resizable columns, multi-column sort, full-text search, and a visual filter builder that writes the WHERE clause.
+- Inline editing: type-aware editors for text, numbers, booleans, enums, dates, UUIDs, and JSON, with changes staged until committed.
+- SQL console: a full editor with schema-aware autocomplete, formatting, and execution time.
+- Export: any grid or query result to CSV or JSON.
+- Schema diagrams: auto-generated ERDs with foreign-key navigation.
+- Charts and dashboards: turn query results into charts and pin them to a dashboard.
+- AI chat: a schema-aware assistant with database access that runs queries, explains schemas, and drafts SQL.
+- MCP server: expose a connection to Claude, Cursor, or any MCP client.
+- Command palette: Cmd/Ctrl+K to jump anywhere; every core view has a shortcut.
+- SSH tunnels: connect to databases behind a bastion host from inside the app.
+- Local AI models: point the AI assistant at a model running on the same machine, so schema and data never leave it.
+
+## Pricing
+
+- Try: $0. Every feature unlocked while evaluating, all engines, all platforms, no account.
+- Own: $9.99 once. The app is yours forever, a license key for up to 2 devices, every future update, priority support.
+- Team: $99 once. Licenses everyone on a company's email domain; each teammate gets their own key; no seats or per-user fees.
+
+There is no subscription and no renewal.
+
+## Install
+
+macOS: download the .dmg for Apple Silicon or Intel from https://stroke.click/download/macos, or run:
+
+    brew install --cask stroke-app/tap/stroke
+
+Windows: download the EXE or MSI from https://stroke.click/download/windows, or run:
+
+    scoop bucket add stroke https://github.com/stroke-app/stroke
+    scoop install stroke
+
+Linux: AppImage, .deb, or .rpm from https://stroke.click/download/linux.
+
+Direct downloads are not code-signed yet. On macOS, right-click the app and choose Open the first time. On Windows, choose More info, then Run anyway in SmartScreen.
+
+## Getting started
+
+1. Download and install Stroke. No account is needed to try it.
+2. Choose New connection, pick an engine, and paste a connection string or enter host, port, and credentials. Connections run directly from the user's machine.
+3. To keep Stroke, buy a license and paste the key into Settings → License.
+4. Turn on the MCP server to let agents query the database.
+
+## MCP setup
+
+Open Stroke → MCP, pick the connection to expose, and turn the server on. Stroke serves MCP locally and shows the endpoint and a ready config for each client. Claude Desktop config (the port may differ):
+
+    {
+      "mcpServers": {
+        "stroke": {
+          "url": "http://127.0.0.1:4319/mcp"
+        }
+      }
+    }
+
+In Cursor, open Settings → MCP → Add server and paste the endpoint, or add it to a project's .cursor/mcp.json. The MCP server only runs while Stroke is open and enabled for a connection.
+
+## Privacy
+
+Stroke connects to databases directly from the user's device. Connection credentials are stored locally. Query results never pass through Stroke's servers. Details: https://stroke.click/privacy

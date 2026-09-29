@@ -1,8 +1,9 @@
-import { SiPlanetscale, SiPrisma, SiSupabase } from "@icons-pack/react-simple-icons";
+import { SiCloudflare, SiPlanetscale, SiPrisma, SiSupabase } from "@icons-pack/react-simple-icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
 
-import { BrushStroke, REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { NextLinks, PageBody, PageHeader, PageShell, SideNav } from "#/components/page";
+import { REPO_URL } from "#/components/site-chrome";
 import { buttonVariants } from "#/components/ui/button";
 import { seo } from "#/lib/seo";
 import { cn } from "#/lib/utils";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/roadmap")({
       description:
         "What has shipped in Stroke, what's being built now, and what's planned next, from database engines and provider sign-in to the built-in MCP server.",
       path: "/roadmap",
+      breadcrumbs: [{ name: "Roadmap", path: "/roadmap" }],
     }),
   component: RoadmapPage,
 });
@@ -23,14 +25,17 @@ type ItemState = "done" | "active" | "todo";
 interface RoadmapItem {
   title: string;
   body: string;
+  /** Short status label shown beside the title, e.g. "Beta". */
+  tag?: string;
   extra?: React.ReactNode;
 }
 
 const PROVIDERS = [
   { name: "Neon", Icon: null },
   { name: "Supabase", Icon: SiSupabase },
-  { name: "PlanetScale", Icon: SiPlanetscale },
   { name: "Prisma Postgres", Icon: SiPrisma },
+  { name: "Cloudflare D1", Icon: SiCloudflare },
+  { name: "PlanetScale (soon)", Icon: SiPlanetscale },
 ];
 
 // Completed items are drawn from the changelog (stroke.click/changelog).
@@ -92,9 +97,22 @@ const SHIPPED: RoadmapItem[] = [
     title: "Command palette and shortcuts",
     body: "Cmd/Ctrl+K to jump anywhere, plus a deep set of keyboard shortcuts for tabs, search, and navigation.",
   },
+  {
+    title: "SSH tunnels",
+    body: "Connect to databases behind a bastion host without leaving the app.",
+  },
+  {
+    title: "Local AI models",
+    body: "Point the AI assistant at a model running on your own machine, so schema and data never leave it.",
+  },
 ];
 
 const IN_PROGRESS: RoadmapItem[] = [
+  {
+    title: "Extension API",
+    tag: "Beta",
+    body: "Community-built panels and dialect plugins on top of the Extensions panel. Available to try now while the API settles.",
+  },
   {
     title: "Redesigned connection experience",
     body: "A two-pane connect screen: pick your type, driver, and saved connections on the left while editing details in a focused pane on the right.",
@@ -107,35 +125,20 @@ const IN_PROGRESS: RoadmapItem[] = [
 
 const PLANNED: RoadmapItem[] = [
   {
-    title: "SSH tunnels",
-    body: "Connect to databases behind a bastion host without leaving the app.",
-  },
-  {
-    title: "More export formats",
-    body: "Parquet and JSONL export from any grid or query result, alongside the existing CSV and JSON.",
-  },
-  {
-    title: "Saved queries on both devices",
-    body: "Your query library follows your license, so both of your machines stay in sync.",
-  },
-  {
-    title: "More engines",
-    body: "New dialects land regularly, decided by what users ask for. BigQuery and others are in the queue.",
-  },
-];
-
-const EXPLORING: RoadmapItem[] = [
-  {
-    title: "Extension API",
-    body: "The Extensions panel is in the app today. A public API for community-built panels and dialect plugins is under design.",
+    title: "Sync to your Stroke account",
+    body: "Connections, saved queries, and settings saved to your account, so every device you sign in on picks up where you left off.",
   },
   {
     title: "Shared workspaces",
     body: "Connections, saved queries, and dashboards shared across a team.",
   },
   {
-    title: "Local AI models",
-    body: "Point the AI assistant at a model running on your own machine, so schema and data never leave it.",
+    title: "More engines",
+    body: "New dialects land regularly, decided by what users ask for. BigQuery and others are in the queue.",
+  },
+  {
+    title: "More export formats",
+    body: "Parquet and JSONL export from any grid or query result, alongside the existing CSV and JSON.",
   },
 ];
 
@@ -143,7 +146,6 @@ const GROUPS: { label: string; note: string; state: ItemState; items: RoadmapIte
   { label: "Shipped", note: "Done and in your hands", state: "done", items: SHIPPED },
   { label: "In progress", note: "Being built now", state: "active", items: IN_PROGRESS },
   { label: "Planned", note: "Next in line", state: "todo", items: PLANNED },
-  { label: "Exploring", note: "Taking shape", state: "todo", items: EXPLORING },
 ];
 
 function Checkbox({ state }: { state: ItemState }) {
@@ -164,50 +166,69 @@ function Checkbox({ state }: { state: ItemState }) {
   return <span className="mt-0.5 size-5 shrink-0 rounded-md border border-border" />;
 }
 
+function slug(label: string) {
+  return label.toLowerCase().replaceAll(" ", "-");
+}
+
 function RoadmapPage() {
   const shippedCount = SHIPPED.length;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-      <main className="mx-auto max-w-2xl px-6 py-16 md:py-20">
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Roadmap</p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Where Stroke is headed
-        </h1>
-        <BrushStroke className="mt-4 h-2 w-20" />
-        <p className="mt-6 text-[15px] leading-[1.75] text-pretty text-muted-foreground">
-          What has already shipped, what's being built now, and what's next. The order comes from
-          what people ask for, so if something you need is missing,{" "}
-          <a
-            href={`${REPO_URL}/issues`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-foreground"
-          >
-            open an issue
-          </a>
-          .
-        </p>
-
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link to="/changelog" className={buttonVariants({ variant: "outline", size: "sm" })}>
-            See every release
-            <ArrowRightIcon className="size-3.5" />
-          </Link>
-          <span className="text-xs text-muted-foreground">
-            {shippedCount} milestones shipped and counting
-          </span>
-        </div>
-
-        <div className="mt-14 space-y-14">
+    <PageShell>
+      <PageHeader
+        eyebrow="Roadmap"
+        title="Where Stroke is headed"
+        description={
+          <>
+            What has already shipped, what's being built now, and what's next. The order comes from
+            what people ask for, so if something you need is missing,{" "}
+            <a
+              href={`${REPO_URL}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground underline underline-offset-2"
+            >
+              open an issue
+            </a>
+            .
+          </>
+        }
+        actions={
+          <>
+            <Link to="/changelog" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              See every release
+              <ArrowRightIcon className="size-4" />
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              {shippedCount} milestones shipped and counting
+            </span>
+          </>
+        }
+      />
+      <PageBody
+        aside={
+          <SideNav
+            title="On this page"
+            items={GROUPS.map((g) => ({
+              hash: slug(g.label),
+              label: (
+                <>
+                  {g.label}
+                  <span className="pr-1 text-xs text-muted-foreground tabular-nums">
+                    {g.items.length}
+                  </span>
+                </>
+              ),
+            }))}
+          />
+        }
+      >
+        <div className="space-y-14">
           {GROUPS.map((group) => (
-            <section key={group.label}>
+            <section key={group.label} id={slug(group.label)} className="scroll-mt-20">
               <div className="flex items-baseline gap-3">
                 <h2 className="text-lg font-semibold tracking-tight">{group.label}</h2>
-                <span className="font-mono text-[11px] tracking-widest text-muted-foreground uppercase">
-                  {group.note}
-                </span>
+                <span className="text-sm text-muted-foreground">{group.note}</span>
               </div>
               <ul className="mt-5 space-y-5">
                 {group.items.map((item) => (
@@ -221,6 +242,11 @@ function RoadmapPage() {
                         )}
                       >
                         {item.title}
+                        {item.tag && (
+                          <span className="ml-2 rounded-full border border-copper/30 bg-copper/10 px-2 py-0.5 align-[1px] text-[11px] font-medium text-copper">
+                            {item.tag}
+                          </span>
+                        )}
                       </h3>
                       <p className="mt-1 text-sm leading-relaxed text-pretty text-muted-foreground">
                         {item.body}
@@ -234,22 +260,13 @@ function RoadmapPage() {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-wrap items-center gap-3 border-t border-border/40 pt-8">
-          <Link to="/changelog" className={buttonVariants({ variant: "outline", size: "sm" })}>
-            Read the changelog
-            <ArrowRightIcon className="size-3.5" />
-          </Link>
-          <a
-            href={`${REPO_URL}/issues`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            Request a feature
+        <NextLinks>
+          <Link to="/changelog">Read the changelog →</Link>
+          <a href={`${REPO_URL}/issues`} target="_blank" rel="noopener noreferrer">
+            Request a feature →
           </a>
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
+        </NextLinks>
+      </PageBody>
+    </PageShell>
   );
 }

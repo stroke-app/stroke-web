@@ -1,7 +1,7 @@
 name = "stroke-web"
 account_id = "16b2c363a412bfaaec2a5a2572964728"
 compatibility_date = "2025-10-01"
-main = "@tanstack/react-start/server-entry"
+main = "src/server.ts"
 compatibility_flags = ["nodejs_compat"]
 preview_urls = true
 
@@ -12,6 +12,11 @@ routes = [{ pattern = "stroke.click", custom_domain = true }]
 # and shared across all users, so src/lib/ai/free-tier.ts caps usage app-wide.
 [ai]
 binding = "AI"
+
+# Weekly giveaway: draw the week that just closed, Mondays 00:05 UTC
+# (src/server.ts -> src/lib/giveaway/service.ts runDueDraw).
+[triggers]
+crons = ["5 0 * * 1"]
 
 [[d1_databases]]
 binding = "DB"
