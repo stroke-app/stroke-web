@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { VideoDemo } from "#/components/app-window";
+import { LaunchVideo, VideoDemo } from "#/components/app-window";
 import { SmartDownloadButton } from "#/components/download-button";
 import { FeatureShot } from "#/components/feature-shot";
 import { GiveawayCard } from "#/components/giveaway";
@@ -63,6 +63,7 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
+        <Launch />
         <Pillars />
         <Connect />
         <Features />
@@ -993,6 +994,39 @@ function Editing() {
             />
           </Tile>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// The launch video lives in the `stroke` R2 bucket, served at media.stroke.click
+// (R2 answers range requests, which Safari needs to play an mp4).
+const LAUNCH_MEDIA = "https://media.stroke.click/launch";
+
+function Launch() {
+  return (
+    <section id="launch" className="scroll-mt-16 border-y border-border/40">
+      <div className={cn(WRAP, "py-24 md:py-32")}>
+        <SectionHeader eyebrow="Launch video" title="Stroke in 44 seconds" center>
+          <p>
+            Ten engines, one-click provider sign-in, six ways to read a result, and an MCP server
+            for your agents.
+          </p>
+        </SectionHeader>
+        <LaunchVideo
+          src={`${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4`}
+          poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg`}
+          title="The Stroke launch video"
+          className="mx-auto mt-14 max-w-5xl md:mt-16"
+        />
+        <p className="mt-5 text-center text-sm text-muted-foreground">
+          <a
+            href={`${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4`}
+            className="underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Watch in 4K
+          </a>
+        </p>
       </div>
     </section>
   );

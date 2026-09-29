@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import { cn } from "#/lib/utils";
 
 /**
@@ -62,6 +64,69 @@ export function VideoDemo({
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
             className="block h-full w-full border-0"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The launch video, self-hosted on R2 and framed to match {@link AppWindow}.
+ * It starts muted the first time it scrolls into view, unless the visitor
+ * prefers reduced motion; the native controls handle sound and fullscreen.
+ */
+export function LaunchVideo({
+  src,
+  poster,
+  title,
+  className,
+}: {
+  src: string;
+  poster: string;
+  title: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        video.play().catch(() => {});
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className={cn("relative", className)}>
+      {/* Warm ambient glow behind the window */}
+      <div
+        aria-hidden="true"
+        className="absolute -inset-x-6 -top-10 -bottom-8 -z-10 bg-[radial-gradient(60%_70%_at_50%_20%,--alpha(var(--color-copper)/14%),transparent_70%)]"
+      />
+
+      {/* Premium hairline frame: gradient edge, brighter along the top */}
+      <div className="rounded-xl bg-linear-to-b from-foreground/20 via-border/70 to-border/40 p-px dark:from-foreground/25">
+        <div className="aspect-video overflow-hidden rounded-[calc(var(--radius)*1.4-1px)] bg-black">
+          <video
+            ref={ref}
+            src={src}
+            poster={poster}
+            title={title}
+            aria-label={title}
+            muted
+            loop
+            playsInline
+            controls
+            preload="metadata"
+            className="block h-full w-full"
           />
         </div>
       </div>
