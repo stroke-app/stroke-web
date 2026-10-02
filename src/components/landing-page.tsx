@@ -24,6 +24,7 @@ import {
 import { useState } from "react";
 
 import { SmartDownloadButton } from "#/components/download-button";
+import { EditingShowcase } from "#/components/editing-showcase";
 import { ThemeToggle } from "#/components/theme-toggle";
 import { Button, buttonVariants } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -44,6 +45,7 @@ export function LandingPage() {
         <Hero />
         <Databases />
         <Features />
+        <EditingShowcase />
         <Pricing />
       </main>
       <SiteFooter />
@@ -75,6 +77,9 @@ function SiteHeader() {
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           <a href="#features" className="transition-colors hover:text-foreground">
             Features
+          </a>
+          <a href="#editing" className="transition-colors hover:text-foreground">
+            Editing
           </a>
           <a href="#databases" className="transition-colors hover:text-foreground">
             Databases
