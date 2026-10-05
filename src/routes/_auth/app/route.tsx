@@ -82,7 +82,10 @@ function SidebarSignOut() {
 
 function AppLayout() {
   const { user } = useAuth();
+  const matchRoute = useMatchRoute();
   const initial = user?.name?.[0]?.toUpperCase() ?? "?";
+  const page =
+    NAV_ITEMS.find((item) => matchRoute({ to: item.to, fuzzy: !item.exact }))?.label ?? "App";
 
   return (
     <div className="flex min-h-svh bg-background">
@@ -103,12 +106,15 @@ function AppLayout() {
 
         <div className="border-t border-border/40 p-2">
           <div className="mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-2">
-            <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-[10px] font-semibold text-muted-foreground uppercase ring-1 ring-border/60">
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-xs font-semibold text-muted-foreground uppercase ring-1 ring-border/60">
               {initial}
             </div>
             <div className="min-w-0">
               <p className="truncate text-xs leading-tight font-medium">{user?.name}</p>
-              <p className="truncate text-[10px] leading-tight text-muted-foreground">
+              <p
+                className="mt-0.5 truncate text-xs leading-tight text-muted-foreground"
+                title={user?.email}
+              >
                 {user?.email}
               </p>
             </div>
@@ -129,7 +135,7 @@ function AppLayout() {
               stroke.click
             </Link>
             <span className="opacity-40">/</span>
-            <span className="text-foreground">app</span>
+            <span className="text-foreground">{page}</span>
           </div>
           <div className="ml-auto">
             <ThemeToggle />
