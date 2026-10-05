@@ -30,8 +30,9 @@ DODO_ENVIRONMENT = "live_mode"
 # Secrets: set via wrangler secret put <NAME>
 # DODO_PAYMENTS_API_KEY, DODO_WEBHOOK_KEY, DODO_PRODUCT_ID, LICENSE_PRIVATE_KEY_HEX
 # DODO_TEAM_PRODUCT_ID (optional) — enables the $99 Team plan covering an email domain
-# OPENROUTER_POOL_KEY (optional) — free-tier overflow once the Workers AI daily cap
-#   trips. Without it, the free tier simply 429s instead of falling back.
+# GROQ_API_KEY, CEREBRAS_API_KEY, OPENROUTER_POOL_KEY (all optional) — the free-tier
+#   overflow chain, tried in that order when Workers AI fails or its daily cap trips.
+#   Unset ones are skipped; with none set, the free tier 429s instead of falling back.
 # GITHUB_TOKEN (optional) — raises the GitHub API rate limit for /api/releases
 # PLUNK_API_KEY (optional) — Plunk SECRET key (sk_...) for transactional email;
 #   when unset, purchase/failure emails are skipped. Sender: PLUNK_FROM_EMAIL

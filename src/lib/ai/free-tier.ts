@@ -86,6 +86,44 @@ export const OVERFLOW_MODELS = [
 export const OVERFLOW_MODEL = OVERFLOW_MODELS[0];
 
 /**
+ * The overflow chain, walked in order: every model of a provider, then the next
+ * provider. A provider whose key isn't set is skipped, so adding one is just
+ * `wrangler secret put <key>` — and removing the secret takes it out again.
+ *
+ * All three speak OpenAI's chat-completions schema (tools and SSE included), so
+ * a response is passed through to the desktop app untouched. Every model listed
+ * must support tool calling; the database agent is useless without it.
+ *
+ * Each model has its own rate-limit bucket upstream, so a second model on the
+ * same provider is extra free capacity, not just a spare.
+ */
+export const OVERFLOW_PROVIDERS = [
+  {
+    // Free plan, no card. Per model: 30 req/min, 1,000 req/day, 8K tokens/min,
+    // 200K tokens/day (console.groq.com/docs/rate-limits). Fastest of the three.
+    name: "groq",
+    url: "https://api.groq.com/openai/v1/chat/completions",
+    key: "GROQ_API_KEY",
+    models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"],
+  },
+  {
+    // Free Trial: a one-time $5 credit that lapses after 30 days, then the API
+    // pauses (no charge). 5 req/min per model. Once it lapses its errors just
+    // move the chain on to OpenRouter.
+    name: "cerebras",
+    url: "https://api.cerebras.ai/v1/chat/completions",
+    key: "CEREBRAS_API_KEY",
+    models: ["gpt-oss-120b", "qwen-3.8-27b"],
+  },
+  {
+    name: "openrouter",
+    url: "https://openrouter.ai/api/v1/chat/completions",
+    key: "OPENROUTER_POOL_KEY",
+    models: OVERFLOW_MODELS,
+  },
+] as const;
+
+/**
  * The catalogue the desktop app shows. Deliberately tiny: these are aliases we
  * control, not raw upstream ids, so the routing can change underneath without
  * invalidating a model id someone has saved in a profile.
