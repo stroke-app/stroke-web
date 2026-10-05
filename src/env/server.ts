@@ -41,8 +41,11 @@ export const env = createEnv({
     // limit from 60 to 5000 requests/hour; no scopes needed for public repos)
     GITHUB_TOKEN: z.string().optional(),
 
-    // Free AI tier overflow. Optional: without it the free tier returns a typed
-    // 429 once the Workers AI daily cap trips, instead of falling back.
+    // Free AI tier overflow, tried in this order when Workers AI fails or its
+    // daily cap trips (see OVERFLOW_PROVIDERS). Each is optional and skipped when
+    // unset; with none set the free tier returns a typed 429 instead of falling back.
+    GROQ_API_KEY: z.string().optional(),
+    CEREBRAS_API_KEY: z.string().optional(),
     OPENROUTER_POOL_KEY: z.string().optional(),
 
     // Dodo Payments

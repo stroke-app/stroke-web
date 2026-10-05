@@ -7,7 +7,7 @@ import {
   deviceIdFrom,
   FAST_MODEL,
   ipFrom,
-  OVERFLOW_MODELS,
+  OVERFLOW_PROVIDERS,
   PRIMARY_MODEL,
   quotaError,
   recordUsage,
@@ -33,7 +33,8 @@ import {
  * button) works unchanged.
  *
  * Routing: Cloudflare Workers AI while the shared daily allocation lasts, then
- * the OpenRouter free pool, then a typed 429. Tool calls must survive both paths
+ * the free overflow chain (Groq, Cerebras, OpenRouter; see OVERFLOW_PROVIDERS),
+ * then a typed 429. Tool calls must survive both paths
  * — the database agent is useless without them.
  */
 
@@ -181,29 +182,44 @@ export const Route = createFileRoute("/api/ai/chat/completions")({
           return await workersAi!.run(primaryModel, { ...base, stream });
         };
 
-        // Free OpenRouter slugs are individually unreliable — they get retired
-        // (404 "use this slug instead") and rate-limited upstream (429) without
-        // warning. Walk the list until one answers, so overflow degrades model by
-        // model instead of collapsing on the first bad one.
+        // Free overflow models are individually unreliable — they get retired
+        // (404 "use this slug instead"), rate-limited (429), or run out of trial
+        // credit without warning. Walk the chain until one answers, so overflow
+        // degrades model by model instead of collapsing on the first bad one.
         const runOverflow = async () => {
-          const key = serverEnv.OPENROUTER_POOL_KEY;
-          if (!key) throw new Error("overflow provider not configured");
-
-          let lastDetail = "";
-          for (const model of OVERFLOW_MODELS) {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "content-type": "application/json",
-                authorization: `Bearer ${key}`,
-                "http-referer": "https://stroke.click",
-                "x-title": "Stroke",
-              },
-              body: JSON.stringify({ ...shared, stream, model }),
-            });
-            if (res.ok) return res;
-            lastDetail = (await res.text().catch(() => "")).slice(0, 200);
-            console.log("overflow model rejected", model, res.status, lastDetail);
+          let lastDetail = "overflow provider not configured";
+          for (const p of OVERFLOW_PROVIDERS) {
+            const key = serverEnv[p.key];
+            if (!key) continue;
+            for (const model of p.models) {
+              let res: Response;
+              try {
+                res = await fetch(p.url, {
+                  method: "POST",
+                  headers: {
+                    "content-type": "application/json",
+                    authorization: `Bearer ${key}`,
+                    // OpenRouter's app attribution; the other providers don't use it.
+                    ...(p.name === "openrouter" && {
+                      "http-referer": "https://stroke.click",
+                      "x-title": "Stroke",
+                    }),
+                  },
+                  body: JSON.stringify({ ...shared, stream, model }),
+                });
+              } catch (err) {
+                // A provider that can't be reached is one more bad link, not the end.
+                lastDetail = String(err);
+                console.log("overflow model unreachable", p.name, model, lastDetail);
+                continue;
+              }
+              if (res.ok) {
+                overflowUpstream = `${p.name}/${model}`;
+                return res;
+              }
+              lastDetail = (await res.text().catch(() => "")).slice(0, 200);
+              console.log("overflow model rejected", p.name, model, res.status, lastDetail);
+            }
           }
           throw new Error(`all overflow models failed: ${lastDetail}`);
         };
@@ -240,6 +256,8 @@ export const Route = createFileRoute("/api/ai/chat/completions")({
                 (stream ? "text/event-stream" : "application/json"),
               "cache-control": "no-cache",
               "x-stroke-provider": "overflow",
+              // Which link of the chain answered, e.g. "groq/openai/gpt-oss-120b".
+              "x-stroke-upstream": overflowUpstream,
             },
           });
         };
@@ -258,6 +276,7 @@ export const Route = createFileRoute("/api/ai/chat/completions")({
         // A provider that errors must not burn the user's daily allowance, so
         // usage is booked only after one of them accepts the request.
         let provider = verdict.provider;
+        let overflowUpstream = "";
         let raw: unknown;
         let primaryModel = PRIMARY_MODEL;
         let workersAi: { run: (m: string, o: Record<string, unknown>) => Promise<unknown> } | null =
