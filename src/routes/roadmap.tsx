@@ -1,4 +1,14 @@
-import { SiCloudflare, SiPlanetscale, SiPrisma, SiSupabase } from "@icons-pack/react-simple-icons";
+import {
+  SiCloudflare,
+  SiPlanetscale,
+  SiPosthog,
+  SiPrisma,
+  SiRailway,
+  SiSupabase,
+  SiTidb,
+  SiTurso,
+  SiUpstash,
+} from "@icons-pack/react-simple-icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
 
@@ -34,8 +44,14 @@ const PROVIDERS = [
   { name: "Neon", Icon: null },
   { name: "Supabase", Icon: SiSupabase },
   { name: "Prisma Postgres", Icon: SiPrisma },
+  { name: "PlanetScale", Icon: SiPlanetscale },
+  { name: "TiDB Cloud", Icon: SiTidb },
+  { name: "Turso", Icon: SiTurso },
+  { name: "Railway", Icon: SiRailway },
+  { name: "Nile", Icon: null },
+  { name: "Upstash", Icon: SiUpstash },
+  { name: "PostHog", Icon: SiPosthog },
   { name: "Cloudflare D1", Icon: SiCloudflare },
-  { name: "PlanetScale (soon)", Icon: SiPlanetscale },
 ];
 
 // Completed items are drawn from the changelog (stroke.click/changelog).
@@ -119,7 +135,8 @@ const IN_PROGRESS: RoadmapItem[] = [
   },
   {
     title: "Redis support",
-    body: "A Redis client, already in the connection picker behind a “soon” tag. It ships once it holds up against real workloads.",
+    tag: "Beta",
+    body: "A Redis client, in the connection picker and available to try now. It leaves beta once it holds up against real workloads.",
   },
 ];
 
