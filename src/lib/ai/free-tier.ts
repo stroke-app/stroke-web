@@ -24,10 +24,16 @@ export const FREE_TIER = {
    *
    * Raising it costs nothing on its own — the global caps below are what gate
    * the shared pool, and this only decides how much of it one device may take.
+   * 300 is roughly 75 agent questions a day; real traffic is a handful of
+   * devices a day, nowhere near the global caps, so the per-device wall was the
+   * only limit anyone ever met.
    */
-  perDeviceDaily: 120,
-  /** Requests one IP may make per UTC day (a device id can be regenerated). */
-  perIpDaily: 300,
+  perDeviceDaily: 300,
+  /**
+   * Requests one IP may make per UTC day (a device id can be regenerated).
+   * Twice the device cap, so two people behind one office NAT both get a full day.
+   */
+  perIpDaily: 600,
   /**
    * App-wide Workers AI requests per day. Past this we stop metering Cloudflare
    * and move to the overflow provider — nobody is cut off here, they are served
