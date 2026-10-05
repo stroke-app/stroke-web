@@ -104,7 +104,9 @@ export const OVERFLOW_PROVIDERS = [
     name: "groq",
     url: "https://api.groq.com/openai/v1/chat/completions",
     key: "GROQ_API_KEY",
-    models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"],
+    // Checked against a real free-plan key: llama-3.3-70b-versatile is listed in
+    // the docs but answers 404 model_not_found; these three all call tools.
+    models: ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"],
   },
   {
     // Free Trial: a one-time $5 credit that lapses after 30 days, then the API
