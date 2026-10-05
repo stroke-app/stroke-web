@@ -6,12 +6,16 @@ import {
   SiMariadb,
   SiMysql,
   SiPlanetscale,
+  SiPosthog,
   SiPostgresql,
   SiPrisma,
+  SiRailway,
   SiRedis,
   SiSqlite,
   SiSupabase,
+  SiTidb,
   SiTurso,
+  SiUpstash,
 } from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -63,7 +67,6 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <Launch />
         <Pillars />
         <Connect />
         <Features />
@@ -124,6 +127,12 @@ function ReleasePill() {
     </Link>
   );
 }
+
+// The launch video lives in the `stroke` R2 bucket, served at media.stroke.click
+// (R2 answers range requests, which Safari needs to play an mp4).
+const LAUNCH_MEDIA = "https://media.stroke.click/launch";
+// Bump when the files in R2 are replaced, so the CDN serves the new ones at once.
+const LAUNCH_VERSION = "?v=1";
 
 function Hero() {
   return (
@@ -188,6 +197,23 @@ function Hero() {
           </p>
         </div>
 
+        <div
+          className="animate-fade-up mx-auto mt-14 max-w-5xl md:mt-20"
+          style={{ animationDelay: "380ms" }}
+        >
+          <LaunchVideo
+            sources={[
+              {
+                src: `${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4${LAUNCH_VERSION}`,
+                media: "(min-width: 1280px)",
+              },
+              { src: `${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4${LAUNCH_VERSION}` },
+            ]}
+            poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg${LAUNCH_VERSION}`}
+            title="Stroke in 44 seconds: the launch video"
+          />
+        </div>
+
         <Databases />
       </div>
     </section>
@@ -205,7 +231,7 @@ const DATABASES = [
   { name: "CockroachDB", Icon: SiCockroachlabs },
   { name: "Turso / LibSQL", Icon: SiTurso },
   { name: "Cloudflare D1", Icon: SiCloudflare },
-  { name: "Redis", Icon: SiRedis, soon: true },
+  { name: "Redis", Icon: SiRedis, tag: "Beta" },
 ] as const;
 
 function Databases() {
@@ -216,18 +242,12 @@ function Databases() {
       </p>
       <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
         {DATABASES.map((db) => (
-          <li
-            key={db.name}
-            className={cn(
-              "flex items-center gap-2 text-sm text-muted-foreground",
-              "soon" in db && db.soon && "opacity-60",
-            )}
-          >
+          <li key={db.name} className="flex items-center gap-2 text-sm text-muted-foreground">
             <db.Icon className="size-4 shrink-0" />
             <span className="font-medium">{db.name}</span>
-            {"soon" in db && db.soon && (
+            {"tag" in db && (
               <span className="rounded-full bg-copper/12 px-1.5 py-px text-[11px] font-medium text-copper">
-                Soon
+                {db.tag}
               </span>
             )}
           </li>
@@ -245,21 +265,45 @@ function Databases() {
   );
 }
 
-function NeonMark({ className }: { className?: string }) {
+type MarkProps = { className?: string; style?: React.CSSProperties };
+
+function NeonMark({ className, style }: MarkProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className} style={style}>
       <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="2.5" />
       <path d="M8.5 16V8l7 8V8" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
     </svg>
   );
 }
 
+// Nile's own mark (thenile.dev/logo.svg), the same one the desktop app draws.
+function NileMark({ className, style }: MarkProps) {
+  return (
+    <svg
+      viewBox="0 0 23.6 29.5"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      style={style}
+    >
+      <path d="M20.121 21.658C14.5515 21.0013 9.75863 17.4158 7.56726 12.2611C6.97966 10.8371 5.56944 9.83472 3.93571 9.83472C1.76277 9.83472 0 11.5975 0 13.7681C0 14.8534 0.437813 15.8397 1.15214 16.5494C2.87113 18.2684 2.87113 21.0635 1.15214 22.7825C0.444726 23.4899 0 24.4784 0 25.5637C0 27.7344 1.76277 29.4971 3.93341 29.4971C6.10404 29.4971 7.86681 27.7344 7.86681 25.5637C7.86681 24.4784 7.429 23.4922 6.71467 22.7825C5.44962 21.5174 5.11781 19.6694 5.71231 18.1025C10.3093 19.3376 14.1368 22.6166 16.0286 27.0707C16.6162 28.4948 18.0264 29.4971 19.6601 29.4971C21.8307 29.4971 23.5935 27.7344 23.5935 25.5637C23.5935 23.5452 22.0704 21.8861 20.1187 21.6603L20.121 21.658ZM22.4414 6.71467C23.1488 6.00726 23.5935 5.01872 23.5935 3.93341C23.5935 1.76277 21.8307 0 19.6601 0C17.4895 0 15.7267 1.76277 15.7267 3.93341C15.7267 5.01872 16.1645 6.00495 16.8789 6.71467C18.1439 7.97972 18.4757 9.82775 17.8812 11.3947C13.2842 10.1596 9.45677 6.88058 7.56495 2.42641C6.97736 1.00236 5.56944 0 3.93341 0C1.76277 0 0 1.76277 0 3.93341C0 5.95196 1.52313 7.61104 3.47485 7.83686C9.0443 8.48436 13.828 12.0721 16.0217 17.2268C16.6092 18.6508 18.0195 19.6532 19.6532 19.6532C21.8238 19.6532 23.5866 17.8904 23.5866 15.7198C23.5866 14.6345 23.1488 13.6483 22.4345 12.9385C20.7247 11.2288 20.7247 8.44058 22.4414 6.71467Z" />
+    </svg>
+  );
+}
+
+// Same providers, order, and colours as the desktop app's "Connect with a provider".
 const PROVIDERS = [
   { name: "Neon", Icon: NeonMark, color: "#00e599" },
   { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e" },
   { name: "Prisma Postgres", Icon: SiPrisma, color: "#6366f1" },
+  { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor" },
+  { name: "TiDB Cloud", Icon: SiTidb, color: "#e30c34" },
+  { name: "Turso", Icon: SiTurso, color: "#4ff8d2" },
+  { name: "Railway", Icon: SiRailway, color: "currentColor" },
+  { name: "Nile", Icon: NileMark, color: "#8a63f9" },
+  { name: "Upstash", Icon: SiUpstash, color: "#00e9a3" },
+  { name: "PostHog", Icon: SiPosthog, color: "#f9bd2b" },
   { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
-  { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor", soon: true },
 ] as const;
 
 const CONNECT_STEPS = [
@@ -309,16 +353,10 @@ function Connect() {
               {PROVIDERS.map((p) => (
                 <li
                   key={p.name}
-                  className={cn(
-                    "flex h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm font-medium",
-                    "soon" in p && p.soon && "text-white/40",
-                  )}
+                  className="flex h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm font-medium"
                 >
                   <p.Icon className="size-4.5 shrink-0" style={{ color: p.color }} />
                   {p.name}
-                  {"soon" in p && p.soon && (
-                    <span className="ml-auto text-xs font-normal text-white/35">Soon</span>
-                  )}
                 </li>
               ))}
             </ul>
@@ -999,41 +1037,6 @@ function Editing() {
   );
 }
 
-// The launch video lives in the `stroke` R2 bucket, served at media.stroke.click
-// (R2 answers range requests, which Safari needs to play an mp4).
-const LAUNCH_MEDIA = "https://media.stroke.click/launch";
-// Bump when the files in R2 are replaced, so the CDN serves the new ones at once.
-const LAUNCH_VERSION = "?v=1";
-
-function Launch() {
-  return (
-    <section id="launch" className="scroll-mt-16 border-y border-border/40">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader eyebrow="Launch video" title="Stroke in 44 seconds" center>
-          <p>
-            Ten engines, one-click provider sign-in, six ways to read a result, and an MCP server
-            for your agents.
-          </p>
-        </SectionHeader>
-        <LaunchVideo
-          src={`${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4${LAUNCH_VERSION}`}
-          poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg${LAUNCH_VERSION}`}
-          title="The Stroke launch video"
-          className="mx-auto mt-14 max-w-5xl md:mt-16"
-        />
-        <p className="mt-5 text-center text-sm text-muted-foreground">
-          <a
-            href={`${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4${LAUNCH_VERSION}`}
-            className="underline-offset-4 hover:text-foreground hover:underline"
-          >
-            Watch in 4K
-          </a>
-        </p>
-      </div>
-    </section>
-  );
-}
-
 function Demo() {
   return (
     <section className="border-b border-border/40">
@@ -1292,7 +1295,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Which databases does Stroke support?",
-    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is next, and the roadmap lists what follows.",
+    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is in beta, and the roadmap lists what follows.",
   },
   {
     q: "Does Stroke see my database credentials or data?",

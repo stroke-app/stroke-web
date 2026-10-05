@@ -75,14 +75,15 @@ export function VideoDemo({
  * The launch video, self-hosted on R2 and framed to match {@link AppWindow}.
  * It starts muted the first time it scrolls into view, unless the visitor
  * prefers reduced motion; the native controls handle sound and fullscreen.
+ * The browser plays the first source whose `media` query matches.
  */
 export function LaunchVideo({
-  src,
+  sources,
   poster,
   title,
   className,
 }: {
-  src: string;
+  sources: { src: string; media?: string }[];
   poster: string;
   title: string;
   className?: string;
@@ -98,7 +99,7 @@ export function LaunchVideo({
         observer.disconnect();
         video.play().catch(() => {});
       },
-      { threshold: 0.5 },
+      { threshold: 0.25 },
     );
     observer.observe(video);
     return () => observer.disconnect();
@@ -117,7 +118,6 @@ export function LaunchVideo({
         <div className="aspect-video overflow-hidden rounded-[calc(var(--radius)*1.4-1px)] bg-black">
           <video
             ref={ref}
-            src={src}
             poster={poster}
             title={title}
             aria-label={title}
@@ -127,7 +127,11 @@ export function LaunchVideo({
             controls
             preload="metadata"
             className="block h-full w-full"
-          />
+          >
+            {sources.map((s) => (
+              <source key={s.src} src={s.src} media={s.media} type="video/mp4" />
+            ))}
+          </video>
         </div>
       </div>
     </div>
