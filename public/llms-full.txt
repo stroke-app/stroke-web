@@ -1,15 +1,15 @@
 # Stroke: full reference for LLMs
 
-Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data.
+Stroke is a native database client for engineers and analysts. Query, browse, and edit every database you run, in one fast app.
 
-Stroke is a native desktop database client for macOS, Windows, and Linux. It launches quickly and stays light on large tables. It ships a built-in MCP (Model Context Protocol) server so AI agents such as Claude and Cursor can read the schema and run queries against a database the user already has open.
+Stroke runs on macOS, Windows, and Linux. It launches quickly and stays light on large tables. It ships a built-in MCP (Model Context Protocol) server so AI agents such as Claude and Cursor can read the schema and run queries against a database the user already has open.
 
 Website: https://stroke.click
 Source: https://github.com/stroke-app/stroke
 
 ## Supported databases
 
-PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, Cloudflare D1. SQLite and DuckDB also run in-memory. Redis is next on the roadmap.
+PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, Cloudflare D1. SQLite and DuckDB also run in-memory. Redis is in beta.
 
 ## Features
 

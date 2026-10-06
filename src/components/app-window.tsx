@@ -4,20 +4,21 @@ import { cn } from "#/lib/utils";
 
 /**
  * The Stroke desktop app in the hero, a real screenshot inside a framed
- * card with a warm ambient glow.
+ * hairline frame lit softly from above.
  */
 export function AppWindow({ className }: { className?: string }) {
   return (
     <div className={cn("relative", className)}>
-      {/* Warm ambient glow behind the window */}
+      {/* A soft light centered on the window's top edge; it fades out before
+          reaching its own bounds, so it never shows a hard edge. */}
       <div
         aria-hidden="true"
-        className="absolute -inset-x-6 -top-10 -bottom-8 -z-10 bg-[radial-gradient(60%_70%_at_50%_20%,--alpha(var(--color-copper)/14%),transparent_70%)]"
+        className="absolute inset-x-[8%] -top-36 -z-10 h-72 bg-[radial-gradient(closest-side,rgb(255_255_255/0.07),transparent)]"
       />
 
-      {/* Premium hairline frame: gradient edge, brighter along the top */}
-      <div className="rounded-xl bg-linear-to-b from-foreground/20 via-border/70 to-border/40 p-px dark:from-foreground/25">
-        <div className="overflow-hidden rounded-[calc(var(--radius)*1.4-1px)]">
+      {/* Hairline frame, brightest along the top edge. */}
+      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+        <div className="overflow-hidden rounded-[calc(1rem-1px)]">
           <img
             src="/app-screenshot.png"
             width={2208}
@@ -34,7 +35,7 @@ export function AppWindow({ className }: { className?: string }) {
 
 /**
  * A YouTube demo of the Stroke app, framed to match {@link AppWindow}, the
- * same warm glow and hairline frame, wrapping a 16:9 embed.
+ * same light and hairline frame, wrapping a 16:9 embed.
  */
 export function VideoDemo({
   videoId,
@@ -47,15 +48,16 @@ export function VideoDemo({
 }) {
   return (
     <div className={cn("relative", className)}>
-      {/* Warm ambient glow behind the window */}
+      {/* A soft light centered on the window's top edge; it fades out before
+          reaching its own bounds, so it never shows a hard edge. */}
       <div
         aria-hidden="true"
-        className="absolute -inset-x-6 -top-10 -bottom-8 -z-10 bg-[radial-gradient(60%_70%_at_50%_20%,--alpha(var(--color-copper)/14%),transparent_70%)]"
+        className="absolute inset-x-[8%] -top-36 -z-10 h-72 bg-[radial-gradient(closest-side,rgb(255_255_255/0.07),transparent)]"
       />
 
-      {/* Premium hairline frame: gradient edge, brighter along the top */}
-      <div className="rounded-xl bg-linear-to-b from-foreground/20 via-border/70 to-border/40 p-px dark:from-foreground/25">
-        <div className="aspect-video overflow-hidden rounded-[calc(var(--radius)*1.4-1px)] bg-black">
+      {/* Hairline frame, brightest along the top edge. */}
+      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+        <div className="aspect-video overflow-hidden rounded-[calc(1rem-1px)] bg-black">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${videoId}`}
             title={title}
@@ -107,15 +109,16 @@ export function LaunchVideo({
 
   return (
     <div className={cn("relative", className)}>
-      {/* Warm ambient glow behind the window */}
+      {/* A soft light centered on the window's top edge; it fades out before
+          reaching its own bounds, so it never shows a hard edge. */}
       <div
         aria-hidden="true"
-        className="absolute -inset-x-6 -top-10 -bottom-8 -z-10 bg-[radial-gradient(60%_70%_at_50%_20%,--alpha(var(--color-copper)/14%),transparent_70%)]"
+        className="absolute inset-x-[8%] -top-36 -z-10 h-72 bg-[radial-gradient(closest-side,rgb(255_255_255/0.07),transparent)]"
       />
 
-      {/* Premium hairline frame: gradient edge, brighter along the top */}
-      <div className="rounded-xl bg-linear-to-b from-foreground/20 via-border/70 to-border/40 p-px dark:from-foreground/25">
-        <div className="aspect-video overflow-hidden rounded-[calc(var(--radius)*1.4-1px)] bg-black">
+      {/* Hairline frame, brightest along the top edge. */}
+      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+        <div className="aspect-video overflow-hidden rounded-[calc(1rem-1px)] bg-black">
           <video
             ref={ref}
             poster={poster}

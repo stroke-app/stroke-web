@@ -191,6 +191,20 @@ export const auth = betterAuth({
     },
   },
 
+  // https://www.better-auth.com/docs/concepts/users-accounts#account-linking
+  // A sign-in whose email matches an existing user joins that user, so one
+  // person keeps one account (and license) across GitHub and Google.
+  account: {
+    accountLinking: {
+      enabled: true,
+      // Google verifies every address it issues, so its sign-ins always link.
+      // GitHub isn't trusted: it can report an address the user never
+      // verified, which would hand them someone else's account. It still links
+      // whenever GitHub says the email is verified.
+      trustedProviders: ["google"],
+    },
+  },
+
   // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
     github: {

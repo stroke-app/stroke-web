@@ -1,8 +1,8 @@
 # Stroke
 
-> Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. Stroke is a native desktop database client for macOS, Windows, and Linux, with a built-in MCP server so AI agents can query the same databases.
+> Stroke is a native database client for engineers and analysts. Query, browse, and edit every database you run, in one fast app. It runs on macOS, Windows, and Linux, with a built-in MCP server so AI agents can query the same databases.
 
-Stroke connects to PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis support is next. Connections run directly from the user's machine; credentials and query results never pass through Stroke's servers. The full app is free to try with no account. A license costs $9.99 once (2 devices, every future update), and a Team license costs $99 once for everyone on a company email domain. The source is on GitHub.
+Stroke connects to PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis support is in beta. Connections run directly from the user's machine; credentials and query results never pass through Stroke's servers. The full app is free to try with no account. A license costs $9.99 once (2 devices, every future update), and a Team license costs $99 once for everyone on a company email domain. The source is on GitHub.
 
 ## Product
 

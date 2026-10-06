@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Faq, Pricing } from "#/components/landing-page";
+import { SITE } from "#/components/page";
 import { SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { seo } from "#/lib/seo";
 
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={SITE}>
       <SiteHeader />
       <main>
         <Pricing as="h1" />

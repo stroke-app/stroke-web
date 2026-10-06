@@ -33,6 +33,8 @@ const STEPS = [
   },
 ];
 
+const SECTION_TITLE = "text-[2rem] md:text-[2.5rem]";
+
 const RULES = [
   "Free to enter. No purchase is necessary, and buying Stroke doesn't improve your chances.",
   "One entry per Stroke account per week. The account needs a verified email address.",
@@ -54,16 +56,23 @@ function GiveawayPage() {
         description="One free lifetime license goes to a random entrant every Monday. Entering is free and takes one click."
       />
       <PageBody wide>
-        <GiveawayCard showRulesLink={false} />
+        <GiveawayCard showRulesLink={false} headingAs="h2" />
 
-        <section className="mt-16">
-          <h2 className="text-lg font-semibold tracking-tight">How it works</h2>
-          <ol className="mt-6 grid gap-3 sm:grid-cols-3">
+        <section aria-labelledby="how-it-works" className="mt-24 md:mt-32">
+          <h2 id="how-it-works" className={SECTION_TITLE}>
+            How it works
+          </h2>
+          <ol className="mt-10 grid grid-cols-1 border-t border-border sm:grid-cols-3">
             {STEPS.map((step, i) => (
-              <li key={step.title} className="rounded-2xl border border-border bg-card p-6">
-                <span className="text-sm font-medium text-copper tabular-nums">0{i + 1}</span>
-                <p className="mt-3 text-sm font-medium">{step.title}</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-pretty text-muted-foreground">
+              <li
+                key={step.title}
+                className="border-b border-border py-7 sm:border-b-0 sm:pr-8 sm:not-first:border-l sm:not-first:pl-8"
+              >
+                <span aria-hidden="true" className="font-mono text-[12px] text-faint tabular-nums">
+                  0{i + 1}
+                </span>
+                <h3 className="mt-5 text-[15px] font-medium">{step.title}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-pretty text-muted-foreground">
                   {step.body}
                 </p>
               </li>
@@ -71,11 +80,26 @@ function GiveawayPage() {
           </ol>
         </section>
 
-        <section id="rules" className="mt-16 max-w-3xl scroll-mt-20">
-          <h2 className="text-lg font-semibold tracking-tight">Rules</h2>
-          <ol className="mt-5 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground marker:text-copper marker:tabular-nums">
-            {RULES.map((rule) => (
-              <li key={rule} className="pl-1 text-pretty">
+        <section
+          id="rules"
+          aria-labelledby="rules-title"
+          className="mt-24 grid scroll-mt-24 grid-cols-1 gap-x-16 gap-y-8 md:mt-32 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"
+        >
+          <h2 id="rules-title" className={SECTION_TITLE}>
+            Rules
+          </h2>
+          <ol className="border-t border-border">
+            {RULES.map((rule, i) => (
+              <li
+                key={rule}
+                className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-border py-4 text-[15px] leading-relaxed text-pretty text-soft"
+              >
+                <span
+                  aria-hidden="true"
+                  className="pt-[3px] font-mono text-[12px] text-faint tabular-nums"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 {rule}
               </li>
             ))}

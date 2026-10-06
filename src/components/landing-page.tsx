@@ -6,8 +6,8 @@ import {
   SiMariadb,
   SiMysql,
   SiPlanetscale,
-  SiPosthog,
   SiPostgresql,
+  SiPosthog,
   SiPrisma,
   SiRailway,
   SiRedis,
@@ -25,37 +25,35 @@ import {
   BracesIcon,
   ChartLineIcon,
   CheckIcon,
-  ChevronDownIcon,
   CodeIcon,
   DatabaseIcon,
+  DownloadIcon,
   GitForkIcon,
   GitPullRequestIcon,
   Grid3x3Icon,
   KeyboardIcon,
   LayoutDashboardIcon,
-  MapIcon,
   ListChecksIcon,
-  ListIcon,
+  MapIcon,
   MousePointerClickIcon,
-  NetworkIcon,
   PencilLineIcon,
   PlugIcon,
+  PlusIcon,
   ReplaceIcon,
-  SearchIcon,
   StarIcon,
   StickyNoteIcon,
-  TablePropertiesIcon,
   TerminalIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { LaunchVideo, VideoDemo } from "#/components/app-window";
-import { SmartDownloadButton } from "#/components/download-button";
+import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
 import { FeatureShot } from "#/components/feature-shot";
 import { GiveawayCard } from "#/components/giveaway";
-import { Eyebrow, WRAP } from "#/components/page";
-import { BrushStroke, REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
-import { buttonVariants } from "#/components/ui/button";
+import { AgentsMockup, ConnectMockup, NeonGlyph, QueryMockup } from "#/components/landing-mockups";
+import { Panel, Section, SectionIntro, SITE, siteButton, WRAP } from "#/components/page";
+import { SchemaShowcase } from "#/components/schema-showcase";
+import { REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { useAuth } from "#/lib/auth/hooks";
 import { useLatestRelease } from "#/lib/releases";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
@@ -63,15 +61,17 @@ import { cn } from "#/lib/utils";
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={SITE}>
       <SiteHeader />
       <main>
         <Hero />
         <Pillars />
         <Connect />
-        <Features />
+        <QuerySection />
         <Views />
+        <SchemaSection />
         <Editing />
+        <Agents />
         <Demo />
         <Reviews />
         <Pricing />
@@ -84,42 +84,50 @@ export function LandingPage() {
   );
 }
 
-function SectionHeader({
-  eyebrow,
-  title,
-  children,
-  center = false,
-  as: Heading = "h2",
+/**
+ * Linear's feature row under a section's visual: short items side by side,
+ * separated by hairlines, each an icon and one paragraph led by its title.
+ */
+function FeatureRow({
+  items,
+  className,
 }: {
-  eyebrow: string;
-  title: React.ReactNode;
-  children?: React.ReactNode;
-  center?: boolean;
-  as?: "h1" | "h2";
+  items: { icon: React.ElementType; title: string; body: string }[];
+  className?: string;
 }) {
   return (
-    <div className={cn("max-w-2xl", center && "mx-auto text-center")}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <Heading className="mt-3 text-3xl leading-[1.1] font-medium tracking-[-0.035em] text-balance sm:text-[2.75rem]">
-        {title}
-      </Heading>
-      {children && (
-        <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
-          {children}
-        </div>
+    <ul
+      className={cn(
+        "mt-16 grid grid-cols-1 border-t border-border sm:grid-cols-2 md:mt-20",
+        items.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4",
+        className,
       )}
-    </div>
+    >
+      {items.map((item) => (
+        <li
+          key={item.title}
+          className="border-b border-border py-7 sm:odd:pr-8 sm:even:border-l sm:even:pl-8 lg:border-b-0 lg:border-l lg:px-7 lg:first:border-l-0 lg:first:pl-0 lg:odd:pr-7"
+        >
+          <item.icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+          <p className="mt-4 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+            <span className="font-medium text-foreground">{item.title}.</span> {item.body}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
+
+// ── Hero ─────────────────────────────────────────────────────────────────────
 
 function ReleasePill() {
   const { data: release } = useLatestRelease();
   return (
     <Link
       to="/changelog"
-      className="group inline-flex h-7 items-center gap-2 rounded-full border border-border/60 bg-muted/30 pr-2.5 pl-1 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+      className="group inline-flex h-7 items-center gap-2 rounded-full border border-border bg-white/[0.03] pr-3 pl-1 text-[13px] text-muted-foreground transition-colors hover:border-white/15 hover:text-foreground"
     >
-      <span className="rounded-full bg-copper/15 px-2 py-0.5 text-[11px] font-medium text-copper">
+      <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[11px] font-[510] text-foreground">
         New
       </span>
       {release ? `${release.tag_name} is out` : "See what's new"}
@@ -137,70 +145,56 @@ const LAUNCH_VERSION = "?v=1";
 function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
-      <div className={cn(WRAP, "pt-16 pb-20 md:pt-28 md:pb-28")}>
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <div className="animate-fade-up">
-            <ReleasePill />
-          </div>
-
-          <h1
-            className="animate-fade-up mt-7 text-[2.1rem] leading-[1.02] font-medium tracking-[-0.045em] text-balance min-[430px]:text-[2.6rem] sm:text-6xl md:text-[4.25rem]"
-            style={{ animationDelay: "80ms" }}
-          >
-            The database studio for{" "}
-            <span className="relative inline-block whitespace-nowrap">
-              agents and humans
-              <BrushStroke
-                animate
-                className="absolute -bottom-2 left-0 h-2.5 w-full sm:-bottom-3"
-              />
-            </span>
-            .
-          </h1>
-
-          <p
-            className="animate-fade-up mt-8 max-w-xl text-lg leading-[1.6] text-pretty text-muted-foreground"
-            style={{ animationDelay: "160ms" }}
-          >
-            Fast, elegant, and designed for engineers and analysts who care about their tools.
-            Rethink how you query, explore, and work with data.
-          </p>
-
-          <div
-            className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-3"
-            style={{ animationDelay: "240ms" }}
-          >
-            <SmartDownloadButton size="lg" variant="default" alternates={false} />
-            <Link to="/pricing" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              $9.99 · Own it forever
-            </Link>
-          </div>
-
-          <p
-            className="animate-fade-up mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground sm:gap-x-2"
-            style={{ animationDelay: "300ms" }}
-          >
-            <span>macOS, Windows, and Linux</span>
-            <span aria-hidden="true" className="hidden sm:inline">
-              ·
-            </span>
-            <span>Free to try, no account needed</span>
-            <span aria-hidden="true" className="hidden sm:inline">
-              ·
-            </span>
-            <Link
-              to="/download"
-              className="underline-offset-4 hover:text-foreground hover:underline"
-            >
-              Other downloads
-            </Link>
-          </p>
+      {/* A faint light at the top of the page, nothing more. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(50%_70%_at_50%_0%,rgb(255_255_255/0.045),transparent)]"
+      />
+      <div className={cn(WRAP, "pt-20 pb-16 md:pt-32 md:pb-24")}>
+        <div className="animate-fade-up">
+          <ReleasePill />
         </div>
 
-        <div
-          className="animate-fade-up mx-auto mt-14 max-w-5xl md:mt-20"
-          style={{ animationDelay: "380ms" }}
+        <h1
+          className="animate-fade-up mt-8 max-w-[18ch] text-[2.5rem] text-balance min-[430px]:text-[3rem] sm:text-[3.75rem] md:text-[4.5rem]"
+          style={{ animationDelay: "60ms" }}
         >
+          The database studio for agents and humans.
+        </h1>
+
+        <div
+          className="animate-fade-up mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 md:mt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-16"
+          style={{ animationDelay: "140ms" }}
+        >
+          <p className="max-w-xl text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-lg">
+            A native database client for engineers and analysts. Query, browse, and edit every
+            database you run in one fast app, and hand the same database to your AI agents through a
+            built-in MCP server.
+          </p>
+          <div className="flex min-w-0 flex-col gap-3 md:items-end">
+            <div className="flex flex-wrap items-center gap-3">
+              <SmartDownloadButton size="lg" variant="default" alternates={false} />
+              <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
+                $9.99 · Own it forever
+              </Link>
+            </div>
+            <BrewCommand />
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
+              <span>macOS, Windows, and Linux</span>
+              <span aria-hidden="true">·</span>
+              <span>Free to try, no account needed</span>
+              <span aria-hidden="true">·</span>
+              <Link
+                to="/download"
+                className="underline-offset-4 hover:text-foreground hover:underline"
+              >
+                Other downloads
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        <div className="animate-fade-up mt-16 md:mt-24" style={{ animationDelay: "240ms" }}>
           <LaunchVideo
             sources={[
               {
@@ -213,51 +207,77 @@ function Hero() {
             title="Stroke in 44 seconds: the launch video"
           />
         </div>
-
-        <Databases />
       </div>
+
+      <Databases />
     </section>
   );
 }
 
 const DATABASES = [
-  { name: "PostgreSQL", Icon: SiPostgresql },
-  { name: "MySQL", Icon: SiMysql },
-  { name: "MariaDB", Icon: SiMariadb },
-  { name: "SQLite", Icon: SiSqlite },
-  { name: "DuckDB", Icon: SiDuckdb },
-  { name: "SQL Server", Icon: DatabaseIcon },
-  { name: "ClickHouse", Icon: SiClickhouse },
-  { name: "CockroachDB", Icon: SiCockroachlabs },
-  { name: "Turso / LibSQL", Icon: SiTurso },
-  { name: "Cloudflare D1", Icon: SiCloudflare },
-  { name: "Redis", Icon: SiRedis, tag: "Beta" },
+  { name: "PostgreSQL", Icon: SiPostgresql, color: "#699eca" },
+  { name: "MySQL", Icon: SiMysql, color: "#4f9fd3" },
+  { name: "MariaDB", Icon: SiMariadb, color: "#c0765a" },
+  { name: "SQLite", Icon: SiSqlite, color: "#44a8e0" },
+  { name: "DuckDB", Icon: SiDuckdb, color: "#fff000" },
+  { name: "SQL Server", Icon: DatabaseIcon, color: "#e2574c" },
+  { name: "ClickHouse", Icon: SiClickhouse, color: "#ffcc01" },
+  { name: "CockroachDB", Icon: SiCockroachlabs, color: "#8b6bff" },
+  { name: "Turso / LibSQL", Icon: SiTurso, color: "#4ff8d2" },
+  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
+  { name: "Redis", Icon: SiRedis, color: "#ff4438", tag: "Beta" },
 ] as const;
 
-function Databases() {
+// Nile's own mark (thenile.dev/logo.svg), the same one the desktop app draws.
+function NileMark({ className }: { className?: string }) {
   return (
-    <div className="mx-auto mt-16 max-w-5xl">
-      <p className="text-center text-sm text-muted-foreground">
-        Ten engines today, from a local SQLite file to ClickHouse
-      </p>
-      <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-        {DATABASES.map((db) => (
-          <li key={db.name} className="flex items-center gap-2 text-sm text-muted-foreground">
-            <db.Icon className="size-4 shrink-0" />
-            <span className="font-medium">{db.name}</span>
-            {"tag" in db && (
-              <span className="rounded-full bg-copper/12 px-1.5 py-px text-[11px] font-medium text-copper">
-                {db.tag}
-              </span>
-            )}
-          </li>
+    <svg viewBox="0 0 23.6 29.5" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M20.121 21.658C14.5515 21.0013 9.75863 17.4158 7.56726 12.2611C6.97966 10.8371 5.56944 9.83472 3.93571 9.83472C1.76277 9.83472 0 11.5975 0 13.7681C0 14.8534 0.437813 15.8397 1.15214 16.5494C2.87113 18.2684 2.87113 21.0635 1.15214 22.7825C0.444726 23.4899 0 24.4784 0 25.5637C0 27.7344 1.76277 29.4971 3.93341 29.4971C6.10404 29.4971 7.86681 27.7344 7.86681 25.5637C7.86681 24.4784 7.429 23.4922 6.71467 22.7825C5.44962 21.5174 5.11781 19.6694 5.71231 18.1025C10.3093 19.3376 14.1368 22.6166 16.0286 27.0707C16.6162 28.4948 18.0264 29.4971 19.6601 29.4971C21.8307 29.4971 23.5935 27.7344 23.5935 25.5637C23.5935 23.5452 22.0704 21.8861 20.1187 21.6603L20.121 21.658ZM22.4414 6.71467C23.1488 6.00726 23.5935 5.01872 23.5935 3.93341C23.5935 1.76277 21.8307 0 19.6601 0C17.4895 0 15.7267 1.76277 15.7267 3.93341C15.7267 5.01872 16.1645 6.00495 16.8789 6.71467C18.1439 7.97972 18.4757 9.82775 17.8812 11.3947C13.2842 10.1596 9.45677 6.88058 7.56495 2.42641C6.97736 1.00236 5.56944 0 3.93341 0C1.76277 0 0 1.76277 0 3.93341C0 5.95196 1.52313 7.61104 3.47485 7.83686C9.0443 8.48436 13.828 12.0721 16.0217 17.2268C16.6092 18.6508 18.0195 19.6532 19.6532 19.6532C21.8238 19.6532 23.5866 17.8904 23.5866 15.7198C23.5866 14.6345 23.1488 13.6483 22.4345 12.9385C20.7247 11.2288 20.7247 8.44058 22.4414 6.71467Z" />
+    </svg>
+  );
+}
+
+// Same providers and order as the desktop app's "Connect with a provider".
+const PROVIDERS = [
+  { name: "Neon", Icon: NeonGlyph, color: "#00e599" },
+  { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e" },
+  { name: "Prisma Postgres", Icon: SiPrisma, color: "#8b8ff8" },
+  { name: "PlanetScale", Icon: SiPlanetscale, color: "#f2f2f2" },
+  { name: "TiDB Cloud", Icon: SiTidb, color: "#ff3d5a" },
+  { name: "Turso", Icon: SiTurso, color: "#4ff8d2" },
+  { name: "Railway", Icon: SiRailway, color: "#f2f2f2" },
+  { name: "Nile", Icon: NileMark, color: "#8a63f9" },
+  { name: "Upstash", Icon: SiUpstash, color: "#00e9a3" },
+  { name: "PostHog", Icon: SiPosthog, color: "#f9bd2b" },
+  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
+];
+
+/** A caption over a hairline grid of marks, the way Linear shows its customers. */
+function LogoGrid({
+  caption,
+  items,
+  tail,
+  className,
+}: {
+  caption: React.ReactNode;
+  items: readonly { name: string; Icon: React.ElementType; color: string; tag?: string }[];
+  tail: { to: "/roadmap" | "/docs"; label: string };
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className="text-[15px] text-muted-foreground">{caption}</p>
+      <ul className="mt-8 grid grid-cols-2 border-t border-l border-border sm:grid-cols-3 lg:grid-cols-6">
+        {items.map((item) => (
+          <EngineCell key={item.name} {...item} />
         ))}
-        <li>
+        <li className="h-20 border-r border-b border-border md:h-24">
           <Link
-            to="/roadmap"
-            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            to={tail.to}
+            className="group flex h-full items-center justify-center gap-1.5 px-3 text-[14px] text-muted-foreground transition-colors duration-150 hover:bg-white/[0.02] hover:text-foreground"
           >
-            More on the roadmap →
+            {tail.label}
+            <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </li>
       </ul>
@@ -265,110 +285,127 @@ function Databases() {
   );
 }
 
-type MarkProps = { className?: string; style?: React.CSSProperties };
-
-function NeonMark({ className, style }: MarkProps) {
+function Databases() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className} style={style}>
-      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="2.5" />
-      <path d="M8.5 16V8l7 8V8" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
-    </svg>
+    <div className={cn(WRAP, "space-y-16 pb-24 md:space-y-20 md:pb-32")}>
+      <LogoGrid
+        caption={
+          <>
+            <span className="text-foreground">Ten engines today,</span> from a local SQLite file to
+            ClickHouse.
+          </>
+        }
+        items={DATABASES}
+        tail={{ to: "/roadmap", label: "More on the roadmap" }}
+      />
+      <LogoGrid
+        caption={
+          <>
+            <span className="text-foreground">Eleven providers, one click.</span> Sign in and every
+            database on your account is ready to open.
+          </>
+        }
+        items={PROVIDERS}
+        tail={{ to: "/docs", label: "Or paste a URL" }}
+      />
+    </div>
   );
 }
 
-// Nile's own mark (thenile.dev/logo.svg), the same one the desktop app draws.
-function NileMark({ className, style }: MarkProps) {
+const SCRAMBLE_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#%&*+=?";
+const SCRAMBLE_MS = 420;
+
+/**
+ * One engine in the grid. On hover the name scrambles and settles left to
+ * right, the mark jitters into its brand color, and a soft light follows the
+ * pointer. With reduced motion only the color changes.
+ */
+function EngineCell({
+  name,
+  Icon,
+  color,
+  tag,
+}: {
+  name: string;
+  Icon: React.ElementType;
+  color: string;
+  tag?: string;
+}) {
+  // null shows the real name; a string is a frame of the scramble.
+  const [label, setLabel] = useState<string | null>(null);
+  const frame = useRef(0);
+  const settle = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const stop = () => {
+    cancelAnimationFrame(frame.current);
+    clearTimeout(settle.current);
+    setLabel(null);
+  };
+
+  useEffect(() => stop, []);
+
+  const scramble = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    stop();
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.max(0, Math.min((now - start) / SCRAMBLE_MS, 1));
+      if (progress >= 1) return setLabel(null);
+      const settled = Math.floor(progress * name.length);
+      setLabel(
+        Array.from(name, (ch, i) =>
+          i < settled || ch === " " || ch === "/"
+            ? ch
+            : SCRAMBLE_GLYPHS[Math.floor(Math.random() * SCRAMBLE_GLYPHS.length)],
+        ).join(""),
+      );
+      frame.current = requestAnimationFrame(tick);
+    };
+    frame.current = requestAnimationFrame(tick);
+    // A throttled or interrupted frame loop must never leave a scrambled name.
+    settle.current = setTimeout(stop, SCRAMBLE_MS + 120);
+  };
+
   return (
-    <svg
-      viewBox="0 0 23.6 29.5"
-      fill="currentColor"
-      aria-hidden="true"
-      className={className}
-      style={style}
+    <li
+      onPointerEnter={scramble}
+      onPointerLeave={stop}
+      onPointerMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty("--x", `${e.clientX - r.left}px`);
+        e.currentTarget.style.setProperty("--y", `${e.clientY - r.top}px`);
+      }}
+      style={{ "--brand": color } as React.CSSProperties}
+      className="group/engine relative flex h-20 items-center justify-center gap-2.5 overflow-hidden border-r border-b border-border px-3 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground md:h-24"
     >
-      <path d="M20.121 21.658C14.5515 21.0013 9.75863 17.4158 7.56726 12.2611C6.97966 10.8371 5.56944 9.83472 3.93571 9.83472C1.76277 9.83472 0 11.5975 0 13.7681C0 14.8534 0.437813 15.8397 1.15214 16.5494C2.87113 18.2684 2.87113 21.0635 1.15214 22.7825C0.444726 23.4899 0 24.4784 0 25.5637C0 27.7344 1.76277 29.4971 3.93341 29.4971C6.10404 29.4971 7.86681 27.7344 7.86681 25.5637C7.86681 24.4784 7.429 23.4922 6.71467 22.7825C5.44962 21.5174 5.11781 19.6694 5.71231 18.1025C10.3093 19.3376 14.1368 22.6166 16.0286 27.0707C16.6162 28.4948 18.0264 29.4971 19.6601 29.4971C21.8307 29.4971 23.5935 27.7344 23.5935 25.5637C23.5935 23.5452 22.0704 21.8861 20.1187 21.6603L20.121 21.658ZM22.4414 6.71467C23.1488 6.00726 23.5935 5.01872 23.5935 3.93341C23.5935 1.76277 21.8307 0 19.6601 0C17.4895 0 15.7267 1.76277 15.7267 3.93341C15.7267 5.01872 16.1645 6.00495 16.8789 6.71467C18.1439 7.97972 18.4757 9.82775 17.8812 11.3947C13.2842 10.1596 9.45677 6.88058 7.56495 2.42641C6.97736 1.00236 5.56944 0 3.93341 0C1.76277 0 0 1.76277 0 3.93341C0 5.95196 1.52313 7.61104 3.47485 7.83686C9.0443 8.48436 13.828 12.0721 16.0217 17.2268C16.6092 18.6508 18.0195 19.6532 19.6532 19.6532C21.8238 19.6532 23.5866 17.8904 23.5866 15.7198C23.5866 14.6345 23.1488 13.6483 22.4345 12.9385C20.7247 11.2288 20.7247 8.44058 22.4414 6.71467Z" />
-    </svg>
+      {/* Light that follows the pointer, tinted by the engine's brand color. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/engine:opacity-100"
+        style={{
+          background:
+            "radial-gradient(140px circle at var(--x, 50%) var(--y, 50%), color-mix(in oklab, var(--brand) 14%, transparent), transparent 70%)",
+        }}
+      />
+      <Icon className="engine-jitter relative size-[18px] shrink-0 transition-colors duration-200 group-hover/engine:text-[var(--brand)]" />
+      {/* The real name holds the width; the scrambled one is drawn over it. */}
+      <span className="relative font-medium">
+        <span className="invisible">{name}</span>
+        <span aria-hidden="true" className="absolute inset-0 whitespace-nowrap">
+          {label ?? name}
+        </span>
+        <span className="sr-only">{name}</span>
+      </span>
+      {tag && (
+        <span className="relative rounded-full bg-white/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
+          {tag}
+        </span>
+      )}
+    </li>
   );
 }
 
-// Same providers, order, and colours as the desktop app's "Connect with a provider".
-const PROVIDERS = [
-  { name: "Neon", Icon: NeonMark, color: "#00e599" },
-  { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e" },
-  { name: "Prisma Postgres", Icon: SiPrisma, color: "#6366f1" },
-  { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor" },
-  { name: "TiDB Cloud", Icon: SiTidb, color: "#e30c34" },
-  { name: "Turso", Icon: SiTurso, color: "#4ff8d2" },
-  { name: "Railway", Icon: SiRailway, color: "currentColor" },
-  { name: "Nile", Icon: NileMark, color: "#8a63f9" },
-  { name: "Upstash", Icon: SiUpstash, color: "#00e9a3" },
-  { name: "PostHog", Icon: SiPosthog, color: "#f9bd2b" },
-  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
-] as const;
-
-const CONNECT_STEPS = [
-  {
-    title: "Sign in with your provider",
-    body: "Authorize Stroke once from the connection screen.",
-  },
-  { title: "Pick a database", body: "Every database on your account shows up, ready to open." },
-  { title: "You're connected", body: "No connection strings to find, copy, or paste." },
-];
-
-function Connect() {
-  return (
-    <section id="connect" className="scroll-mt-16">
-      <div
-        className={cn(
-          WRAP,
-          "grid grid-cols-1 items-center gap-12 py-24 md:py-32 lg:grid-cols-2 lg:gap-20",
-        )}
-      >
-        <div>
-          <SectionHeader eyebrow="Connect" title="Sign in. Pick a database. You're in.">
-            <p>
-              Sign in with your database provider and see every database on your account, then
-              connect in one click. Everything else still takes a plain connection string.
-            </p>
-          </SectionHeader>
-          <ol className="mt-10 space-y-5">
-            {CONNECT_STEPS.map((step, i) => (
-              <li key={step.title} className="flex gap-4">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border text-xs font-medium tabular-nums">
-                  {i + 1}
-                </span>
-                <span className="pt-0.5">
-                  <span className="block text-sm font-medium">{step.title}</span>
-                  <span className="mt-0.5 block text-sm text-muted-foreground">{step.body}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        <div className="relative">
-          <div className="spotlight rounded-3xl border border-white/10 bg-[#050505] p-6 text-white [--spot-glow:oklch(1_0_0/0.07)] [--spot-line:oklch(1_0_0/0.55)] sm:p-8">
-            <p className="text-xs font-medium text-white/50">Connect with a provider</p>
-            <ul className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-              {PROVIDERS.map((p) => (
-                <li
-                  key={p.name}
-                  className="flex h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-sm font-medium"
-                >
-                  <p.Icon className="size-4.5 shrink-0" style={{ color: p.color }} />
-                  {p.name}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-5 border-t border-white/8 pt-4 text-xs leading-relaxed text-white/45">
-              Or paste a connection string for any of the ten engines Stroke supports.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+// ── Principles ───────────────────────────────────────────────────────────────
 
 const PILLARS = [
   {
@@ -387,288 +424,118 @@ const PILLARS = [
 
 function Pillars() {
   return (
-    <section className="border-b border-border/40">
-      <div
-        className={cn(
-          WRAP,
-          "grid grid-cols-1 divide-y divide-border/40 md:grid-cols-3 md:divide-x md:divide-y-0",
-        )}
-      >
+    <Section>
+      <SectionIntro title="A database client that respects your time.">
+        <p>
+          Stroke is built for the hours you spend inside your databases.{" "}
+          <strong>Three ideas shape every part of it.</strong>
+        </p>
+      </SectionIntro>
+      <ol className="mt-16 grid grid-cols-1 border-t border-border md:mt-24 md:grid-cols-3">
         {PILLARS.map((p, i) => (
-          <div
+          <li
             key={p.title}
-            className="flex flex-col gap-3 py-12 md:px-10 md:py-16 md:first:pl-0 md:last:pr-0"
+            className="border-b border-border py-10 md:border-b-0 md:border-l md:px-10 md:first:border-l-0 md:first:pl-0 md:last:pr-0"
           >
-            <span className="text-sm font-medium text-copper tabular-nums">0{i + 1}</span>
-            <h3 className="text-base font-semibold tracking-tight">{p.title}</h3>
-            <p className="text-sm leading-relaxed text-pretty text-muted-foreground">{p.body}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Tile({
-  icon: Icon,
-  title,
-  desc,
-  className,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  desc: string;
-  className?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "spotlight flex flex-col rounded-3xl border border-border bg-card p-7 transition-colors duration-150 hover:border-foreground/20 sm:p-8",
-        className,
-      )}
-    >
-      <Icon className="size-4 text-copper" strokeWidth={1.5} />
-      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
-      <p className="mt-1.5 max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
-        {desc}
-      </p>
-      {children && <div className="mt-6 flex flex-1 flex-col justify-end">{children}</div>}
-    </div>
-  );
-}
-
-/** A small app-like panel that frames the illustrations inside feature tiles. */
-function Panel({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        "overflow-hidden rounded-lg border border-border/60 bg-background font-mono text-[11.5px] leading-relaxed",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-1.5 border-b border-border/50 px-3 py-2">
-        <span className="size-2 rounded-full bg-border" />
-        <span className="size-2 rounded-full bg-border" />
-        <span className="size-2 rounded-full bg-border" />
-        <span className="ml-2 text-[10.5px] text-muted-foreground">{label}</span>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-const K = ({ children }: { children: React.ReactNode }) => (
-  <span className="text-copper">{children}</span>
-);
-
-const CHART_SHOTS = [
-  {
-    key: "bar",
-    label: "Bar",
-    src: "/features/charts-bar.webp",
-    alt: "A bar chart of article views by publish date, built from a query result, with a tooltip showing 195,621 views for May 2023",
-  },
-  {
-    key: "area",
-    label: "Area",
-    src: "/features/charts-area.webp",
-    alt: "The same query as an area chart of article views over time, with a tooltip showing 34,730 views for May 2023",
-  },
-  {
-    key: "step",
-    label: "Step",
-    src: "/features/charts-step.webp",
-    alt: "The same query as a step chart of article views over time, with a tooltip showing 220,106 views for May 2023",
-  },
-] as const;
-
-/** Real chart screenshots from the app, switchable with a small toggle. */
-function ChartShowcase() {
-  const [active, setActive] = useState<(typeof CHART_SHOTS)[number]["key"]>("bar");
-
-  return (
-    <div>
-      <fieldset className="mb-3 inline-flex rounded-lg border border-border/60 bg-background p-0.5">
-        <legend className="sr-only">Chart type</legend>
-        {CHART_SHOTS.map((shot) => (
-          <button
-            key={shot.key}
-            type="button"
-            aria-pressed={active === shot.key}
-            onClick={() => setActive(shot.key)}
-            className={cn(
-              "h-7 rounded-md px-3 text-xs font-medium transition-colors duration-150",
-              active === shot.key
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {shot.label}
-          </button>
-        ))}
-      </fieldset>
-      {/* Both images share one grid cell, so they cross-fade in place. */}
-      <div className="grid">
-        {CHART_SHOTS.map((shot) => (
-          <div
-            key={shot.key}
-            inert={active !== shot.key}
-            className={cn(
-              "transition-opacity duration-150 ease-out [grid-area:1/1]",
-              active === shot.key ? "opacity-100" : "pointer-events-none opacity-0",
-            )}
-          >
-            <FeatureShot src={shot.src} width={1472} height={718} alt={shot.alt} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function McpIllustration() {
-  return (
-    <Panel label="claude_desktop_config.json">
-      <pre className="overflow-x-auto p-3 text-foreground/90">
-        {"{\n"}
-        {"  "}
-        <K>"mcpServers"</K>
-        {": {\n    "}
-        <K>"stroke"</K>
-        {": {\n      "}
-        <K>"url"</K>
-        {': "http://127.0.0.1:4319/mcp"\n    }\n  }\n}'}
-      </pre>
-    </Panel>
-  );
-}
-
-function Features() {
-  return (
-    <section id="features" className="scroll-mt-16">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <SectionHeader eyebrow="Features" title="Everything you need. Nothing you don't." />
-          <Link
-            to="/features"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "self-start md:self-auto",
-            )}
-          >
-            See all features
-            <ArrowRightIcon className="size-3.5" />
-          </Link>
-        </div>
-
-        <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-16 lg:grid-cols-6">
-          <Tile
-            icon={TerminalIcon}
-            title="SQL console"
-            desc="A full editor with schema-aware autocomplete, formatting, execution time, and one-click CSV or JSON export."
-            className="sm:col-span-2 lg:col-span-4"
-          >
-            <FeatureShot
-              src="/features/sql-console.webp"
-              width={1473}
-              height={689}
-              alt="The Stroke query editor running SELECT * FROM events LIMIT 10, with ten typed result rows below: 10 rows in 16ms"
-            />
-          </Tile>
-          <Tile
-            icon={PlugIcon}
-            title="Built-in MCP server"
-            desc="Expose your database to Claude, Cursor, and other MCP clients with one-click config."
-            className="lg:col-span-2"
-          >
-            <McpIllustration />
-          </Tile>
-          <Tile
-            icon={TablePropertiesIcon}
-            title="Schema explorer"
-            desc="Tables, views, materialized views, foreign tables, indexes, and enums, all with live row counts."
-            className="lg:col-span-2"
-          />
-          <Tile
-            icon={SearchIcon}
-            title="Powerful data grid"
-            desc="Paginated browsing, resizable columns, multi-column sort, full-text search, and a visual filter builder."
-            className="lg:col-span-2"
-          />
-          <Tile
-            icon={PencilLineIcon}
-            title="Inline editing"
-            desc="Type-aware editors for text, numbers, booleans, enums, dates, UUIDs, and JSON."
-            className="lg:col-span-2"
-          />
-          <Tile
-            icon={BotIcon}
-            title="AI chat"
-            desc="An assistant with direct database access that runs queries, explains schemas, and generates SQL."
-            className="lg:col-span-3"
-          >
-            <FeatureShot
-              src="/features/ai-chat.webp"
-              width={1120}
-              height={836}
-              alt="The Stroke AI chat, connected to the public schema with 6 tables, asking what you would like to explore, with suggestions like Row counts for all tables, Foreign key relationships, and Spot duplicate records"
-            />
-          </Tile>
-          <Tile
-            icon={KeyboardIcon}
-            title="Command palette"
-            desc="Hit Cmd/Ctrl+K to jump anywhere. Every core view has a shortcut."
-            className="lg:col-span-3"
-          >
-            <FeatureShot
-              src="/features/command-palette.webp"
-              width={1920}
-              height={1080}
-              alt="The Stroke command palette open over the app, listing views like Table data, Find in database, SQL editor, ORM Runner, ER Diagram, and Schema Explorer with their keyboard shortcuts"
-            />
-          </Tile>
-          <Tile
-            icon={LayoutDashboardIcon}
-            title="Charts & dashboards"
-            desc="Turn any query result into a chart in one click, then pin it to a dashboard you can revisit any time."
-            className="sm:col-span-2 lg:col-span-4"
-          >
-            <ChartShowcase />
-          </Tile>
-          <Tile
-            icon={NetworkIcon}
-            title="Schema diagrams"
-            desc="Auto-generated ERDs of your tables and relationships with foreign-key navigation."
-            className="lg:col-span-2"
-          />
-          <Link
-            to="/features"
-            className="group flex flex-col justify-between gap-4 rounded-3xl border border-dashed border-border p-7 transition-colors hover:border-copper/50 hover:bg-muted/20 sm:px-8 lg:col-span-6 lg:flex-row lg:items-center"
-          >
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Exports, shortcuts, and the rest of what ships in the app.
+            <span className="font-mono text-[12px] text-faint tabular-nums">0{i + 1}</span>
+            <h3 className="mt-5 text-xl font-[560] tracking-[-0.02em]">{p.title}</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+              {p.body}
             </p>
-            <span className="flex items-center gap-1.5 text-sm font-medium">
-              Every feature
-              <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-        </div>
-      </div>
-    </section>
+          </li>
+        ))}
+      </ol>
+    </Section>
   );
 }
+
+// ── 1.0 Connect ──────────────────────────────────────────────────────────────
+
+const CONNECT_STEPS = [
+  {
+    icon: PlugIcon,
+    title: "Sign in with your provider",
+    body: "Authorize Stroke once from the connection screen. Neon, Supabase, Prisma Postgres, PlanetScale, TiDB Cloud, Turso, Railway, Nile, Upstash, PostHog, and Cloudflare D1.",
+  },
+  {
+    icon: DatabaseIcon,
+    title: "Pick a database",
+    body: "Every database on your account shows up, ready to open.",
+  },
+  {
+    icon: CheckIcon,
+    title: "You're connected",
+    body: "No connection strings to find, copy, or paste. Everything else still takes a plain connection string.",
+  },
+];
+
+function Connect() {
+  return (
+    <Section id="connect">
+      <SectionIntro
+        index="1.0"
+        eyebrow="Connect"
+        title="Sign in. Pick a database. You're in."
+        link={{ to: "/docs", label: "How connecting works" }}
+      >
+        <p>
+          Sign in with your database provider and see every database on your account, then{" "}
+          <strong>connect in one click.</strong> Any of the ten engines also takes a plain
+          connection string.
+        </p>
+      </SectionIntro>
+      <ConnectMockup className="mt-16 md:mt-24" />
+      <FeatureRow items={CONNECT_STEPS} />
+    </Section>
+  );
+}
+
+// ── 2.0 Query ────────────────────────────────────────────────────────────────
+
+const QUERY_FEATURES = [
+  {
+    icon: TerminalIcon,
+    title: "SQL console",
+    body: "Schema-aware autocomplete, formatting, and the execution time of every run.",
+  },
+  {
+    icon: DownloadIcon,
+    title: "Export",
+    body: "Any result to CSV or JSON in one click.",
+  },
+  {
+    icon: LayoutDashboardIcon,
+    title: "Charts & dashboards",
+    body: "Turn a result into a chart, then pin it to a dashboard you can revisit any time.",
+  },
+  {
+    icon: KeyboardIcon,
+    title: "Command palette",
+    body: "Hit Cmd/Ctrl+K to jump anywhere. Every core view has a shortcut.",
+  },
+];
+
+function QuerySection() {
+  return (
+    <Section id="query">
+      <SectionIntro
+        index="2.0"
+        eyebrow="Query"
+        title="Write SQL with the schema at hand."
+        link={{ to: "/features", label: "Every feature" }}
+      >
+        <p>
+          A full editor that knows your tables and columns as you type.{" "}
+          <strong>Run it, read the result, and keep going</strong> without leaving the keyboard.
+        </p>
+      </SectionIntro>
+      <QueryMockup className="mt-16 md:mt-24" />
+      <FeatureRow items={QUERY_FEATURES} />
+    </Section>
+  );
+}
+
+// ── 3.0 Views ────────────────────────────────────────────────────────────────
 
 interface ViewInfo {
   key: string;
@@ -677,13 +544,13 @@ interface ViewInfo {
   title: string;
   what: string;
   why: string;
-  shot?: { src: string; width: number; height: number; alt: string };
+  shot: { src: string; width: number; height: number; alt: string };
 }
 
 const VIEWS: ViewInfo[] = [
   {
     key: "table",
-    label: "Table view",
+    label: "Table",
     icon: Grid3x3Icon,
     title: "Scan, sort, and edit rows",
     what: "The grid: typed column headers, sort, filter, search, and inline editing, paging smoothly through a million rows.",
@@ -697,7 +564,7 @@ const VIEWS: ViewInfo[] = [
   },
   {
     key: "json",
-    label: "JSON view",
+    label: "JSON",
     icon: BracesIcon,
     title: "The rows as a JSON array",
     what: "Every row as a JSON object, with a JSONPath bar ($.field, [0], .items[*].name) to pull out just the part you need, and a column picker to hide the rest.",
@@ -710,16 +577,8 @@ const VIEWS: ViewInfo[] = [
     },
   },
   {
-    key: "record",
-    label: "Record view",
-    icon: ListIcon,
-    title: "One row, top to bottom",
-    what: "A single row laid out field by field, each with its name and type.",
-    why: "Wide tables. A row with forty columns reads down the page instead of scrolling sideways.",
-  },
-  {
     key: "text",
-    label: "Text view",
+    label: "Text",
     icon: StickyNoteIcon,
     title: "Copy-ready text in four formats",
     what: "The result as CSV, TSV, Markdown, or JSON Lines, with one click to copy or download it.",
@@ -733,7 +592,7 @@ const VIEWS: ViewInfo[] = [
   },
   {
     key: "chart",
-    label: "Chart view",
+    label: "Chart",
     icon: ChartLineIcon,
     title: "See the shape of the data",
     what: "Pick a category and a value column, optionally group by a third, then switch between bar, area, step, and more.",
@@ -747,7 +606,7 @@ const VIEWS: ViewInfo[] = [
   },
   {
     key: "erd",
-    label: "ERD view",
+    label: "ERD",
     icon: GitForkIcon,
     title: "How the tables connect",
     what: "The current table and the tables it references, with primary and foreign keys marked, 1:N and 1:1 links, zoom, and a minimap.",
@@ -761,7 +620,7 @@ const VIEWS: ViewInfo[] = [
   },
   {
     key: "map",
-    label: "Map view",
+    label: "Map",
     icon: MapIcon,
     title: "Geometry, on a map",
     what: "Geometry columns plotted on a world map and clustered, so a million points stay readable, with the SRID and live coordinates shown.",
@@ -775,32 +634,17 @@ const VIEWS: ViewInfo[] = [
   },
 ];
 
-const COUNT_WORDS = [
-  "zero",
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-];
-
 /** How long each view stays on stage while the section plays on its own. */
 const VIEW_DWELL_MS = 5000;
 
 function Views() {
-  // Only views with a real screenshot go on stage.
-  const views = VIEWS.filter((v) => v.shot);
   const [active, setActive] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const [hovered, setHovered] = useState(false);
   const [inView, setInView] = useState(false);
-  const section = useRef<HTMLElement>(null);
+  const section = useRef<HTMLDivElement>(null);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const view = views[active];
+  const view = VIEWS[active];
 
   useEffect(() => {
     const el = section.current;
@@ -813,7 +657,7 @@ function Views() {
   }, []);
 
   const choose = (i: number, focus = false) => {
-    const next = (i + views.length) % views.length;
+    const next = (i + VIEWS.length) % VIEWS.length;
     setAutoplay(false);
     setActive(next);
     if (focus) tabs.current[next]?.focus();
@@ -826,7 +670,7 @@ function Views() {
       ArrowLeft: active - 1,
       ArrowUp: active - 1,
       Home: 0,
-      End: views.length - 1,
+      End: VIEWS.length - 1,
     };
     if (e.key in keys) {
       e.preventDefault();
@@ -837,67 +681,61 @@ function Views() {
   const playing = autoplay && inView && !hovered;
 
   return (
-    <section ref={section} id="views" className="relative isolate scroll-mt-16 overflow-hidden">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader
-          eyebrow="Views"
-          title={`One result, ${COUNT_WORDS[views.length] ?? views.length} ways to read it.`}
-          center
-        >
+    <Section id="views">
+      <div ref={section}>
+        <SectionIntro index="3.0" eyebrow="Views" title="One result, six ways to read it.">
           <p>
-            Switch how any table or query result is shown, without running it again. Each view is
-            built for a different question.
+            Switch how any table or query result is shown, without running it again.{" "}
+            <strong>Each view is built for a different question.</strong>
           </p>
-        </SectionHeader>
+        </SectionIntro>
 
         {/* The switcher, styled after the app's own view menu. */}
-        <div className="mt-10 flex justify-center">
-          <div
-            role="tablist"
-            aria-label="Views"
-            className="flex max-w-full gap-1 overflow-x-auto rounded-full border border-border bg-card p-1"
-          >
-            {views.map((v, i) => {
-              const selected = i === active;
-              return (
-                <button
-                  key={v.key}
-                  ref={(el) => {
-                    tabs.current[i] = el;
-                  }}
-                  type="button"
-                  role="tab"
-                  id={`view-tab-${v.key}`}
-                  aria-selected={selected}
-                  aria-controls="view-panel"
-                  tabIndex={selected ? 0 : -1}
-                  onClick={() => choose(i)}
-                  onKeyDown={onKeyDown}
-                  className={cn(
-                    "relative flex h-9 shrink-0 items-center gap-2 overflow-hidden rounded-full px-4 text-sm whitespace-nowrap transition-colors duration-150",
-                    selected
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <v.icon className="size-4 shrink-0" strokeWidth={1.75} />
-                  {v.label.replace(" view", "")}
-                  {selected && autoplay && (
-                    <span
-                      key={`${v.key}-progress`}
-                      aria-hidden="true"
-                      onAnimationEnd={() => setActive((i + 1) % views.length)}
-                      style={{
-                        animationDuration: `${VIEW_DWELL_MS}ms`,
-                        animationPlayState: playing ? "running" : "paused",
-                      }}
-                      className="view-progress absolute inset-x-4 bottom-0.5 h-px origin-left rounded-full bg-copper"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+        <div
+          role="tablist"
+          aria-label="Views"
+          className="mt-16 flex max-w-full gap-1 overflow-x-auto rounded-xl border border-border bg-white/[0.02] p-1 md:mt-24 md:w-fit"
+        >
+          {VIEWS.map((v, i) => {
+            const selected = i === active;
+            return (
+              <button
+                key={v.key}
+                ref={(el) => {
+                  tabs.current[i] = el;
+                }}
+                type="button"
+                role="tab"
+                id={`view-tab-${v.key}`}
+                aria-selected={selected}
+                aria-controls="view-panel"
+                tabIndex={selected ? 0 : -1}
+                onClick={() => choose(i)}
+                onKeyDown={onKeyDown}
+                className={cn(
+                  "relative flex h-9 shrink-0 items-center gap-2 overflow-hidden rounded-lg px-3.5 text-[13px] whitespace-nowrap transition-colors duration-150",
+                  selected
+                    ? "bg-white/[0.08] text-foreground"
+                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground",
+                )}
+              >
+                <v.icon className="size-4 shrink-0" strokeWidth={1.75} />
+                {v.label}
+                {selected && autoplay && (
+                  <span
+                    key={`${v.key}-progress`}
+                    aria-hidden="true"
+                    onAnimationEnd={() => setActive((i + 1) % VIEWS.length)}
+                    style={{
+                      animationDuration: `${VIEW_DWELL_MS}ms`,
+                      animationPlayState: playing ? "running" : "paused",
+                    }}
+                    className="view-progress absolute inset-x-3 bottom-0.5 h-px origin-left rounded-full bg-foreground/70"
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* The stage: one app window, every view stacked in it, cross-fading in place. */}
@@ -909,148 +747,197 @@ function Views() {
           onPointerLeave={() => setHovered(false)}
           onFocus={() => setHovered(true)}
           onBlur={() => setHovered(false)}
-          className="mx-auto mt-8 max-w-5xl"
+          className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-14"
         >
-          <div className="spotlight rounded-[1.5rem] border border-border [--spot-x:70%]">
-            <div className="overflow-hidden rounded-[calc(1.5rem-1px)] bg-[#050505]">
-              <div className="flex items-center gap-1.5 border-b border-white/8 px-4 py-2.5">
-                <span className="size-2.5 rounded-full bg-white/15" />
-                <span className="size-2.5 rounded-full bg-white/15" />
-                <span className="size-2.5 rounded-full bg-white/15" />
-                <span className="ml-3 flex items-center gap-1.5 text-xs text-white/55">
-                  <view.icon className="size-3.5" strokeWidth={1.75} />
-                  {view.label}
-                </span>
-              </div>
-              <div className="grid">
-                {views.map((v, i) =>
-                  v.shot ? (
-                    <div
-                      key={v.key}
-                      inert={i !== active}
-                      className={cn(
-                        "transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] [grid-area:1/1]",
-                        i === active
-                          ? "scale-100 opacity-100"
-                          : "pointer-events-none scale-[1.01] opacity-0",
-                      )}
-                    >
-                      <FeatureShot {...v.shot} flush />
-                    </div>
-                  ) : null,
-                )}
-              </div>
+          <Panel>
+            <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-4 py-2.5">
+              <span className="size-2.5 rounded-full bg-white/12" />
+              <span className="size-2.5 rounded-full bg-white/12" />
+              <span className="size-2.5 rounded-full bg-white/12" />
+              <span className="ml-3 flex items-center gap-1.5 text-xs text-white/50">
+                <view.icon className="size-3.5" strokeWidth={1.75} />
+                {view.label} view
+              </span>
             </div>
-          </div>
+            <div className="grid">
+              {VIEWS.map((v, i) => (
+                <div
+                  key={v.key}
+                  inert={i !== active}
+                  className={cn(
+                    "transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] [grid-area:1/1]",
+                    i === active
+                      ? "scale-100 opacity-100"
+                      : "pointer-events-none scale-[1.01] opacity-0",
+                  )}
+                >
+                  <FeatureShot {...v.shot} flush />
+                </div>
+              ))}
+            </div>
+          </Panel>
 
           {/* Caption: what it is and why you would reach for it. */}
-          <div
-            key={view.key}
-            className="animate-fade-up mt-6 grid gap-4 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] sm:gap-10"
-          >
-            <div>
-              <h3 className="text-lg font-semibold tracking-tight">{view.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-pretty text-muted-foreground">
-                {view.what}
-              </p>
-            </div>
-            <div className="border-l-2 border-copper/60 pl-4">
-              <p className="text-[13px] font-medium text-copper">Why use it</p>
-              <p className="mt-1 text-sm leading-relaxed text-pretty text-foreground/85">
-                {view.why}
-              </p>
+          <div key={view.key} className="animate-fade-up lg:pt-4">
+            <h3 className="text-xl font-[560] tracking-[-0.02em]">{view.title}</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+              {view.what}
+            </p>
+            <div className="mt-6 border-t border-border pt-6">
+              <p className="text-[13px] font-medium text-foreground">Reach for it when</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-pretty text-soft">{view.why}</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
+
+// ── 4.0 Schema ───────────────────────────────────────────────────────────────
+
+function SchemaSection() {
+  return (
+    <Section id="schema">
+      <SectionIntro
+        index="4.0"
+        eyebrow="Schema"
+        title="One schema, six ways to see it."
+        link={{ to: "/features", hash: "schema", label: "Schema features" }}
+      >
+        <p>
+          Open the schema diagram on any connection and switch how it's drawn: an ER diagram, a
+          hierarchy, Mermaid for your docs, a tree of foreign keys, a data dictionary, or the DDL.{" "}
+          <strong>Try it below on a sample store.</strong>
+        </p>
+      </SectionIntro>
+      <SchemaShowcase className="mt-16 md:mt-24" />
+    </Section>
+  );
+}
+
+// ── 5.0 Editing ──────────────────────────────────────────────────────────────
+
+const EDITING_FEATURES = [
+  {
+    icon: ListChecksIcon,
+    title: "Every change waits for you",
+    body: "Edits, new rows, and deletes are staged and marked in the grid. Apply them together, or reset and they never happened.",
+  },
+  {
+    icon: MousePointerClickIcon,
+    title: "A right-click away",
+    body: "Filter by a value or exclude it, copy in another format, transform, duplicate, or preview the row as JSON, straight from the cell.",
+  },
+  {
+    icon: PencilLineIcon,
+    title: "Type-aware editors",
+    body: "For text, numbers, booleans, enums, dates, UUIDs, and JSON.",
+  },
+  {
+    icon: ReplaceIcon,
+    title: "Find and replace, previewed",
+    body: "Match case, whole word, or a regex, and see every cell that will change, old value beside new, before you replace.",
+  },
+];
 
 function Editing() {
   return (
-    <section id="editing" className="scroll-mt-16">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader eyebrow="Editing" title="Change data without holding your breath.">
-          <p>
-            Nothing touches the database until you say so. Every change is previewed first, and
-            every action on a cell is one right-click away.
-          </p>
-        </SectionHeader>
+    <Section id="editing">
+      <SectionIntro
+        index="5.0"
+        eyebrow="Editing"
+        title="Change data without holding your breath."
+        link={{ to: "/features", label: "Learn more" }}
+      >
+        <p>
+          <strong>Nothing touches the database until you say so.</strong> Every change is previewed
+          first, and every action on a cell is one right-click away.
+        </p>
+      </SectionIntro>
 
-        <div className="mt-14 grid grid-cols-1 gap-4 md:mt-16 lg:grid-cols-6">
-          <Tile
-            icon={MousePointerClickIcon}
-            title="Everything is a right-click away"
-            desc="Filter by a value or exclude it, copy in another format, transform, duplicate, or preview the row as JSON, straight from the cell."
-            className="lg:col-span-2"
-          >
-            <FeatureShot
-              src="/features/context-menu.webp"
-              width={864}
-              height={715}
-              alt="The cell context menu with Open row, Preview cell, Preview row JSON, Pin column, Edit, Copy as, Filter, Transform, Duplicate row, and Delete row, and the Filter submenu open"
-            />
-          </Tile>
-          <Tile
-            icon={BracesIcon}
-            title="Open any row as JSON"
-            desc="Expand a row in place to read every field, switch between tree and raw, and copy any value with one click."
-            className="lg:col-span-4"
-          >
-            <FeatureShot
-              src="/features/row-json.webp"
-              width={1477}
-              height={516}
-              alt="Row 8 expanded inline as a JSON tree with id, doc_id, chunk, source, content, tokens, and embedding, with Tree and Raw toggles and copy buttons"
-            />
-          </Tile>
-          <Tile
-            icon={ListChecksIcon}
-            title="Every change waits for you"
-            desc="Edits, new rows, and deletes are staged and marked right in the grid. Review them, then apply them together, or reset and they never happened."
-            className="lg:col-span-4"
-          >
-            <FeatureShot
-              src="/features/staged-edits.webp"
-              width={1472}
-              height={750}
-              alt="Staged changes in the openai_docs table: a new row at the top, a row marked for deletion in red, and a cell being edited with Stage change"
-            />
-          </Tile>
-          <Tile
-            icon={ReplaceIcon}
-            title="Find and replace, previewed"
-            desc="Pick a column, match case, whole word, or a regex, and see every cell that will change, old value beside new, before you replace."
-            className="lg:col-span-2"
-          >
-            <FeatureShot
-              src="/features/find-replace.webp"
-              width={960}
-              height={1000}
-              alt="Find and replace on the label column of geom_zoo: point replaced with updated, previewing 8 cells that will change, with match case, regex, and whole word options"
-            />
-          </Tile>
-        </div>
+      {/* The staged-changes grid, with the cell menu laid over its right edge. */}
+      <div className="relative mt-16 md:mt-24 md:pb-24">
+        <Panel className="md:w-[78%]">
+          <FeatureShot
+            src="/features/staged-edits.webp"
+            width={1472}
+            height={750}
+            alt="Staged changes in the openai_docs table: a new row at the top, a row marked for deletion in red, and a cell being edited with Stage change"
+            flush
+          />
+        </Panel>
+        <Panel className="mt-4 w-[78%] md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[36%]">
+          <FeatureShot
+            src="/features/context-menu.webp"
+            width={864}
+            height={715}
+            alt="The cell context menu with Open row, Preview cell, Preview row JSON, Pin column, Edit, Copy as, Filter, Transform, Duplicate row, and Delete row, and the Filter submenu open"
+            flush
+          />
+        </Panel>
       </div>
-    </section>
+
+      <FeatureRow items={EDITING_FEATURES} />
+    </Section>
   );
 }
 
+// ── 6.0 Agents ───────────────────────────────────────────────────────────────
+
+const AGENT_FEATURES = [
+  {
+    icon: PlugIcon,
+    title: "Built-in MCP server",
+    body: "Expose your database to Claude, Cursor, and other MCP clients with one-click config.",
+  },
+  {
+    icon: BotIcon,
+    title: "AI chat",
+    body: "An assistant with direct database access that runs queries, explains schemas, and generates SQL.",
+  },
+  {
+    icon: CodeIcon,
+    title: "Same schema, both ways",
+    body: "Agents and the in-app chat read the same schema you browse, so answers line up with what you see.",
+  },
+];
+
+function Agents() {
+  return (
+    <Section id="agents">
+      <SectionIntro
+        index="6.0"
+        eyebrow="AI and agents"
+        title="Hand your database to an agent."
+        link={{ to: "/docs/mcp", label: "Set up MCP" }}
+      >
+        <p>
+          Stroke ships an MCP server, so{" "}
+          <strong>Claude, Cursor, or any agent can read your schema and run queries</strong> in one
+          click. The same schema-aware AI chat lives right inside the app for you.
+        </p>
+      </SectionIntro>
+      <AgentsMockup className="mt-16 md:mt-24" />
+      <FeatureRow items={AGENT_FEATURES} />
+    </Section>
+  );
+}
+
+// ── Tour, reviews ────────────────────────────────────────────────────────────
+
 function Demo() {
   return (
-    <section className="border-b border-border/40">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader eyebrow="See it in action" title="A quick tour of Stroke" center>
-          <p>Connect, browse, query, and hand the same database to an agent.</p>
-        </SectionHeader>
-        <VideoDemo
-          videoId="xmeVKZShJtQ"
-          title="A quick tour of the Stroke database client"
-          className="mx-auto mt-14 max-w-5xl md:mt-16"
-        />
-      </div>
-    </section>
+    <Section>
+      <SectionIntro title="A quick tour of Stroke.">
+        <p>Connect, browse, query, and hand the same database to an agent.</p>
+      </SectionIntro>
+      <VideoDemo
+        videoId="xmeVKZShJtQ"
+        title="A quick tour of the Stroke database client"
+        className="mt-16 md:mt-24"
+      />
+    </Section>
   );
 }
 
@@ -1065,59 +952,38 @@ function Reviews() {
   if (!reviews || reviews.length === 0) return null;
 
   return (
-    <section id="reviews" className="scroll-mt-16">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader eyebrow="Reviews" title="What people say about Stroke" />
-
-        <div className="mt-14 gap-4 [column-fill:_balance] sm:columns-2 md:mt-16 lg:columns-3">
-          {reviews.map((r) => (
-            <figure
-              key={r.id}
-              className="mb-4 flex break-inside-avoid flex-col gap-4 rounded-3xl border border-border bg-card p-6 transition-colors duration-150 hover:border-foreground/20"
-            >
-              <blockquote className="text-sm leading-relaxed text-foreground/90">
-                “{r.body}”
-              </blockquote>
-              <figcaption className="mt-auto flex items-center gap-2.5">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-[10px] font-semibold text-muted-foreground uppercase ring-1 ring-border/60">
-                  {initialsFrom(r.authorName)}
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-xs font-medium">{r.authorName}</span>
-                  {r.title ? (
-                    <span className="block truncate text-[11px] text-muted-foreground">
-                      {r.title}
-                    </span>
-                  ) : null}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PerkList({ perks, accent = false }: { perks: string[]; accent?: boolean }) {
-  return (
-    <ul className="space-y-3 text-sm">
-      {perks.map((perk) => (
-        <li key={perk} className="flex items-start gap-3">
-          <span
-            className={cn(
-              "mt-px flex size-4.5 shrink-0 items-center justify-center rounded-full",
-              accent ? "bg-copper/15 text-copper" : "bg-foreground/8 text-foreground/70",
-            )}
+    <Section id="reviews">
+      <SectionIntro title="What people say about Stroke." />
+      <div className="mt-16 border-t border-border [column-fill:_balance] sm:columns-2 md:mt-20 lg:columns-3 lg:gap-12">
+        {reviews.map((r) => (
+          <figure
+            key={r.id}
+            className="flex break-inside-avoid flex-col gap-6 border-b border-border py-8"
           >
-            <CheckIcon className="size-3" strokeWidth={2.5} />
-          </span>
-          <span className="text-pretty text-muted-foreground">{perk}</span>
-        </li>
-      ))}
-    </ul>
+            <blockquote className="text-[17px] leading-[1.55] text-pretty text-soft">
+              “{r.body}”
+            </blockquote>
+            <figcaption className="flex items-center gap-3">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-muted-foreground uppercase ring-1 ring-border">
+                {initialsFrom(r.authorName)}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[13px] font-medium">{r.authorName}</span>
+                {r.title ? (
+                  <span className="block truncate text-[12px] text-muted-foreground">
+                    {r.title}
+                  </span>
+                ) : null}
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </Section>
   );
 }
+
+// ── Pricing ──────────────────────────────────────────────────────────────────
 
 function Plan({
   name,
@@ -1136,39 +1002,63 @@ function Plan({
   suffix: string;
   tagline: string;
   cta: React.ReactNode;
-  note: string;
+  note: React.ReactNode;
   perks: string[];
   featured?: boolean;
 }) {
-  return (
-    <div className={cn("relative flex flex-col p-7 sm:p-8")}>
-      {featured && (
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-copper to-transparent"
-        />
+  const body = (
+    <div
+      className={cn(
+        "relative flex h-full flex-col rounded-[calc(1rem-1px)] p-7 sm:p-8",
+        featured ? "bg-[#141516]" : "bg-card",
       )}
+    >
       <div className="flex h-6 items-center justify-between gap-3">
-        <h3 className="text-sm font-medium">{name}</h3>
+        <h3 className="text-[15px] font-medium">{name}</h3>
         {tag && (
-          <span className="rounded-full border border-copper/30 bg-copper/10 px-2 py-0.5 text-[11px] font-medium text-copper">
+          <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[11px] font-[510] text-soft">
             {tag}
           </span>
         )}
       </div>
-      <p className="mt-6 flex items-baseline gap-1.5">
-        <span className="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{price}</span>
-        <span className="text-sm text-muted-foreground">{suffix}</span>
+      <p className="mt-8 flex items-baseline gap-2">
+        <span className="text-[3rem] leading-none font-[510] tracking-[-0.03em] tabular-nums">
+          {price}
+        </span>
+        <span className="text-[15px] text-muted-foreground">{suffix}</span>
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">{tagline}</p>
+      <p className="mt-3 text-[15px] text-soft">{tagline}</p>
 
-      <div className="mt-7">{cta}</div>
-      <p className="mt-3 text-xs text-muted-foreground">{note}</p>
+      <ul className="mt-8 flex-1 space-y-3 border-t border-border pt-7 text-[14px]">
+        {perks.map((perk) => (
+          <li key={perk} className="flex items-start gap-3">
+            <CheckIcon
+              className={cn(
+                "mt-0.5 size-4 shrink-0",
+                featured ? "text-foreground" : "text-muted-foreground",
+              )}
+              strokeWidth={2}
+            />
+            <span className="text-pretty text-muted-foreground">{perk}</span>
+          </li>
+        ))}
+      </ul>
 
-      <div className="mt-7 border-t border-border/60 pt-6">
-        <p className="mb-4 text-xs font-medium text-muted-foreground">Includes</p>
-        <PerkList perks={perks} accent={featured} />
-      </div>
+      <div className="mt-10">{cta}</div>
+      <p className="mt-3 text-center text-[13px] text-muted-foreground">{note}</p>
+    </div>
+  );
+
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border",
+        featured
+          ? "border-white/[0.16] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]"
+          : "border-border",
+      )}
+    >
+      {body}
     </div>
   );
 }
@@ -1193,92 +1083,114 @@ const TEAM_PERKS = [
   "No seats to manage, no per-user fees",
 ];
 
-/** Pricing cards. Rendered on the landing page and as the /pricing page body. */
+const GUARANTEES = [
+  { title: "No renewals", body: "Pay once and keep it. Nothing comes due next year." },
+  { title: "No upsells", body: "No locked features, no paid upgrade later." },
+  { title: "Nothing to cancel", body: "There is no subscription to remember or forget." },
+  { title: "Free to try", body: "Every feature, no account or card needed." },
+];
+
+/** Pricing plans. Rendered on the landing page and as the /pricing page body. */
 export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
   const { user } = useAuth();
   const buyTo = user ? "/app/billing" : "/login";
 
   return (
-    <section id="pricing" className="scroll-mt-16">
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <SectionHeader eyebrow="Pricing" title="Pay once. Own it forever." center as={as}>
-          <p>
-            Most database clients now charge $100 or more a year, every year. I think a tool you use
-            every day should be one you own, so Stroke costs{" "}
-            <strong className="font-medium text-foreground">$9.99, once</strong>. That is the lowest
-            price I can offer and still keep development going.
-          </p>
-        </SectionHeader>
+    <Section id="pricing" border={as === "h2"}>
+      <SectionIntro eyebrow="Pricing" title="Pay once. Own it forever." as={as}>
+        <p>
+          Most database clients now charge $100 or more a year, every year. I think a tool you use
+          every day should be one you own, so Stroke costs <strong>$9.99, once</strong>. That is the
+          lowest price I can offer and still keep development going.
+        </p>
+      </SectionIntro>
 
-        <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 divide-y divide-border overflow-hidden rounded-3xl border border-border bg-card md:mt-16 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
-          <Plan
-            name="Try"
-            price="$0"
-            suffix="to start"
-            tagline="Take your time deciding."
-            cta={
-              <SmartDownloadButton
-                size="lg"
-                variant="outline"
-                alternates={false}
-                className="w-full"
-              />
-            }
-            note="No account or card needed."
-            perks={FREE_PERKS}
-          />
-          <Plan
-            name="Own"
-            tag="Pay once"
-            price="$9.99"
-            suffix="once"
-            tagline="One payment. Yours for good."
-            cta={
-              <Link
-                to={buyTo}
-                className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
+      <div className="mt-16 grid grid-cols-1 gap-4 md:mt-24 lg:grid-cols-3 lg:gap-5">
+        <Plan
+          name="Try"
+          price="$0"
+          suffix="to start"
+          tagline="Take your time deciding."
+          cta={
+            <SmartDownloadButton
+              size="lg"
+              variant="outline"
+              alternates={false}
+              className="w-full"
+            />
+          }
+          note="No account or card needed."
+          perks={FREE_PERKS}
+        />
+        <Plan
+          name="Own"
+          tag="Pay once"
+          price="$9.99"
+          suffix="once"
+          tagline="One payment. Yours for good."
+          cta={
+            <Link to={buyTo} className={cn(siteButton({ size: "lg" }), "w-full")}>
+              Buy Stroke
+            </Link>
+          }
+          note="One-time payment. No recurring charges."
+          perks={LICENSE_PERKS}
+          featured
+        />
+        <Plan
+          name="Team"
+          price="$99"
+          suffix="once"
+          tagline="One purchase, whole company."
+          cta={
+            // Team checkout is paused for now; teams buy by email instead.
+            <button
+              type="button"
+              disabled
+              className={cn(siteButton({ variant: "secondary", size: "lg" }), "w-full")}
+            >
+              Buy Team
+            </button>
+          }
+          note={
+            <>
+              Coming soon. To license your team now, email{" "}
+              <a
+                href="mailto:support@stroke.click?subject=Stroke%20Team%20license"
+                className="text-soft underline decoration-white/25 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/60"
               >
-                Buy Stroke
-              </Link>
-            }
-            note="One-time payment. No recurring charges."
-            perks={LICENSE_PERKS}
-            featured
-          />
-          <Plan
-            name="Team"
-            price="$99"
-            suffix="once"
-            tagline="One purchase, whole company."
-            cta={
-              <Link
-                to={buyTo}
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
-              >
-                Buy Team
-              </Link>
-            }
-            note="One-time payment. No per-seat billing."
-            perks={TEAM_PERKS}
-          />
-        </div>
-
-        <ul className="mx-auto mt-8 flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
-          {["No renewals", "No upsells", "Nothing to cancel", "Free to try"].map((item) => (
-            <li key={item} className="flex items-center gap-2">
-              <CheckIcon className="size-3.5 text-copper" strokeWidth={2.5} />
-              {item}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mx-auto mt-14 max-w-5xl">
-          <GiveawayCard />
-        </div>
+                support@stroke.click
+              </a>
+              .
+            </>
+          }
+          perks={TEAM_PERKS}
+        />
       </div>
-    </section>
+
+      <ul className="mt-12 grid grid-cols-1 border-t border-border sm:grid-cols-2 lg:grid-cols-4">
+        {GUARANTEES.map((g) => (
+          <li
+            key={g.title}
+            className="border-b border-border py-6 sm:odd:pr-8 sm:even:border-l sm:even:pl-8 lg:border-b-0 lg:border-l lg:px-7 lg:first:border-l-0 lg:first:pl-0 lg:odd:pr-7"
+          >
+            <p className="flex items-center gap-2 text-[14px] font-medium">
+              <CheckIcon className="size-4 text-foreground" strokeWidth={2.25} />
+              {g.title}
+            </p>
+            <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{g.body}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-24 md:mt-32">
+        <GiveawayCard />
+      </div>
+    </Section>
   );
 }
+
+// ── FAQ ──────────────────────────────────────────────────────────────────────
 
 const FAQ_ITEMS = [
   {
@@ -1303,7 +1215,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Can I move my license to a new machine?",
-    a: "Yes. Your license covers 2 devices at once, and you can deactivate an old device from your dashboard whenever you switch machines. Refunds are covered in the Terms of Service.",
+    a: "Yes. Your license covers 2 devices at once, and you can deactivate it in the app on your old machine whenever you switch, or email us if that machine is gone. Refunds are covered in the Terms of Service.",
   },
   {
     q: "Is Stroke open source?",
@@ -1314,45 +1226,47 @@ const FAQ_ITEMS = [
 /** FAQ accordion. Rendered on the landing page and the /pricing page. */
 export function Faq() {
   return (
-    <section id="faq" className="scroll-mt-16">
-      <div
-        className={cn(
-          WRAP,
-          "grid grid-cols-1 gap-10 py-24 md:py-32 lg:grid-cols-[1fr_1.6fr] lg:gap-16",
-        )}
-      >
+    <Section id="faq">
+      <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16 lg:gap-24">
         <div>
-          <SectionHeader eyebrow="FAQ" title="Questions, answered." />
-          <p className="mt-6 text-sm text-muted-foreground">
+          <h2 className="text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.03em] sm:text-[2.75rem] md:text-[3.25rem]">
+            Questions, answered.
+          </h2>
+          <p className="mt-6 text-[15px] text-muted-foreground">
             The fine print lives in the{" "}
-            <Link to="/terms" className="underline underline-offset-2 hover:text-foreground">
+            <Link to="/terms" className="underline underline-offset-4 hover:text-foreground">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+            <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
               Privacy Policy
             </Link>
             .
           </p>
         </div>
 
-        <div className="divide-y divide-border/50 border-y border-border/50">
+        <div className="divide-y divide-border border-y border-border">
           {FAQ_ITEMS.map((item, i) => (
             <details key={item.q} className="group" open={i === 0}>
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-medium transition-colors hover:text-copper [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[15px] font-medium transition-colors hover:text-soft [&::-webkit-details-marker]:hidden">
                 {item.q}
-                <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+                <PlusIcon
+                  className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45"
+                  strokeWidth={1.75}
+                />
               </summary>
-              <p className="pb-5 text-sm leading-relaxed text-pretty text-muted-foreground">
+              <p className="pb-6 text-[15px] leading-relaxed text-pretty text-muted-foreground">
                 {item.a}
               </p>
             </details>
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
+
+// ── Open source, closer ──────────────────────────────────────────────────────
 
 const OPEN_SOURCE_ITEMS = [
   {
@@ -1374,94 +1288,67 @@ const OPEN_SOURCE_ITEMS = [
 
 function OpenSource() {
   return (
-    <section id="open-source" className="scroll-mt-16">
-      <div
-        className={cn(WRAP, "grid grid-cols-1 items-center gap-12 py-24 md:py-32 lg:grid-cols-2")}
-      >
-        <div>
-          <SectionHeader eyebrow="Open source" title="The whole thing is on GitHub.">
-            <p>
-              Every line, Pro features included. Stroke holds your database credentials and connects
-              to your production systems, and you should not have to take anybody's word for what it
-              does with them. Read it.
-            </p>
-            <p>
-              Free to use, personally or at work. Not for resale, since that is what keeps it
-              funded. If it saves you an afternoon, a star genuinely helps other people find it.
-            </p>
-          </SectionHeader>
+    <Section id="open-source">
+      <SectionIntro eyebrow="Open source" title="The whole thing is on GitHub.">
+        <p>
+          Every line, Pro features included. Stroke holds your database credentials and connects to
+          your production systems, and{" "}
+          <strong>you should not have to take anybody's word for what it does with them.</strong>{" "}
+          Read it.
+        </p>
+        <p className="text-muted-foreground">
+          Free to use, personally or at work. Not for resale, since that is what keeps it funded.
+        </p>
+      </SectionIntro>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href={REPO_URL}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(buttonVariants({ size: "default" }), "gap-2")}
-            >
-              <StarIcon className="size-4" />
-              Star on GitHub
-            </a>
-            <a
-              href={`${REPO_URL}/blob/master/CONTRIBUTING.md`}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(buttonVariants({ variant: "outline", size: "default" }), "gap-2")}
-            >
-              <GitPullRequestIcon className="size-4" />
-              Contribute
-            </a>
-            <a
-              href={`${REPO_URL}/issues`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            >
-              Report a bug
-            </a>
-          </div>
-        </div>
-
-        <ul className="grid gap-3">
-          {OPEN_SOURCE_ITEMS.map((item) => (
-            <li
-              key={item.title}
-              className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
-            >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background">
-                <item.icon className="size-4 text-copper" strokeWidth={1.5} />
-              </span>
-              <span>
-                <span className="block text-sm font-medium">{item.title}</span>
-                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-                  {item.body}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-10 flex flex-wrap items-center gap-3 md:ml-[calc(50%+2rem)] lg:ml-[calc(50%+3rem)]">
+        <a href={REPO_URL} target="_blank" rel="noreferrer" className={siteButton()}>
+          <StarIcon className="size-4" />
+          Star on GitHub
+        </a>
+        <a
+          href={`${REPO_URL}/blob/master/CONTRIBUTING.md`}
+          target="_blank"
+          rel="noreferrer"
+          className={siteButton({ variant: "secondary" })}
+        >
+          <GitPullRequestIcon className="size-4" />
+          Contribute
+        </a>
+        <a
+          href={`${REPO_URL}/issues`}
+          target="_blank"
+          rel="noreferrer"
+          className={siteButton({ variant: "ghost" })}
+        >
+          Report a bug
+        </a>
       </div>
-    </section>
+
+      <FeatureRow items={OPEN_SOURCE_ITEMS} />
+    </Section>
   );
 }
 
 function ClosingCta() {
   return (
-    <section>
-      <div className={cn(WRAP, "py-24 md:py-32")}>
-        <div className="spotlight overflow-hidden rounded-3xl border border-border bg-card px-6 py-20 text-center [--spot-x:50%] sm:py-24">
-          <h2 className="text-2xl font-semibold tracking-tight text-balance sm:text-4xl">
-            Try Stroke on your own database.
-          </h2>
-          <BrushStroke className="mx-auto mt-4 h-2 w-24" />
-          <p className="mt-5 text-sm text-muted-foreground">
-            Free to download. $9.99 whenever you decide to keep it.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <SmartDownloadButton size="lg" variant="default" alternates={false} />
-            <Link to="/docs" className={buttonVariants({ variant: "ghost", size: "lg" })}>
-              Read the docs
-            </Link>
-          </div>
+    <section className="relative isolate overflow-hidden border-t border-border">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-full bg-[radial-gradient(45%_70%_at_50%_100%,rgb(255_255_255/0.06),transparent)]"
+      />
+      <div className={cn(WRAP, "flex flex-col items-center py-28 text-center md:py-40")}>
+        <h2 className="max-w-3xl text-[2.5rem] leading-[1.06] font-semibold tracking-[-0.03em] text-balance sm:text-5xl md:text-[4rem]">
+          Try Stroke on your own database.
+        </h2>
+        <p className="mt-6 text-lg text-soft">
+          Free to download. $9.99 whenever you decide to keep it.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <SmartDownloadButton size="lg" variant="default" align="center" alternates={false} />
+          <Link to="/docs" className={siteButton({ variant: "secondary", size: "lg" })}>
+            Read the docs
+          </Link>
         </div>
       </div>
     </section>

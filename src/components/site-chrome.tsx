@@ -4,9 +4,8 @@ import { Link } from "@tanstack/react-router";
 import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import { siteButton } from "#/components/page";
 import { StrokeIcon } from "#/components/stroke-icon";
-import { ThemeToggle } from "#/components/theme-toggle";
-import { Button, buttonVariants } from "#/components/ui/button";
 import { useAuth } from "#/lib/auth/hooks";
 import { changelogQueryOptions } from "#/lib/changelog";
 import { REPO_URL } from "#/lib/seo";
@@ -14,36 +13,15 @@ import { cn } from "#/lib/utils";
 
 export { REPO_URL };
 
-/**
- * The signature motif: a hand-drawn brush stroke, used under the hero
- * headline and echoed at smaller sizes across the site.
- */
-export function BrushStroke({
-  className,
-  animate = false,
-}: {
-  className?: string;
-  animate?: boolean;
-}) {
-  return (
-    <svg
-      viewBox="0 0 220 12"
-      fill="none"
-      aria-hidden="true"
-      preserveAspectRatio="none"
-      className={cn("text-copper", className)}
-    >
-      <path
-        d="M4 8.5C42 3.5 96 2.5 133 4.5c30 1.6 55 3 83 2"
-        stroke="currentColor"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        pathLength="1"
-        className={animate ? "stroke-draw" : undefined}
-      />
-    </svg>
-  );
-}
+const DOWNLOAD_LINKS = [
+  { os: "macos", label: "Stroke for Mac" },
+  { os: "windows", label: "Stroke for Windows" },
+  { os: "linux", label: "Stroke for Linux" },
+] as const;
+
+/** The one-line description of Stroke used in the footer and page metadata. */
+export const TAGLINE =
+  "Stroke is a native database client for engineers and analysts. Query, browse, and edit every database you run, in one fast app.";
 
 const NAV_LINKS = [
   { label: "Features", to: "/features" },
@@ -51,7 +29,6 @@ const NAV_LINKS = [
   { label: "Pricing", to: "/pricing" },
   { label: "Changelog", to: "/changelog" },
   { label: "Roadmap", to: "/roadmap" },
-  { label: "Download", to: "/download" },
 ] as const;
 
 export function SiteHeader() {
@@ -65,15 +42,15 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-6">
-        <div className="flex items-center gap-8">
-          <Link to="/" aria-label="Stroke home" className="flex items-center gap-2">
-            <StrokeIcon className="size-5" />
-            <span className="text-[15px] font-semibold tracking-tight">Stroke</span>
+    <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[rgb(11_11_11/0.8)] backdrop-blur-[20px]">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-6 md:px-8">
+        <div className="flex items-center gap-10">
+          <Link to="/" aria-label="Stroke home" className="flex items-center gap-2.5">
+            <StrokeIcon className="size-[22px]" />
+            <span className="text-[15px] font-[560] tracking-[-0.01em]">Stroke</span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+          <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main">
             {NAV_LINKS.map((link) => {
               const prefetch = link.to === "/changelog" ? prefetchChangelog : undefined;
               return (
@@ -82,11 +59,9 @@ export function SiteHeader() {
                   to={link.to}
                   onMouseEnter={prefetch}
                   onFocus={prefetch}
-                  className="rounded-lg px-2.5 py-1.5 text-sm transition-colors"
-                  activeProps={{ className: "bg-muted text-foreground" }}
-                  inactiveProps={{
-                    className: "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-                  }}
+                  className="rounded-md px-3 py-1.5 text-[13px] transition-colors"
+                  activeProps={{ className: "text-foreground" }}
+                  inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
                 >
                   {link.label}
                 </Link>
@@ -95,36 +70,38 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <a
             href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Stroke on GitHub"
             className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "hidden sm:inline-flex",
+              siteButton({ variant: "ghost", size: "sm" }),
+              "hidden w-8 px-0 sm:inline-flex",
             )}
           >
             <SiGithub className="size-4" />
           </a>
-          <ThemeToggle />
-          {user ? (
-            <Button render={<Link to="/app" />} nativeButton={false} size="sm">
-              Dashboard
-            </Button>
-          ) : (
-            <Button render={<Link to="/login" />} nativeButton={false} size="sm">
-              Sign in
-            </Button>
-          )}
+          <Link
+            to={user ? "/app" : "/login"}
+            className={cn(siteButton({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}
+          >
+            {user ? "Dashboard" : "Sign in"}
+          </Link>
+          <Link to="/download" className={siteButton({ size: "sm" })}>
+            Download
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative md:hidden")}
+            className={cn(
+              siteButton({ variant: "ghost", size: "sm" }),
+              "relative w-8 px-0 md:hidden",
+            )}
           >
             <MenuIcon
               className={cn(
@@ -146,28 +123,37 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Main"
-          className="border-t border-border/50 bg-background px-4 pt-2 pb-4 md:hidden"
+          className="border-t border-border bg-background px-4 pt-2 pb-4 md:hidden"
         >
           <ul className="grid gap-0.5">
-            {NAV_LINKS.map((link) => (
+            {[...NAV_LINKS, { label: "Download", to: "/download" } as const].map((link) => (
               <li key={link.to}>
                 <Link
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className="flex h-11 items-center rounded-lg px-3 text-[15px] transition-colors"
-                  activeProps={{ className: "bg-muted font-medium text-foreground" }}
-                  inactiveProps={{ className: "text-muted-foreground hover:bg-muted/60" }}
+                  activeProps={{ className: "bg-white/[0.05] text-foreground" }}
+                  inactiveProps={{ className: "text-muted-foreground hover:bg-white/[0.04]" }}
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
             <li>
+              <Link
+                to={user ? "/app" : "/login"}
+                onClick={() => setOpen(false)}
+                className="flex h-11 items-center rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-white/[0.04]"
+              >
+                {user ? "Dashboard" : "Sign in"}
+              </Link>
+            </li>
+            <li>
               <a
                 href={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-muted/60"
+                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-white/[0.04]"
               >
                 <SiGithub className="size-4" />
                 GitHub
@@ -180,120 +166,118 @@ export function SiteHeader() {
   );
 }
 
-const DOWNLOAD_LINKS = [
-  { os: "macos", label: "Stroke for Mac" },
-  { os: "windows", label: "Stroke for Windows" },
-  { os: "linux", label: "Stroke for Linux" },
-] as const;
+const FOOTER_LINK = "text-muted-foreground transition-colors hover:text-foreground";
+
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[13px] font-medium text-foreground">{title}</p>
+      <ul className="mt-4 space-y-3 text-[13px]">{children}</ul>
+    </div>
+  );
+}
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/40">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex flex-col justify-between gap-10 sm:flex-row">
-          <div className="max-w-xs">
-            <span className="flex items-center gap-2">
-              <StrokeIcon className="size-5" />
-              <span className="text-sm font-semibold tracking-tight">Stroke</span>
-            </span>
-            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-              Fast, elegant, and designed for engineers and analysts who care about their tools.
-              Rethink how you query, explore, and work with data.
+    <footer className="border-t border-border">
+      <div className="mx-auto max-w-[1200px] px-6 pt-16 pb-10 md:px-8 md:pt-20">
+        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
+            <Link to="/" aria-label="Stroke home" className="inline-flex items-center gap-2.5">
+              <StrokeIcon className="size-[22px]" />
+              <span className="text-[15px] font-[560] tracking-[-0.01em]">Stroke</span>
+            </Link>
+            <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-muted-foreground">
+              {TAGLINE}
             </p>
-            <BrushStroke className="mt-4 h-1.5 w-16" />
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 sm:gap-16">
-            <div>
-              <p className="text-xs font-medium tracking-wide text-foreground">Product</p>
-              <ul className="mt-3 space-y-2 text-[13px] text-muted-foreground">
-                <li>
-                  <Link to="/features" className="transition-colors hover:text-foreground">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/docs" className="transition-colors hover:text-foreground">
-                    Docs
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/pricing" className="transition-colors hover:text-foreground">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/giveaway" className="transition-colors hover:text-foreground">
-                    Weekly giveaway
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/download" className="transition-colors hover:text-foreground">
-                    Download
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/roadmap" className="transition-colors hover:text-foreground">
-                    Roadmap
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/changelog" className="transition-colors hover:text-foreground">
-                    Changelog
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href={`${REPO_URL}/issues`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors hover:text-foreground"
-                  >
-                    Report an issue
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-medium tracking-wide text-foreground">Download</p>
-              <ul className="mt-3 space-y-2 text-[13px] text-muted-foreground">
-                {DOWNLOAD_LINKS.map((d) => (
-                  <li key={d.os}>
-                    <Link
-                      to="/download/$os"
-                      params={{ os: d.os }}
-                      className="transition-colors hover:text-foreground"
-                    >
-                      {d.label}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link to="/docs/mcp" className="transition-colors hover:text-foreground">
-                    MCP setup
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-medium tracking-wide text-foreground">Legal</p>
-              <ul className="mt-3 space-y-2 text-[13px] text-muted-foreground">
-                <li>
-                  <Link to="/terms" className="transition-colors hover:text-foreground">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/privacy" className="transition-colors hover:text-foreground">
-                    Privacy Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <FooterColumn title="Product">
+            <li>
+              <Link to="/features" className={FOOTER_LINK}>
+                Features
+              </Link>
+            </li>
+            <li>
+              <Link to="/pricing" className={FOOTER_LINK}>
+                Pricing
+              </Link>
+            </li>
+            <li>
+              <Link to="/changelog" className={FOOTER_LINK}>
+                Changelog
+              </Link>
+            </li>
+            <li>
+              <Link to="/roadmap" className={FOOTER_LINK}>
+                Roadmap
+              </Link>
+            </li>
+            <li>
+              <Link to="/giveaway" className={FOOTER_LINK}>
+                Weekly giveaway
+              </Link>
+            </li>
+          </FooterColumn>
+
+          <FooterColumn title="Download">
+            <li>
+              <Link to="/download" className={FOOTER_LINK}>
+                Download Stroke
+              </Link>
+            </li>
+            {DOWNLOAD_LINKS.map((d) => (
+              <li key={d.os}>
+                <Link to="/download/$os" params={{ os: d.os }} className={FOOTER_LINK}>
+                  {d.label}
+                </Link>
+              </li>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="Resources">
+            <li>
+              <Link to="/docs" className={FOOTER_LINK}>
+                Docs
+              </Link>
+            </li>
+            <li>
+              <Link to="/docs/mcp" className={FOOTER_LINK}>
+                MCP setup
+              </Link>
+            </li>
+            <li>
+              <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={FOOTER_LINK}>
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
+                href={`${REPO_URL}/issues`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={FOOTER_LINK}
+              >
+                Report an issue
+              </a>
+            </li>
+          </FooterColumn>
+
+          <FooterColumn title="Legal">
+            <li>
+              <Link to="/terms" className={FOOTER_LINK}>
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link to="/privacy" className={FOOTER_LINK}>
+                Privacy Policy
+              </Link>
+            </li>
+          </FooterColumn>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border/40 pt-5 text-xs text-muted-foreground">
+        <div className="mt-16 flex flex-wrap items-center justify-between gap-3 text-xs text-faint">
           <span>© {new Date().getFullYear()} Stroke</span>
           <span>stroke.click</span>
         </div>

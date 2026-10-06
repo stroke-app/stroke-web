@@ -1,13 +1,9 @@
+import { SiApple, SiLinux } from "@icons-pack/react-simple-icons";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  DownloadIcon,
-  ExternalLinkIcon,
-  MonitorIcon,
-  ServerIcon,
-  TerminalIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon, DownloadIcon } from "lucide-react";
 
-import { buttonVariants } from "#/components/ui/button";
+import { WindowsLogo } from "#/components/download-targets";
+import { siteButton } from "#/components/page";
 import {
   type Arch,
   type GitHubAsset,
@@ -22,13 +18,13 @@ export const Route = createFileRoute("/_auth/app/downloads")({
 });
 
 const PLATFORM_GROUPS: {
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   os: OS;
   label: string;
   packages: { arch: Arch; ext: string; label: string; matcher: (a: GitHubAsset) => boolean }[];
 }[] = [
   {
-    icon: MonitorIcon,
+    icon: SiApple,
     os: "macos",
     label: "macOS",
     packages: [
@@ -47,7 +43,7 @@ const PLATFORM_GROUPS: {
     ],
   },
   {
-    icon: ServerIcon,
+    icon: WindowsLogo,
     os: "windows",
     label: "Windows",
     packages: [
@@ -66,7 +62,7 @@ const PLATFORM_GROUPS: {
     ],
   },
   {
-    icon: TerminalIcon,
+    icon: SiLinux,
     os: "linux",
     label: "Linux",
     packages: [
@@ -104,22 +100,40 @@ function formatBytes(b: number) {
   return `${(b / 1024 / 1024).toFixed(1)} MB`;
 }
 
+/** Fixed locale and zone, so the server and the browser print the same day. */
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 function DownloadsPage() {
   const { data: release, isLoading } = useLatestRelease();
   const currentPlatform = usePlatform();
 
   return (
-    <div className="mx-auto max-w-xl space-y-9">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-base font-semibold tracking-tight">Downloads</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {isLoading
-              ? "Fetching latest release…"
-              : release
-                ? `Latest: ${release.tag_name} · ${new Date(release.published_at).toLocaleDateString("en-CA")}`
-                : "Stroke Desktop for macOS, Windows, and Linux"}
+    <div className="mx-auto max-w-3xl">
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
+        <div className="min-w-0">
+          <h1 className="text-[1.75rem] md:text-[2rem]">Downloads</h1>
+          <p className="mt-3 text-[15px] text-muted-foreground">
+            {isLoading ? (
+              "Fetching latest release…"
+            ) : release ? (
+              <>
+                Latest: <span className="text-soft">{release.tag_name}</span>
+                <span aria-hidden="true" className="px-2 text-faint">
+                  ·
+                </span>
+                Released{" "}
+                <time dateTime={release.published_at}>{formatDate(release.published_at)}</time>
+              </>
+            ) : (
+              "Stroke Desktop for macOS, Windows, and Linux"
+            )}
           </p>
         </div>
         {release && (
@@ -127,96 +141,101 @@ function DownloadsPage() {
             href={release.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            className={siteButton({ variant: "secondary", size: "sm" })}
           >
-            <ExternalLinkIcon className="size-3.5" />
             Release notes
+            <ArrowUpRightIcon className="size-3.5" />
           </a>
         )}
-      </div>
+      </header>
 
-      {/* Platform groups */}
-      {PLATFORM_GROUPS.map(({ icon: Icon, os, label, packages }) => {
-        const available = release
-          ? packages.map((p) => ({ ...p, asset: release.assets.find(p.matcher) ?? null }))
-          : packages.map((p) => ({ ...p, asset: null }));
+      <div className="mt-12 space-y-12">
+        {PLATFORM_GROUPS.map(({ icon: Icon, os, label, packages }) => {
+          const available = release
+            ? packages.map((p) => ({ ...p, asset: release.assets.find(p.matcher) ?? null }))
+            : packages.map((p) => ({ ...p, asset: null }));
 
-        const hasAny = available.some((p) => p.asset !== null);
+          const hasAny = available.some((p) => p.asset !== null);
 
-        return (
-          <section key={os} className="space-y-2.5">
-            <div className="flex items-center gap-2">
-              <p className="font-mono text-[9px] font-medium tracking-widest text-muted-foreground/60 uppercase">
-                {label}
-              </p>
-              {currentPlatform?.os === os && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 font-mono text-[9px] font-medium tracking-widest text-emerald-500 uppercase">
-                  Your platform
-                </span>
-              )}
-            </div>
+          return (
+            <section key={os} aria-labelledby={`platform-${os}`}>
+              <div className="flex items-center gap-3 pb-4">
+                <h2 id={`platform-${os}`} className="flex items-center gap-2.5 text-xl">
+                  <Icon className="size-[17px] text-muted-foreground" />
+                  {label}
+                </h2>
+                {currentPlatform?.os === os && (
+                  <span className="rounded-full bg-white/[0.08] px-2.5 py-0.5 text-[12px] font-[510] text-soft">
+                    Your platform
+                  </span>
+                )}
+              </div>
 
-            <div className="overflow-hidden rounded-md border border-border/40">
-              {isLoading ? (
-                <div className="px-4 py-3 text-xs text-muted-foreground">Loading…</div>
-              ) : !hasAny ? (
-                <div className="px-4 py-3 text-xs text-muted-foreground">
-                  No packages available yet for this platform in the latest release.
-                </div>
-              ) : (
-                available
-                  .filter((p) => p.asset !== null)
-                  .map(({ asset, label: pkgLabel, arch }, i, arr) => {
-                    const isRecommended =
-                      currentPlatform?.os === os && currentPlatform.arch === arch;
-                    return (
-                      <a
-                        key={pkgLabel}
-                        href={asset!.browser_download_url}
-                        className={[
-                          "flex items-center justify-between px-4 py-3 transition-colors hover:bg-foreground/[0.025]",
-                          i < arr.length - 1 ? "border-b border-border/30" : "",
-                        ].join(" ")}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className="size-4 shrink-0 text-muted-foreground" />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">{pkgLabel}</span>
+              <ul className="divide-y divide-border border-y border-border">
+                {isLoading ? (
+                  <li className="py-4 text-[15px] text-muted-foreground">Loading…</li>
+                ) : !hasAny ? (
+                  <li className="py-4 text-[15px] text-muted-foreground">
+                    No packages available yet for this platform in the latest release.
+                  </li>
+                ) : (
+                  available
+                    .filter((p) => p.asset !== null)
+                    .map(({ asset, label: pkgLabel, arch }) => {
+                      const isRecommended =
+                        currentPlatform?.os === os && currentPlatform.arch === arch;
+                      return (
+                        <li key={pkgLabel} className="flex items-center justify-between gap-4 py-4">
+                          <div className="min-w-0">
+                            <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[15px] font-[510]">
+                              {pkgLabel}
                               {isRecommended && (
-                                <span className="rounded-full bg-foreground/8 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground uppercase">
-                                  recommended
+                                <span className="text-[13px] font-normal text-muted-foreground">
+                                  Recommended
                                 </span>
                               )}
-                            </div>
-                            <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                              {asset!.name} · {formatBytes(asset!.size)}
+                            </p>
+                            <p className="mt-1 truncate text-[13px] text-muted-foreground">
+                              <span className="font-mono text-[12px]">{asset!.name}</span>
+                              <span aria-hidden="true" className="px-1.5 text-faint">
+                                ·
+                              </span>
+                              <span className="tabular-nums">{formatBytes(asset!.size)}</span>
                             </p>
                           </div>
-                        </div>
-                        <DownloadIcon className="size-4 shrink-0 text-muted-foreground" />
-                      </a>
-                    );
-                  })
-              )}
-            </div>
-          </section>
-        );
-      })}
+                          <a
+                            href={asset!.browser_download_url}
+                            aria-label={`Download ${label} ${pkgLabel}`}
+                            className={siteButton({
+                              variant: isRecommended ? "primary" : "secondary",
+                              size: "sm",
+                            })}
+                          >
+                            <DownloadIcon className="size-3.5" />
+                            <span className="hidden sm:inline">Download</span>
+                          </a>
+                        </li>
+                      );
+                    })
+                )}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
 
-      {/* All releases link */}
-      <div className="flex items-center justify-between rounded-md border border-border/30 bg-foreground/[0.02] px-4 py-3">
-        <p className="text-xs text-muted-foreground">Older versions and pre-releases</p>
+      <p className="mt-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[15px] text-muted-foreground">
+        Older versions and pre-releases
         <a
           href={RELEASES_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-soft transition-colors hover:text-foreground"
         >
-          All releases
-          <ExternalLinkIcon className="size-3" />
+          All releases on GitHub
+          <ArrowUpRightIcon className="size-3.5" />
         </a>
-      </div>
+      </p>
     </div>
   );
 }
