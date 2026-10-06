@@ -1,29 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  ArrowRightIcon,
   ArrowUpRightIcon,
+  BookOpenIcon,
   CheckIcon,
   CopyIcon,
   EyeIcon,
   EyeOffIcon,
-  KeyRoundIcon,
+  HelpCircleIcon,
+  PlugIcon,
   ShieldCheckIcon,
-  ZapIcon,
+  SparklesIcon,
 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { SmartDownloadButton } from "#/components/download-button";
-import { buttonVariants } from "#/components/ui/button";
+import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
+import { siteButton } from "#/components/page";
 import { useAuth } from "#/lib/auth/hooks";
 import { billingQueryOptions, licenseQueryOptions } from "#/lib/billing/functions";
 import { cn } from "#/lib/utils";
 
 const RELEASES_URL = "https://github.com/stroke-app/stroke/releases";
 
-// Card shell and the well inset inside it. Concentric: 18px outer = 10px inner + 8px inset.
-const CARD = "rounded-2xl border border-border/60 bg-card";
+const CARD = "rounded-xl border border-border bg-card";
 const ICON_SWAP = "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)]";
 
 export const Route = createFileRoute("/_auth/app/")({
@@ -44,6 +46,33 @@ function formatDate(value: string | number | Date) {
   });
 }
 
+const QUICK_LINKS = [
+  {
+    to: "/docs" as const,
+    icon: BookOpenIcon,
+    title: "Getting started",
+    body: "Connect your first database in a minute.",
+  },
+  {
+    to: "/docs/mcp" as const,
+    icon: PlugIcon,
+    title: "Connect an agent",
+    body: "Hand Stroke's MCP server to Claude or Cursor.",
+  },
+  {
+    to: "/changelog" as const,
+    icon: SparklesIcon,
+    title: "What's new",
+    body: "Every release, with what changed.",
+  },
+  {
+    to: "/app/support" as const,
+    icon: HelpCircleIcon,
+    title: "Support",
+    body: "Questions, bugs, or a license problem.",
+  },
+];
+
 function Dashboard() {
   const { user } = useAuth();
   const billing = useQuery(billingQueryOptions());
@@ -53,22 +82,23 @@ function Dashboard() {
 
   const loading = billing.isPending || licenseQuery.isPending;
   const isPro = subscription?.status === "active";
+  const firstName = user?.name?.split(" ")[0];
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <header>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h1 className="text-2xl leading-tight font-medium tracking-[-0.02em] text-balance">
-            {user?.name}
-          </h1>
+        <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">
+          {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+        </h1>
+        <p className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[14px] text-muted-foreground">
+          <span className="break-all">{user?.email}</span>
           {!loading && <PlanBadge pro={isPro} />}
-        </div>
-        <p className="mt-1 text-sm break-words text-muted-foreground">{user?.email}</p>
+        </p>
       </header>
 
-      <div className="mt-8 flex flex-col gap-4">
+      <div className="mt-10 flex flex-col gap-4">
         {loading ? (
-          <div aria-hidden="true" className={cn(CARD, "h-48 animate-pulse bg-muted/40")} />
+          <div aria-hidden="true" className={cn(CARD, "h-52 animate-pulse bg-white/[0.02]")} />
         ) : isPro && license ? (
           <LicenseCard
             licenseKey={license.licenseKey}
@@ -86,36 +116,63 @@ function Dashboard() {
           />
         )}
 
-        <section className={cn(CARD, "p-5")}>
-          <h2 className="text-sm font-medium">Stroke for desktop</h2>
-          <p className="mt-1 text-sm text-muted-foreground">macOS, Windows, and Linux.</p>
-          <div className="mt-4 flex flex-wrap items-start gap-2">
+        <section className={cn(CARD, "p-6")}>
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-[15px] font-[510]">Stroke for desktop</h2>
+            <p className="text-[13px] text-muted-foreground">macOS, Windows, and Linux</p>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             <SmartDownloadButton size="default" variant={isPro ? "default" : "outline"} />
             <a
               href={RELEASES_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={buttonVariants({ variant: "ghost" })}
+              className={siteButton({ variant: "ghost" })}
             >
               All releases
               <ArrowUpRightIcon className="size-3.5" />
             </a>
           </div>
+          <BrewCommand className="mt-4 w-full max-w-md" />
         </section>
       </div>
+
+      <ul className="mt-10 grid grid-cols-1 border-t border-l border-border sm:grid-cols-2">
+        {QUICK_LINKS.map((link) => (
+          <li key={link.to} className="border-r border-b border-border">
+            <Link
+              to={link.to}
+              className="group flex h-full gap-4 p-5 transition-colors hover:bg-white/[0.02]"
+            >
+              <link.icon
+                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                strokeWidth={1.75}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1.5 text-[14px] font-[510]">
+                  {link.title}
+                  <ArrowRightIcon className="size-3.5 text-muted-foreground opacity-0 transition-[opacity,translate] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                </span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+                  {link.body}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 function PlanBadge({ pro }: { pro: boolean }) {
-  return pro ? (
-    <span className="inline-flex h-6 items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 text-xs font-medium whitespace-nowrap text-emerald-600 dark:text-emerald-400">
-      <ZapIcon className="size-3" />
-      Pro
-    </span>
-  ) : (
-    <span className="inline-flex h-6 items-center rounded-full bg-muted px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground">
-      Free
+  return (
+    <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.06] px-2 text-[12px] font-[510] text-soft">
+      <span
+        aria-hidden="true"
+        className={cn("size-1.5 rounded-full", pro ? "bg-[#4cb782]" : "bg-white/40")}
+      />
+      {pro ? "Pro" : "Free"}
     </span>
   );
 }
@@ -150,33 +207,36 @@ function LicenseCard({
     : recurring
       ? "Subscription"
       : "Lifetime";
-  const meta = [
-    term,
-    `${maxDevices} ${maxDevices === 1 ? "device" : "devices"}`,
-    since ? `Since ${formatDate(since)}` : null,
-  ].filter(Boolean);
+  const details = [
+    { label: "Plan", value: <span className="capitalize">{plan}</span> },
+    { label: "Term", value: term },
+    { label: "Devices", value: `Up to ${maxDevices}` },
+    ...(since ? [{ label: "Since", value: formatDate(since) }] : []),
+  ];
 
   return (
     <section className={CARD}>
-      <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-4">
-        <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-sm font-medium">
-            <KeyRoundIcon className="size-4 text-muted-foreground" />
-            <span className="capitalize">{plan}</span> license
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{meta.join(" · ")}</p>
-        </div>
-        <span className="inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 text-xs font-medium whitespace-nowrap text-emerald-600 dark:text-emerald-400">
-          <span className="size-1.5 rounded-full bg-current" />
+      <div className="flex items-center justify-between gap-4 px-6 pt-6">
+        <h2 className="text-[15px] font-[510]">Your license</h2>
+        <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full bg-[#4cb782]/10 px-2 text-[12px] font-[510] text-[#4cb782]">
+          <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
           Active
         </span>
       </div>
 
-      {/* The key text starts at 8px inset + 12px padding = the card's 20px text edge. */}
-      <div className="mx-2 flex items-center gap-1 rounded-lg bg-muted/60 py-1 pr-1 pl-3">
+      <dl className="mt-5 grid grid-cols-2 gap-y-4 px-6 sm:grid-cols-4">
+        {details.map((d) => (
+          <div key={d.label}>
+            <dt className="text-[12px] text-muted-foreground">{d.label}</dt>
+            <dd className="mt-1 text-[14px]">{d.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="mx-6 mt-6 flex items-center gap-1 rounded-lg border border-border bg-background py-1 pr-1 pl-3.5">
         <code
           className={cn(
-            "min-w-0 flex-1 py-1.5 font-mono text-sm text-foreground/90",
+            "min-w-0 flex-1 py-1.5 font-mono text-[13px] text-soft",
             revealed ? "break-all" : "truncate",
           )}
         >
@@ -190,7 +250,7 @@ function LicenseCard({
           aria-label={revealed ? "Hide license key" : "Show license key"}
           aria-pressed={revealed}
           title={revealed ? "Hide key" : "Show key"}
-          className="flex size-8 shrink-0 items-center justify-center self-start rounded-sm text-muted-foreground transition-[background-color,color,scale] duration-150 ease-out hover:bg-foreground/8 hover:text-foreground active:scale-[0.96]"
+          className="flex size-8 shrink-0 items-center justify-center self-start rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
         >
           <span className="relative">
             <EyeOffIcon
@@ -212,12 +272,12 @@ function LicenseCard({
         <button
           type="button"
           onClick={copyKey}
-          className="flex h-8 shrink-0 items-center gap-1.5 self-start rounded-sm px-2.5 text-sm text-muted-foreground transition-[background-color,color,scale] duration-150 ease-out hover:bg-foreground/8 hover:text-foreground active:scale-[0.96]"
+          className="flex h-8 shrink-0 items-center gap-1.5 self-start rounded-md px-2.5 text-[13px] text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
         >
           <span className="relative">
             <CheckIcon
               className={cn(
-                "absolute inset-0 size-4 text-emerald-500",
+                "absolute inset-0 size-4 text-[#4cb782]",
                 ICON_SWAP,
                 copied ? "blur-0 scale-100 opacity-100" : "scale-[0.25] opacity-0 blur-[4px]",
               )}
@@ -238,10 +298,17 @@ function LicenseCard({
         </button>
       </div>
 
-      <p className="px-5 pt-4 pb-5 text-sm text-pretty text-muted-foreground">
-        Open <span className="font-medium text-foreground">Stroke</span>, go to{" "}
-        <span className="font-medium text-foreground">Settings → License</span>, and paste your key
-        to activate.
+      <p className="px-6 pt-4 pb-6 text-[13px] text-pretty text-muted-foreground">
+        Open <span className="text-foreground">Stroke</span>, go to{" "}
+        <span className="text-foreground">Settings → License</span>, and paste your key to activate.
+        Manage devices on{" "}
+        <Link
+          to="/app/billing"
+          className="text-foreground underline decoration-white/25 underline-offset-[3px] hover:decoration-white/60"
+        >
+          License &amp; billing
+        </Link>
+        .
       </p>
     </section>
   );
@@ -250,44 +317,66 @@ function LicenseCard({
 /** Paid, but the key hasn't been issued yet (the payment webhook can lag). */
 function PendingLicenseCard() {
   return (
-    <section className={cn(CARD, "p-5")}>
-      <h2 className="text-sm font-medium">Your license is on its way</h2>
-      <p className="mt-1 text-sm text-pretty text-muted-foreground">
+    <section className={cn(CARD, "p-6")}>
+      <h2 className="text-[15px] font-[510]">Your license is on its way</h2>
+      <p className="mt-1.5 text-[14px] text-pretty text-muted-foreground">
         Your payment went through. The key usually appears within a minute.
       </p>
-      <Link to="/app/billing" className={cn(buttonVariants({ variant: "outline" }), "mt-4")}>
+      <Link to="/app/billing" className={cn(siteButton({ variant: "secondary" }), "mt-5")}>
         Check status
       </Link>
     </section>
   );
 }
 
+const PRO_PERKS = [
+  "Yours forever, nothing to cancel",
+  "Up to 2 devices at once",
+  "Every future update included",
+  "Priority support",
+];
+
 function UpsellCard({ lapsed }: { lapsed: string | null }) {
   return (
-    <section className={CARD}>
-      <div className="px-5 pt-5 pb-4">
-        <h2 className="text-sm font-medium">Stroke Pro, yours for life</h2>
-        <p className="mt-1 text-sm text-pretty text-muted-foreground">
-          One-time purchase. All features, all platforms, free updates forever.
-        </p>
-        {lapsed && (
-          <p className="mt-2 text-sm text-muted-foreground">
-            Previous plan: <span className="capitalize">{lapsed}</span>
+    <section className={cn(CARD, "overflow-hidden")}>
+      <div className="grid gap-8 p-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+        <div>
+          <h2 className="text-[15px] font-[510]">Stroke Pro</h2>
+          <p className="mt-3 flex items-baseline gap-2">
+            <span className="text-[2.5rem] leading-none font-[510] tracking-[-0.03em] tabular-nums">
+              $9.99
+            </span>
+            <span className="text-[14px] text-muted-foreground">once</span>
           </p>
-        )}
+          <p className="mt-2 text-[14px] text-pretty text-muted-foreground">
+            One payment. Every feature on every platform, yours for good.
+          </p>
+          {lapsed && (
+            <p className="mt-2 text-[13px] text-muted-foreground">
+              Previous plan: <span className="capitalize">{lapsed}</span>
+            </p>
+          )}
+        </div>
+        <ul className="space-y-2 text-[13px] text-muted-foreground">
+          {PRO_PERKS.map((perk) => (
+            <li key={perk} className="flex items-center gap-2">
+              <CheckIcon className="size-3.5 text-foreground" strokeWidth={2.25} />
+              {perk}
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border/60 px-5 py-4">
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border bg-white/[0.015] px-6 py-4">
+        <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
           <ShieldCheckIcon className="size-3.5 shrink-0" />
           Secure checkout via Dodo Payments
         </p>
         <Link
           to="/app/billing"
           onClick={() => posthog.capture("buy_license_clicked", { source: "app_home" })}
-          className={buttonVariants()}
+          className={siteButton()}
         >
-          <KeyRoundIcon className="size-3.5" />
-          Buy license
+          Buy Stroke · $9.99
         </Link>
       </div>
     </section>

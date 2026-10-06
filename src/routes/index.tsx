@@ -1,43 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { LandingPage } from "#/components/landing-page";
+import { TAGLINE } from "#/components/site-chrome";
+import { latestReleaseQueryOptions } from "#/lib/latest-release";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
-import { jsonLd, seo, SITE_IDENTITY, SITE_URL } from "#/lib/seo";
+import { ENGINES, seo, SITE_IDENTITY, softwareApplication } from "#/lib/seo";
 
-const APP = {
-  "@type": "SoftwareApplication",
-  "@id": `${SITE_URL}/#app`,
-  name: "Stroke",
-  publisher: { "@id": `${SITE_URL}/#organization` },
-  image: `${SITE_URL}/icon.png`,
-  screenshot: `${SITE_URL}/app-screenshot.png`,
-  operatingSystem: "macOS, Windows, Linux",
-  applicationCategory: "DeveloperApplication",
-  description:
-    "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more, with a built-in MCP server for AI agents.",
-  url: SITE_URL,
-  downloadUrl: `${SITE_URL}/download`,
-  offers: {
-    "@type": "Offer",
-    price: "9.99",
-    priceCurrency: "USD",
-  },
-};
+const DESCRIPTION = `Stroke is a native database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more. Query, browse, and edit every database you run in one fast app, with a built-in MCP server for AI agents.`;
+
+const APP = softwareApplication({
+  path: "/",
+  description: `${TAGLINE} It connects to ${ENGINES}, and ships a built-in MCP server so AI agents can query the same databases.`,
+});
 
 export const Route = createFileRoute("/")({
   // Await so approved reviews are in the SSR HTML (SEO + no layout shift),
   // not just the client-hydrated cache.
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(approvedReviewsQueryOptions());
+    // Reviews and the latest release render on the server (SEO, and the hero
+    // button shows its version without a flash).
+    await Promise.all([
+      context.queryClient.ensureQueryData(approvedReviewsQueryOptions()),
+      context.queryClient.ensureQueryData(latestReleaseQueryOptions()),
+    ]);
   },
-  head: () => ({
-    ...seo({
-      title: "Stroke · The database studio for agents and humans",
-      description:
-        "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, ClickHouse, DuckDB, and more, with a built-in MCP server for AI agents.",
+  head: () =>
+    seo({
+      title: "Stroke · Native database client for Postgres, MySQL, SQLite & more",
+      description: DESCRIPTION,
       path: "/",
+      schema: [...SITE_IDENTITY, APP],
     }),
-    scripts: [jsonLd([...SITE_IDENTITY, APP])],
-  }),
   component: LandingPage,
 });

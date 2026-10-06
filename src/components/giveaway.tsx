@@ -4,8 +4,7 @@ import { CheckIcon, GiftIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
-import { Eyebrow } from "#/components/page";
-import { buttonVariants } from "#/components/ui/button";
+import { Eyebrow, siteButton } from "#/components/page";
 import { $enterGiveaway, giveawayQueryOptions } from "#/lib/giveaway/functions";
 import { cn } from "#/lib/utils";
 
@@ -51,21 +50,23 @@ function Countdown({ iso }: { iso: string | undefined }) {
     { label: "min", value: left?.minutes },
   ];
   return (
-    <div className="grid grid-cols-3 gap-2" aria-live="off">
+    <div
+      className="grid grid-cols-3 divide-x divide-border rounded-xl border border-border bg-background/60"
+      aria-live="off"
+    >
       {units.map((u) => (
-        <div
-          key={u.label}
-          className="rounded-2xl border border-border bg-background px-3 py-3 text-center"
-        >
-          <p className="text-3xl font-medium tracking-[-0.03em] tabular-nums">
+        <div key={u.label} className="px-3 py-4 text-center">
+          <p className="text-[2.5rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">
             {u.value === undefined ? "--" : String(u.value).padStart(2, "0")}
           </p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{u.label}</p>
+          <p className="mt-2 text-[12px] text-muted-foreground">{u.label}</p>
         </div>
       ))}
     </div>
   );
 }
+
+const STATUS = "flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm";
 
 function EnterButton() {
   const queryClient = useQueryClient();
@@ -79,14 +80,16 @@ function EnterButton() {
     onError: () => toast.error("Couldn't enter you right now. Try again in a moment."),
   });
 
-  const wide = cn(buttonVariants({ variant: "default", size: "lg" }), "w-full");
+  const wide = cn(siteButton({ size: "lg" }), "w-full");
   const status = (text: string) => (
-    <p className="flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-border text-sm text-muted-foreground">
-      {text}
-    </p>
+    <p className={cn(STATUS, "border-border text-muted-foreground")}>{text}</p>
   );
 
-  if (!data) return <span className="block h-10 w-full animate-pulse rounded-2xl bg-muted" />;
+  if (!data) {
+    return (
+      <span className="block h-11 w-full animate-pulse rounded-lg bg-white/[0.05] motion-reduce:animate-none" />
+    );
+  }
   if (!data.signedIn) {
     return (
       <Link to="/login" className={wide}>
@@ -98,7 +101,7 @@ function EnterButton() {
   if (data.status === "unverified") return status("Verify your email to enter");
   if (data.entered) {
     return (
-      <p className="flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-copper/30 bg-copper/10 text-sm font-medium text-copper">
+      <p className={cn(STATUS, "border-copper/25 bg-copper/[0.07] font-medium text-copper")}>
         <CheckIcon className="size-4" strokeWidth={2.5} />
         You're in this week
       </p>
@@ -118,21 +121,28 @@ function EnterButton() {
 }
 
 /** The weekly free-license giveaway: countdown, entry count, last winner, and the enter button. */
-export function GiveawayCard({ showRulesLink = true }: { showRulesLink?: boolean }) {
+export function GiveawayCard({
+  showRulesLink = true,
+  headingAs: Heading = "h3",
+}: {
+  showRulesLink?: boolean;
+  /** Heading level for the card's title, to fit the page outline it sits in. */
+  headingAs?: "h2" | "h3";
+}) {
   const { data } = useQuery(giveawayQueryOptions());
 
   return (
-    <div className="spotlight grid grid-cols-1 items-center gap-10 rounded-3xl border border-border bg-card p-7 [--spot-x:30%] sm:p-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
-      <div>
+    <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-border bg-card lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+      <div className="flex flex-col p-7 sm:p-10">
         <Eyebrow>Weekly giveaway</Eyebrow>
-        <h3 className="mt-3 text-2xl leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl">
+        <Heading className="mt-5 text-[1.75rem] leading-[1.1] font-semibold tracking-[-0.03em] text-balance sm:text-[2rem]">
           Or win it. One free license, every week.
-        </h3>
-        <p className="mt-3 max-w-md text-sm leading-relaxed text-pretty text-muted-foreground">
+        </Heading>
+        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-pretty text-soft">
           Enter once a week with your Stroke account. Every Monday one entrant is drawn at random
           and gets a lifetime license by email, the same one $9.99 buys.
         </p>
-        <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+        <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground lg:mt-auto lg:pt-10">
           <li>
             <span className="font-medium text-foreground tabular-nums">
               {data?.entries ?? "--"}
@@ -149,7 +159,7 @@ export function GiveawayCard({ showRulesLink = true }: { showRulesLink?: boolean
             <li>
               <Link
                 to="/giveaway"
-                className="underline-offset-4 hover:text-foreground hover:underline"
+                className="underline decoration-white/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/50"
               >
                 How it works
               </Link>
@@ -158,13 +168,13 @@ export function GiveawayCard({ showRulesLink = true }: { showRulesLink?: boolean
         </ul>
       </div>
 
-      <div>
-        <p className="mb-3 text-xs font-medium text-muted-foreground">Next draw in</p>
+      <div className="border-t border-border bg-white/[0.012] p-7 sm:p-10 lg:border-t-0 lg:border-l">
+        <p className="mb-3 text-[13px] text-muted-foreground">Next draw in</p>
         <Countdown iso={data?.drawAt} />
         <div className="mt-4">
           <EnterButton />
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">
           {data
             ? `Drawn ${DRAW_DATE.format(new Date(data.drawAt))}, 00:00 UTC. One entry per account.`
             : "One entry per account, drawn every Monday."}

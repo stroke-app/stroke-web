@@ -3,6 +3,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+/* Inter (OFL) for the marketing site, the typeface Raycast and Linear set
+   their sites in. The signed-in app keeps Geist. */
+@import "@fontsource-variable/inter";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -62,6 +65,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-copper: var(--copper);
+  --color-soft: var(--soft);
+  --color-faint: var(--faint);
+  --color-raised: var(--raised);
 }
 
 :root {
@@ -105,14 +111,15 @@
   /* The dark theme's amber (#ffc107), dropped to a lightness that holds text
      contrast on white. */
   --copper: oklch(0.55 0.125 62);
-  --spot-line: oklch(0 0 0 / 0.28);
-  --spot-glow: oklch(0 0 0 / 0.04);
+  --soft: oklch(0.3 0 0);
+  --faint: oklch(0.6 0 0);
+  --raised: oklch(0.97 0 0);
 }
 
 .dark {
   /* True black, the way Resend does it: the page is #000, cards sit barely
-     above it, and structure comes from faint alpha borders and a spotlight on
-     the top edge rather than drop shadows. */
+     above it, and structure comes from faint alpha borders rather than drop
+     shadows. */
   --background: oklch(0 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.075 0 0);
@@ -146,37 +153,118 @@
   --sidebar-ring: oklch(0.556 0 0);
   /* Amber accent (#ffc107), vivid on black. */
   --copper: oklch(0.844 0.172 84.9);
-  --spot-line: oklch(1 0 0 / 0.55);
-  --spot-glow: oklch(1 0 0 / 0.07);
+  --soft: oklch(0.86 0 0);
+  --faint: oklch(0.55 0 0);
+  --raised: oklch(0.12 0 0);
 }
 
-/* Spotlight: a short bright highlight on a card's top border with a soft
-   light falling beneath it. Decoration only, so it lives in pseudo-elements;
-   the card needs no extra markup. --spot-x moves the highlight along the edge. */
-.spotlight {
-  position: relative;
-  isolation: isolate;
+/* The marketing site: dark only, in the Linear manner. A near-black page with
+   the faintest cool tint, four steps of text (primary, soft, muted, faint),
+   surfaces that rise in small steps, and hairlines of white at low alpha. The
+   amber accent stays, used sparingly. Applied by the `site` class on the
+   marketing shell, so the signed-in app keeps its own themes. */
+.site {
+  --background: #08090a;
+  --foreground: #f7f8f8;
+  --soft: #d0d6e0;
+  --muted-foreground: #8a8f98;
+  --faint: #62666d;
+  --card: #0f1011;
+  --card-foreground: #f7f8f8;
+  --raised: #141516;
+  --popover: #141516;
+  --popover-foreground: #f7f8f8;
+  --primary: #f7f8f8;
+  --primary-foreground: #08090a;
+  --secondary: #1c1d1f;
+  --secondary-foreground: #f7f8f8;
+  --muted: #141516;
+  --accent: #1c1d1f;
+  --accent-foreground: #f7f8f8;
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.1);
+  --ring: rgb(255 255 255 / 0.35);
+  --copper: oklch(0.844 0.172 84.9);
+  color-scheme: dark;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Inter Variable", "Geist Variable", system-ui, sans-serif;
 }
-.spotlight::before,
-.spotlight::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  left: var(--spot-x, 62%);
-  translate: -50% 0;
+/* Marketing headlines follow Linear's title scale: Inter at weight 510,
+   -0.022em tracking, tight leading. Unlayered on purpose, so it sets every
+   page's headings the same way whatever weight and tracking utilities they
+   carry. */
+.site h1,
+.site h2 {
+  font-weight: 510;
+  letter-spacing: -0.022em;
+  line-height: 1.06;
 }
-.spotlight::before {
-  top: 0;
-  width: min(34%, 22rem);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--spot-line), transparent);
+html:has(.site),
+body:has(.site) {
+  background-color: #08090a;
+  color-scheme: dark;
 }
-.spotlight::after {
-  top: 0;
-  z-index: -1;
-  width: min(44%, 30rem);
-  height: 14rem;
-  background: radial-gradient(50% 100% at 50% 0%, var(--spot-glow), transparent);
+
+/* Sections rise into place as they scroll into view: each direct child of a
+   `.reveal` container fades up over the first part of its entry. Pure CSS
+   (scroll-driven animations); browsers without them show everything as is. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 28px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal > * {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+/* Every image and coded mockup (`.mono-shot`) on the marketing site is shown
+   in black and white: grayscale, a touch more contrast, slightly dimmed so it
+   sits in the dark page. It stays that way on hover; only the zoom lightbox
+   shows the original colors, for someone inspecting a screenshot. */
+.site img,
+.site .mono-shot {
+  filter: grayscale(1) contrast(1.12) brightness(0.9);
+}
+.site dialog[open] img {
+  filter: none;
+}
+
+/* Edge fades for product mockups: the UI dissolves into the page instead of
+   ending at a hard border. Combine one axis class with the other freely. */
+.fade-r {
+  mask-image: linear-gradient(to right, black 62%, transparent);
+}
+.fade-b {
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
+}
+.fade-rb {
+  mask-image:
+    linear-gradient(to right, black 62%, transparent),
+    linear-gradient(to bottom, black 55%, transparent);
+  mask-composite: intersect;
+}
+/* For a front panel that bleeds off the right edge: only its last stretch fades,
+   so the content inside stays fully legible. */
+.fade-rb-soft {
+  mask-image:
+    linear-gradient(to right, black 80%, transparent),
+    linear-gradient(to bottom, black 62%, transparent);
+  mask-composite: intersect;
+}
+.fade-x {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
 }
 
 /* Views switcher: the active tab's progress line fills over the dwell time,
@@ -242,21 +330,6 @@ html:has(dialog.lightbox[open]) {
   overflow: hidden;
 }
 
-/* Signature brush stroke: draws itself under the hero headline on load. */
-@keyframes stroke-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.stroke-draw {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-
 /* Staggered entrance: content fades and rises into place. Opt-in per element
    with `.animate-fade-up` plus an inline animation-delay for the stagger. */
 @keyframes fade-up {
@@ -276,6 +349,36 @@ html:has(dialog.lightbox[open]) {
   }
 }
 
+/* Engine grid: the mark shivers for a moment when its cell is hovered. */
+@keyframes engine-jitter {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  20% {
+    translate: -1px 1px;
+    rotate: -6deg;
+  }
+  40% {
+    translate: 1px -1px;
+    rotate: 5deg;
+  }
+  60% {
+    translate: -1px 0;
+    rotate: -3deg;
+  }
+  80% {
+    translate: 1px 1px;
+    rotate: 2deg;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .group\/engine:hover .engine-jitter {
+    animation: engine-jitter 360ms ease-out;
+  }
+}
+
 /* Editor caret inside the app-window mock. */
 @keyframes caret-blink {
   0%,
@@ -290,12 +393,6 @@ html:has(dialog.lightbox[open]) {
 
 .caret-blink {
   animation: caret-blink 1.1s steps(1) infinite;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .stroke-draw {
-    animation: stroke-draw 0.9s ease-out 0.35s backwards;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

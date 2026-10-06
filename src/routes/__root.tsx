@@ -6,6 +6,7 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { PostHogProvider } from "#/components/posthog-provider";
+import { TAGLINE } from "#/components/site-chrome";
 import { ThemeProvider } from "#/components/theme-provider";
 import { Toaster } from "#/components/ui/sonner";
 import type { AuthQueryResult } from "#/lib/auth/queries";
@@ -28,15 +29,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     // Default social/meta tags; every public route overrides them via seo().
     // Canonical links are per-route only, so they aren't emitted here.
     const base = seo({
-      title: "Stroke · A fast, native desktop database client",
-      description:
-        "Fast, elegant, and designed for engineers and analysts who care about their tools. Rethink how you query, explore, and work with data. A native database client for PostgreSQL, MySQL, SQLite, ClickHouse, DuckDB, and more.",
+      title: "Stroke · Native database client for Mac, Windows & Linux",
+      description: `${TAGLINE} Works with PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more.`,
       path: "/",
     });
     return {
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
+        // The marketing site is dark only; the signed-in app can override per route.
+        { name: "theme-color", content: "#08090a" },
         ...base.meta,
       ],
       links: [
@@ -58,10 +60,6 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
     // suppress since we're updating the "dark" class in ThemeProvider
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Rendered directly: TanStack head() dedupes meta by name, which
-            would drop one of the two media-scoped theme-color tags. */}
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
         <HeadContent />
       </head>
       <body>

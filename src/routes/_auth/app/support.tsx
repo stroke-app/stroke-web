@@ -1,166 +1,194 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  ArrowRightIcon,
+  ArrowUpRightIcon,
   BookOpenIcon,
-  BugIcon,
-  ExternalLinkIcon,
+  LightbulbIcon,
   MailIcon,
-  MessageCircleIcon,
-  ZapIcon,
+  PlugIcon,
+  PlusIcon,
+  SparklesIcon,
 } from "lucide-react";
+
+import { SUPPORT_EMAIL } from "#/components/legal";
+import { siteButton } from "#/components/page";
+import { REPO_URL } from "#/components/site-chrome";
 
 export const Route = createFileRoute("/_auth/app/support")({
   component: SupportPage,
 });
 
-const GITHUB_URL = "https://github.com/stroke-app/stroke";
-const DISCORD_URL = "https://discord.gg/stroke";
-const EMAIL = "support@stroke.click";
-const DOCS_URL = "https://stroke.click/docs";
-
-const FAQ: { q: string; a: string }[] = [
+// Every answer here matches the Terms, the pricing page, and the app itself.
+const FAQ: { q: string; a: React.ReactNode }[] = [
   {
     q: "How do I activate my license?",
-    a: "Open Stroke → Settings → License, paste your key, and click Activate. The key is tied to your email so it works across up to 5 devices.",
+    a: (
+      <>
+        Copy your key from the <Link to="/app">dashboard</Link>, then open Stroke, go to Settings →
+        License, and paste it.
+      </>
+    ),
   },
   {
-    q: "Can I use Stroke on multiple machines?",
-    a: "Yes. Pro licenses support up to 5 simultaneous activations. Deactivate a device in Settings → License → Manage Activations.",
+    q: "How many devices can I use?",
+    a: (
+      <>
+        A license is active on up to 2 devices at a time. To move it to a new machine, deactivate it
+        in Stroke on the old one (Settings → License). If that machine is gone, email{" "}
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we'll free the slot.
+      </>
+    ),
   },
   {
-    q: "What databases does Stroke support?",
-    a: "PostgreSQL, MySQL, SQLite, MongoDB, and Redis are fully supported. CockroachDB, PlanetScale, and Turso work via their respective Postgres-compatible drivers.",
+    q: "I paid but don't see a license key.",
+    a: (
+      <>
+        Keys usually appear on your dashboard within a minute of payment. If it's still missing
+        after a few minutes, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the
+        address on your account.
+      </>
+    ),
   },
   {
-    q: "How does the MCP server work?",
-    a: "Stroke runs a local MCP server on port 51025 (configurable). Claude, Cursor, and any MCP-compatible AI tool can connect to it to query your database directly.",
+    q: "Which databases does Stroke support?",
+    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is in beta.",
   },
   {
-    q: "I paid but didn't receive a license key.",
-    a: "Go to Dashboard. Your key is generated as soon as the payment clears, usually within seconds. If it's still missing after 5 minutes, use the Refresh button on the billing confirmation page or email us.",
+    q: "How do I connect Claude or Cursor?",
+    a: (
+      <>
+        Stroke runs an MCP server on your machine at <code>http://127.0.0.1:4319/mcp</code>. The{" "}
+        <Link to="/docs/mcp">MCP guide</Link> has the config for each client.
+      </>
+    ),
   },
   {
-    q: "Is there a refund policy?",
-    a: "Yes. If Stroke doesn't work as described on your platform within 14 days of purchase, we'll issue a full refund, no questions asked.",
+    q: "Something went wrong with my purchase.",
+    a: (
+      <>
+        A duplicate charge, a mistake at checkout, or a key that won't activate: email us within 14
+        days and we'll make it right, as the <Link to="/terms">Terms</Link> say.
+      </>
+    ),
   },
 ];
 
+const GUIDES = [
+  {
+    to: "/docs" as const,
+    icon: BookOpenIcon,
+    title: "Getting started",
+    body: "Install Stroke and connect your first database.",
+  },
+  {
+    to: "/docs/mcp" as const,
+    icon: PlugIcon,
+    title: "Connect an agent",
+    body: "Set up the MCP server for Claude, Cursor, or any MCP client.",
+  },
+  {
+    to: "/changelog" as const,
+    icon: SparklesIcon,
+    title: "What's new",
+    body: "Every release, and what changed in it.",
+  },
+];
+
+const ROW =
+  "group flex items-center gap-4 py-4 transition-colors hover:bg-white/[0.02] sm:-mx-3 sm:px-3 sm:rounded-lg";
+
 function SupportPage() {
   return (
-    <div className="mx-auto max-w-xl space-y-9">
-      {/* Header */}
-      <div>
-        <h1 className="text-base font-semibold tracking-tight">Support</h1>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Find help, report bugs, or get in touch.
+    <div className="mx-auto max-w-3xl">
+      <header>
+        <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">Support</h1>
+        <p className="mt-2 text-[15px] text-muted-foreground">
+          Questions, bugs, or a problem with your license. Here's how to reach us.
         </p>
-      </div>
+      </header>
 
-      {/* Contact channels */}
-      <section className="space-y-2.5">
-        <p className="font-mono text-[9px] font-medium tracking-widest text-muted-foreground/60 uppercase">
-          Get help
-        </p>
-        <div className="overflow-hidden rounded-md border border-border/40">
-          {[
-            {
-              icon: BugIcon,
-              label: "GitHub Issues",
-              description: "Bug reports and feature requests",
-              href: `${GITHUB_URL}/issues`,
-              cta: "Open issue",
-            },
-            {
-              icon: MessageCircleIcon,
-              label: "Discord",
-              description: "Community chat and quick answers",
-              href: DISCORD_URL,
-              cta: "Join",
-            },
-            {
-              icon: MailIcon,
-              label: "Email",
-              description: "License issues, billing, and private matters",
-              href: `mailto:${EMAIL}`,
-              cta: EMAIL,
-            },
-            {
-              icon: BookOpenIcon,
-              label: "Docs",
-              description: "Setup guides, API reference, MCP configuration",
-              href: DOCS_URL,
-              cta: "Read docs",
-            },
-          ].map(({ icon: Icon, label, description, href, cta }, i, arr) => (
-            <a
-              key={label}
-              href={href}
-              target={href.startsWith("mailto") ? undefined : "_blank"}
-              rel="noopener noreferrer"
-              className={[
-                "flex items-center justify-between px-4 py-3 transition-colors hover:bg-foreground/[0.025]",
-                i < arr.length - 1 ? "border-b border-border/30" : "",
-              ].join(" ")}
-            >
-              <div className="flex items-center gap-3">
-                <Icon className="size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">{label}</p>
-                  <p className="text-xs text-muted-foreground">{description}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-                {cta}
-                <ExternalLinkIcon className="size-3" />
-              </div>
-            </a>
-          ))}
+      <section className="mt-10 rounded-xl border border-border bg-card p-6 sm:p-7">
+        <div className="flex items-start gap-4">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background">
+            <MailIcon className="size-[18px] text-muted-foreground" strokeWidth={1.75} />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-[17px] leading-snug">Email us</h2>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+              For your license, billing, or anything private. Write from the address on your account
+              so we can find your purchase, and we'll reply by email.
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-2.5 sm:pl-14">
+          <a href={`mailto:${SUPPORT_EMAIL}`} className={siteButton()}>
+            {SUPPORT_EMAIL}
+          </a>
+          <a
+            href={`${REPO_URL}/issues/new`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={siteButton({ variant: "secondary" })}
+          >
+            <SiGithub className="size-4" />
+            Report a bug
+          </a>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="space-y-2.5">
-        <p className="font-mono text-[9px] font-medium tracking-widest text-muted-foreground/60 uppercase">
-          FAQ
-        </p>
-        <div className="overflow-hidden rounded-md border border-border/40">
-          {FAQ.map(({ q, a }, i) => (
-            <details
-              key={i}
-              className={[
-                "group px-4 py-3",
-                i < FAQ.length - 1 ? "border-b border-border/30" : "",
-              ].join(" ")}
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
-                {q}
-                <span className="shrink-0 font-mono text-xs text-muted-foreground transition-transform group-open:rotate-45">
-                  +
+      <section className="mt-12">
+        <h2 className="text-[13px] leading-none text-muted-foreground">Guides</h2>
+        <ul className="mt-3 divide-y divide-border border-y border-border">
+          {GUIDES.map((g) => (
+            <li key={g.to}>
+              <Link to={g.to} className={ROW}>
+                <g.icon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-[510]">{g.title}</span>
+                  <span className="mt-0.5 block text-[14px] text-muted-foreground">{g.body}</span>
                 </span>
-              </summary>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{a}</p>
-            </details>
+                <ArrowRightIcon className="size-4 shrink-0 text-faint transition-[color,translate] group-hover:translate-x-0.5 group-hover:text-foreground" />
+              </Link>
+            </li>
           ))}
-        </div>
-      </section>
-
-      {/* MCP hint */}
-      <section className="flex items-start gap-3 rounded-md border border-border/30 bg-foreground/[0.02] px-4 py-3">
-        <ZapIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-        <div>
-          <p className="text-sm font-medium">Using Stroke with AI assistants?</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            The built-in MCP server lets Claude, Cursor, and other AI tools query your databases
-            directly. See{" "}
+          <li>
             <a
-              href={`${DOCS_URL}/mcp`}
+              href={`${REPO_URL}/issues`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground underline underline-offset-2 transition-opacity hover:opacity-70"
+              className={ROW}
             >
-              the MCP setup guide
-            </a>{" "}
-            to configure it.
-          </p>
+              <LightbulbIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15px] font-[510]">Suggest a feature</span>
+                <span className="mt-0.5 block text-[14px] text-muted-foreground">
+                  Ask for what you need on GitHub, or add your voice to an open request.
+                </span>
+              </span>
+              <ArrowUpRightIcon className="size-4 shrink-0 text-faint transition-colors group-hover:text-foreground" />
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-[13px] leading-none text-muted-foreground">Common questions</h2>
+        <div className="mt-3 divide-y divide-border border-y border-border">
+          {FAQ.map((item, i) => (
+            <details key={item.q} className="group" open={i === 0}>
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[15px] font-[510] [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <PlusIcon
+                  className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
+                  strokeWidth={1.75}
+                />
+              </summary>
+              <p className="pb-5 text-[15px] leading-relaxed text-pretty text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-white/25 [&_a]:underline-offset-[3px] [&_a:hover]:decoration-white/60 [&_code]:rounded [&_code]:bg-white/[0.06] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[13px] [&_code]:text-soft">
+                {item.a}
+              </p>
+            </details>
+          ))}
         </div>
       </section>
     </div>

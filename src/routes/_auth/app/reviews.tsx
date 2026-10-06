@@ -1,13 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2Icon, ClockIcon, KeyRoundIcon, XCircleIcon } from "lucide-react";
+import { StarIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { buttonVariants } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
-import { Textarea } from "#/components/ui/textarea";
+import { siteButton } from "#/components/page";
 import { licenseQueryOptions } from "#/lib/billing/functions";
 import { $submitReview, myReviewQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
@@ -21,27 +18,37 @@ export const Route = createFileRoute("/_auth/app/reviews")({
 });
 
 const MAX_BODY = 1000;
+const MAX_TITLE = 80;
 
 const STATUS_META = {
   pending: {
     label: "In review",
-    icon: ClockIcon,
-    className: "border-amber-500/20 bg-amber-500/6 text-amber-500",
-    note: "Thanks! Your review is waiting for approval before it shows on the site.",
+    dot: "bg-[#f2c94c]",
+    note: "Thanks. Your review is waiting for approval before it shows on the site.",
   },
   approved: {
     label: "Published",
-    icon: CheckCircle2Icon,
-    className: "border-emerald-500/20 bg-emerald-500/6 text-emerald-500",
-    note: "Your review is live on the landing page. Editing it will send it back for review.",
+    dot: "bg-[#4cb782]",
+    note: "Your review is live on stroke.click. Editing it sends it back for review.",
   },
   rejected: {
     label: "Not approved",
-    icon: XCircleIcon,
-    className: "border-border/40 text-muted-foreground",
-    note: "This review wasn't approved. You can edit it and resubmit.",
+    dot: "bg-white/40",
+    note: "This review wasn't approved. You can edit it and submit it again.",
   },
 } as const;
+
+const FIELD =
+  "w-full rounded-lg border border-border bg-white/[0.03] px-3.5 text-[15px] text-foreground transition-colors outline-none placeholder:text-faint hover:border-white/15 focus-visible:border-white/30 focus-visible:bg-white/[0.04]";
+
+function PageHeader({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <header>
+      <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">{title}</h1>
+      <p className="mt-2 text-[15px] text-pretty text-muted-foreground">{children}</p>
+    </header>
+  );
+}
 
 function ReviewsPage() {
   const queryClient = useQueryClient();
@@ -83,27 +90,30 @@ function ReviewsPage() {
   // ── Not licensed ──────────────────────────────────────────────────────────
   if (!licensePending && !license) {
     return (
-      <div className="mx-auto max-w-md space-y-6">
-        <div>
-          <h1 className="text-base font-semibold tracking-tight">Leave a review</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Reviews are open to Stroke license holders.
+      <div className="mx-auto max-w-3xl">
+        <PageHeader title="Reviews">
+          The reviews on stroke.click are written by people who own Stroke.
+        </PageHeader>
+
+        <section className="mt-10 rounded-xl border border-border bg-card p-6 sm:p-8">
+          <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background">
+            <StarIcon className="size-[18px] text-muted-foreground" strokeWidth={1.75} />
+          </span>
+          <h2 className="mt-5 text-[1.25rem] leading-snug">Write a review once you own Stroke</h2>
+          <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
+            Only license holders can leave a review, so what people read on the site comes from real
+            customers. After you buy, come back here to share what you think. Approved reviews may
+            appear on stroke.click.
           </p>
-        </div>
-        <div className="flex items-start gap-3 rounded-md border border-border/40 px-4 py-3 text-sm text-muted-foreground">
-          <KeyRoundIcon className="mt-0.5 size-4 shrink-0" />
-          <div>
-            <p className="font-medium text-foreground">You need a license first</p>
-            <p className="mt-0.5 text-xs">
-              Once you own Stroke you can share what you think, and your words may appear on the
-              landing page.
-            </p>
+          <div className="mt-7 flex flex-wrap gap-2.5">
+            <Link to="/app/billing" className={siteButton()}>
+              Get a license · $9.99
+            </Link>
+            <Link to="/app/downloads" className={siteButton({ variant: "secondary" })}>
+              Try Stroke free
+            </Link>
           </div>
-        </div>
-        <Link to="/app/billing" className={buttonVariants({ size: "sm" })}>
-          <KeyRoundIcon className="size-3.5" />
-          Get a license
-        </Link>
+        </section>
       </div>
     );
   }
@@ -114,27 +124,21 @@ function ReviewsPage() {
 
   // ── Licensed: write / edit ──────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <div>
-        <h1 className="text-base font-semibold tracking-tight">
-          {myReview ? "Your review" : "Leave a review"}
-        </h1>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Share how Stroke works for you. Approved reviews appear on the landing page.
-        </p>
-      </div>
+    <div className="mx-auto max-w-3xl">
+      <PageHeader title={myReview ? "Your review" : "Write a review"}>
+        Tell other people how Stroke works for you. Approved reviews appear on stroke.click with
+        your name.
+      </PageHeader>
 
       {meta && (
-        <div
-          className={cn(
-            "flex items-start gap-3 rounded-md border px-4 py-3 text-sm",
-            meta.className,
-          )}
-        >
-          <meta.icon className="mt-0.5 size-4 shrink-0" />
+        <div className="mt-8 flex items-start gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
+          <span
+            aria-hidden="true"
+            className={cn("mt-[7px] size-2 shrink-0 rounded-full", meta.dot)}
+          />
           <div>
-            <p className="font-medium">{meta.label}</p>
-            <p className="mt-0.5 text-[11px] opacity-80">{meta.note}</p>
+            <p className="text-[14px] font-[510]">{meta.label}</p>
+            <p className="mt-0.5 text-[14px] text-muted-foreground">{meta.note}</p>
           </div>
         </div>
       )}
@@ -144,45 +148,59 @@ function ReviewsPage() {
           e.preventDefault();
           doSubmit();
         }}
-        className="space-y-4"
+        className="mt-8 space-y-6 rounded-xl border border-border bg-card p-6 sm:p-7"
       >
-        <div className="space-y-1.5">
-          <Label htmlFor="review-body" className="text-xs">
-            Your review
-          </Label>
-          <Textarea
+        <div>
+          <div className="flex items-baseline justify-between gap-4">
+            <label id="review-body-label" htmlFor="review-body" className="text-[14px] font-[510]">
+              Your review
+            </label>
+            <span
+              className={cn(
+                "text-[12px] tabular-nums",
+                remaining < 100 ? "text-soft" : "text-faint",
+              )}
+            >
+              {remaining} characters left
+            </span>
+          </div>
+          <textarea
             id="review-body"
+            aria-labelledby="review-body-label"
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, MAX_BODY))}
-            placeholder="Stroke replaced three tools for me. It launches instantly and…"
-            className="min-h-32"
+            placeholder="What do you use Stroke for, and what made it stick?"
             required
+            rows={6}
+            className={cn(FIELD, "mt-2 min-h-40 resize-y py-3 leading-relaxed")}
           />
-          <p className="text-right text-[11px] text-muted-foreground/70">{remaining} left</p>
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="review-title" className="text-xs">
-            Byline <span className="text-muted-foreground/60">(optional)</span>
-          </Label>
-          <Input
+        <div>
+          <label id="review-title-label" htmlFor="review-title" className="text-[14px] font-[510]">
+            Byline <span className="font-normal text-muted-foreground">(optional)</span>
+          </label>
+          <input
             id="review-title"
+            aria-labelledby="review-title-label"
             value={title}
-            onChange={(e) => setTitle(e.target.value.slice(0, 80))}
+            onChange={(e) => setTitle(e.target.value.slice(0, MAX_TITLE))}
             placeholder="Backend engineer at Acme"
+            className={cn(FIELD, "mt-2 h-11")}
           />
-          <p className="text-[11px] text-muted-foreground/70">
-            Shown under your name. Leave blank to show just your name.
+          <p className="mt-2 text-[13px] text-muted-foreground">
+            Shown under your name. Leave it blank to show just your name.
           </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={submit.isPending}
-          className={buttonVariants({ size: "sm" })}
-        >
-          {submit.isPending ? "Submitting…" : myReview ? "Update review" : "Submit review"}
-        </button>
+        <div className="flex flex-wrap items-center gap-3 border-t border-border pt-6">
+          <button type="submit" disabled={submit.isPending} className={siteButton()}>
+            {submit.isPending ? "Submitting…" : myReview ? "Update review" : "Submit review"}
+          </button>
+          <p className="text-[13px] text-muted-foreground">
+            We read every review before it goes live.
+          </p>
+        </div>
       </form>
     </div>
   );
