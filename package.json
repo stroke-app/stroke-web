@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "deploy": "vite build && wrangler types && CI=true wrangler d1 migrations apply stroke-web --remote; wrangler deploy",
     "migrate:local": "CI=true wrangler d1 migrations apply stroke-web --local",
+    "db:docker": "bash scripts/d1-docker.sh",
     "migrate:remote": "CI=true wrangler d1 migrations apply stroke-web --remote",
     "lint": "oxlint --type-aware --type-check",
     "lint:fix": "oxlint --type-aware --type-check --fix",

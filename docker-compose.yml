@@ -1,14 +1,37 @@
+# The local D1 database (the SQLite file wrangler keeps under .wrangler/)
+# served over libSQL, so Stroke or any libSQL client can open it at
+# http://127.0.0.1:58090. Start it with `pnpm db:docker`, which snapshots the
+# file first. Every start copies the latest snapshot in, so writes made through
+# the container are gone after the next start; D1 itself is never touched.
+
 services:
   db:
-    image: postgres:alpine
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_data_tanstarter:/var/lib/postgresql
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: stroke-web-d1
+    # The default bridge, not a project network: Docker on this machine has no
+    # subnets left to hand out.
+    network_mode: bridge
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=tanstarter
+      SQLD_NODE: standalone
+    ports: ["58090:8080"]
+    volumes:
+      - ./.wrangler/docker:/seed:ro
+    entrypoint:
+      - bash
+      - -c
+      - rm -rf iku.db && mkdir -p iku.db/dbs/default && cp /seed/d1.sqlite iku.db/dbs/default/data && exec docker-wrapper.sh /bin/sqld
 
-volumes:
-  postgres_data_tanstarter:
+  sqlite:
+    # The same snapshot as a plain SQLite file, browsable at
+    # http://127.0.0.1:58091. The file sits on the host at
+    # .wrangler/docker/sqlite/stroke-web.sqlite, so Stroke can open it directly
+    # as a SQLite connection. Run as my user so the file stays mine.
+    image: coleifer/sqlite-web:latest
+    container_name: stroke-web-sqlite
+    network_mode: bridge
+    user: "1000:1000"
+    environment:
+      SQLITE_DATABASE: stroke-web.sqlite
+    ports: ["58091:8080"]
+    volumes:
+      - ./.wrangler/docker/sqlite:/data
