@@ -1,7 +1,10 @@
 import "@tanstack/react-start/server-only";
 import { env } from "#/env/server";
 
-const PLUNK_SEND_URL = "https://api.useplunk.com/v1/send";
+// Plunk's new platform. The old API (api.useplunk.com) was discontinued and
+// answers every request with 410 Gone, so mail sent there silently never went.
+const PLUNK_API = "https://next-api.useplunk.com";
+const PLUNK_SEND_URL = `${PLUNK_API}/v1/send`;
 
 export interface SendEmailParams {
   /** Recipient address (or addresses). */
@@ -25,7 +28,7 @@ export interface SendEmailParams {
  * returns false so callers (e.g. the billing webhook) never fail because of
  * mail delivery.
  *
- * @see https://docs.useplunk.com/api-reference/transactional/send
+ * @see https://docs.useplunk.com/api-reference/public-api/sendEmail
  */
 export async function sendTransactionalEmail(params: SendEmailParams): Promise<boolean> {
   const apiKey = env.PLUNK_API_KEY;
@@ -45,8 +48,9 @@ export async function sendTransactionalEmail(params: SendEmailParams): Promise<b
         to: params.to,
         subject: params.subject,
         body: params.body,
-        name: params.name ?? "Stroke",
-        from: params.from ?? env.PLUNK_FROM_EMAIL,
+        // The new API takes the display name inside `from`; a top-level
+        // `name` is deprecated.
+        from: { name: params.name ?? "Stroke", email: params.from ?? env.PLUNK_FROM_EMAIL },
         ...(params.reply ? { reply: params.reply } : {}),
       }),
     });
@@ -65,13 +69,13 @@ export async function sendTransactionalEmail(params: SendEmailParams): Promise<b
   }
 }
 
-const PLUNK_CONTACTS_URL = "https://api.useplunk.com/v1/contacts";
+const PLUNK_CONTACTS_URL = `${PLUNK_API}/contacts`;
 
 /**
  * Create (or upsert) a Plunk contact — used when a new user signs up. Never
  * throws: logs and returns false on failure so it can't block the signup flow.
  *
- * @see https://docs.useplunk.com/api-reference/contacts/create
+ * @see https://docs.useplunk.com/api-reference/overview (POST /contacts, upserts by email)
  */
 export async function createPlunkContact(params: {
   email: string;
