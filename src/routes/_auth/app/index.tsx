@@ -5,46 +5,32 @@ import {
   ArrowUpRightIcon,
   BookOpenIcon,
   CheckIcon,
-  CopyIcon,
-  EyeIcon,
-  EyeOffIcon,
   HelpCircleIcon,
   PlugIcon,
   ShieldCheckIcon,
   SparklesIcon,
 } from "lucide-react";
 import posthog from "posthog-js";
-import { useState } from "react";
-import { toast } from "sonner";
 
+import { appButton, Badge, Card, CardBody, CardFooter, CardHeader } from "#/components/app-ui";
 import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
-import { siteButton } from "#/components/page";
+import { LicensePanel } from "#/components/license-panel";
 import { useAuth } from "#/lib/auth/hooks";
-import { billingQueryOptions, licenseQueryOptions } from "#/lib/billing/functions";
-import { cn } from "#/lib/utils";
-
-const RELEASES_URL = "https://github.com/stroke-app/stroke/releases";
-
-const CARD = "rounded-xl border border-border bg-card";
-const ICON_SWAP = "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)]";
+import {
+  billingQueryOptions,
+  devicesQueryOptions,
+  licenseQueryOptions,
+} from "#/lib/billing/functions";
+import { RELEASES_URL } from "#/lib/releases";
 
 export const Route = createFileRoute("/_auth/app/")({
   loader: ({ context }) => {
     context.queryClient.prefetchQuery(billingQueryOptions());
     context.queryClient.prefetchQuery(licenseQueryOptions());
+    context.queryClient.prefetchQuery(devicesQueryOptions());
   },
   component: Dashboard,
 });
-
-/** Fixed locale and zone, so the server and the browser render the same day. */
-function formatDate(value: string | number | Date) {
-  return new Date(value).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
 
 const QUICK_LINKS = [
   {
@@ -81,251 +67,106 @@ function Dashboard() {
   const license = licenseQuery.data;
 
   const loading = billing.isPending || licenseQuery.isPending;
-  const isPro = subscription?.status === "active";
+  // A license is what unlocks the app, whether bought or covered by a team.
+  const isPro = !!license || subscription?.status === "active";
   const firstName = user?.name?.split(" ")[0];
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <header>
-        <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">
-          {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
-        </h1>
-        <p className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[14px] text-muted-foreground">
-          <span className="break-all">{user?.email}</span>
-          {!loading && <PlanBadge pro={isPro} />}
-        </p>
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.02em]">
+            {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+          </h1>
+          <p className="mt-1.5 truncate text-[14px] text-muted-foreground">{user?.email}</p>
+        </div>
+        {!loading && !isPro && <Badge>Free plan</Badge>}
       </header>
 
-      <div className="mt-10 flex flex-col gap-4">
-        {loading ? (
-          <div aria-hidden="true" className={cn(CARD, "h-52 animate-pulse bg-white/[0.02]")} />
-        ) : isPro && license ? (
-          <LicenseCard
-            licenseKey={license.licenseKey}
-            plan={license.plan}
-            maxDevices={license.maxDevices}
-            expiresAt={license.expiresAt}
-            since={subscription?.createdAt}
-            recurring={!!subscription?.currentPeriodEnd}
-          />
-        ) : isPro ? (
-          <PendingLicenseCard />
-        ) : (
-          <UpsellCard
-            lapsed={subscription ? `${subscription.plan} · ${subscription.status}` : null}
-          />
-        )}
+      {loading ? (
+        <div aria-hidden="true" className="h-48 animate-pulse rounded-lg bg-muted/60" />
+      ) : license ? (
+        <LicensePanel
+          license={license}
+          since={subscription?.createdAt ?? license.createdAt}
+          recurring={!!subscription?.currentPeriodEnd}
+        />
+      ) : isPro ? (
+        <PendingLicenseCard />
+      ) : (
+        <UpsellCard
+          lapsed={subscription ? `${subscription.plan} · ${subscription.status}` : null}
+        />
+      )}
 
-        <section className={cn(CARD, "p-6")}>
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-[15px] font-[510]">Stroke for desktop</h2>
-            <p className="text-[13px] text-muted-foreground">macOS, Windows, and Linux</p>
-          </div>
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <SmartDownloadButton size="default" variant={isPro ? "default" : "outline"} />
+      <Card aria-labelledby="desktop-title">
+        <CardHeader
+          id="desktop-title"
+          title="Stroke for desktop"
+          description="macOS, Windows, and Linux. Updates install themselves."
+          action={
             <a
               href={RELEASES_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={siteButton({ variant: "ghost" })}
+              className={appButton({ variant: "ghost", size: "sm" })}
             >
               All releases
               <ArrowUpRightIcon className="size-3.5" />
             </a>
-          </div>
-          <BrewCommand className="mt-4 w-full max-w-md" />
-        </section>
-      </div>
+          }
+        />
+        <CardBody className="flex flex-col gap-4">
+          <SmartDownloadButton size="default" variant={isPro ? "default" : "outline"} />
+          <BrewCommand className="w-full max-w-md" />
+        </CardBody>
+      </Card>
 
-      <ul className="mt-10 grid grid-cols-1 border-t border-l border-border sm:grid-cols-2">
-        {QUICK_LINKS.map((link) => (
-          <li key={link.to} className="border-r border-b border-border">
-            <Link
-              to={link.to}
-              className="group flex h-full gap-4 p-5 transition-colors hover:bg-white/[0.02]"
-            >
-              <link.icon
-                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                strokeWidth={1.75}
-              />
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-1.5 text-[14px] font-[510]">
-                  {link.title}
-                  <ArrowRightIcon className="size-3.5 text-muted-foreground opacity-0 transition-[opacity,translate] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100" />
+      <Card aria-labelledby="resources-title">
+        <CardHeader id="resources-title" title="Resources" />
+        <ul className="mt-2 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+          {QUICK_LINKS.map((link) => (
+            <li key={link.to} className="border-b border-border">
+              <Link
+                to={link.to}
+                className="group -mx-2 flex items-start gap-3 rounded-md px-2 py-3.5 transition-colors hover:bg-accent/50"
+              >
+                <link.icon
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  strokeWidth={1.75}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1.5 text-[14px] font-medium">
+                    {link.title}
+                    <ArrowRightIcon className="size-3.5 text-muted-foreground opacity-0 transition-[opacity,translate] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  </span>
+                  <span className="mt-0.5 block text-[13px] text-muted-foreground">
+                    {link.body}
+                  </span>
                 </span>
-                <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-                  {link.body}
-                </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Card>
     </div>
-  );
-}
-
-function PlanBadge({ pro }: { pro: boolean }) {
-  return (
-    <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.06] px-2 text-[12px] font-[510] text-soft">
-      <span
-        aria-hidden="true"
-        className={cn("size-1.5 rounded-full", pro ? "bg-[#4cb782]" : "bg-white/40")}
-      />
-      {pro ? "Pro" : "Free"}
-    </span>
-  );
-}
-
-function LicenseCard({
-  licenseKey,
-  plan,
-  maxDevices,
-  expiresAt,
-  since,
-  recurring,
-}: {
-  licenseKey: string;
-  plan: string;
-  maxDevices: number;
-  expiresAt: string | number | Date | null | undefined;
-  since: string | number | Date | null | undefined;
-  recurring: boolean;
-}) {
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  async function copyKey() {
-    await navigator.clipboard.writeText(licenseKey);
-    setCopied(true);
-    toast.success("License key copied");
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  const term = expiresAt
-    ? `Expires ${formatDate(expiresAt)}`
-    : recurring
-      ? "Subscription"
-      : "Lifetime";
-  const details = [
-    { label: "Plan", value: <span className="capitalize">{plan}</span> },
-    { label: "Term", value: term },
-    { label: "Devices", value: `Up to ${maxDevices}` },
-    ...(since ? [{ label: "Since", value: formatDate(since) }] : []),
-  ];
-
-  return (
-    <section className={CARD}>
-      <div className="flex items-center justify-between gap-4 px-6 pt-6">
-        <h2 className="text-[15px] font-[510]">Your license</h2>
-        <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full bg-[#4cb782]/10 px-2 text-[12px] font-[510] text-[#4cb782]">
-          <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-          Active
-        </span>
-      </div>
-
-      <dl className="mt-5 grid grid-cols-2 gap-y-4 px-6 sm:grid-cols-4">
-        {details.map((d) => (
-          <div key={d.label}>
-            <dt className="text-[12px] text-muted-foreground">{d.label}</dt>
-            <dd className="mt-1 text-[14px]">{d.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <div className="mx-6 mt-6 flex items-center gap-1 rounded-lg border border-border bg-background py-1 pr-1 pl-3.5">
-        <code
-          className={cn(
-            "min-w-0 flex-1 py-1.5 font-mono text-[13px] text-soft",
-            revealed ? "break-all" : "truncate",
-          )}
-        >
-          {revealed
-            ? licenseKey
-            : licenseKey.slice(0, 6) + "•".repeat(Math.max(licenseKey.length - 6, 0))}
-        </code>
-        <button
-          type="button"
-          onClick={() => setRevealed((v) => !v)}
-          aria-label={revealed ? "Hide license key" : "Show license key"}
-          aria-pressed={revealed}
-          title={revealed ? "Hide key" : "Show key"}
-          className="flex size-8 shrink-0 items-center justify-center self-start rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
-        >
-          <span className="relative">
-            <EyeOffIcon
-              className={cn(
-                "absolute inset-0 size-4",
-                ICON_SWAP,
-                revealed ? "blur-0 scale-100 opacity-100" : "scale-[0.25] opacity-0 blur-[4px]",
-              )}
-            />
-            <EyeIcon
-              className={cn(
-                "size-4",
-                ICON_SWAP,
-                revealed ? "scale-[0.25] opacity-0 blur-[4px]" : "blur-0 scale-100 opacity-100",
-              )}
-            />
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={copyKey}
-          className="flex h-8 shrink-0 items-center gap-1.5 self-start rounded-md px-2.5 text-[13px] text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
-        >
-          <span className="relative">
-            <CheckIcon
-              className={cn(
-                "absolute inset-0 size-4 text-[#4cb782]",
-                ICON_SWAP,
-                copied ? "blur-0 scale-100 opacity-100" : "scale-[0.25] opacity-0 blur-[4px]",
-              )}
-            />
-            <CopyIcon
-              className={cn(
-                "size-4",
-                ICON_SWAP,
-                copied ? "scale-[0.25] opacity-0 blur-[4px]" : "blur-0 scale-100 opacity-100",
-              )}
-            />
-          </span>
-          {/* Both labels share one grid cell, so the button never changes width. */}
-          <span className="grid">
-            <span className={cn("col-start-1 row-start-1", copied && "invisible")}>Copy</span>
-            <span className={cn("col-start-1 row-start-1", !copied && "invisible")}>Copied</span>
-          </span>
-        </button>
-      </div>
-
-      <p className="px-6 pt-4 pb-6 text-[13px] text-pretty text-muted-foreground">
-        Open <span className="text-foreground">Stroke</span>, go to{" "}
-        <span className="text-foreground">Settings → License</span>, and paste your key to activate.
-        Manage devices on{" "}
-        <Link
-          to="/app/billing"
-          className="text-foreground underline decoration-white/25 underline-offset-[3px] hover:decoration-white/60"
-        >
-          License &amp; billing
-        </Link>
-        .
-      </p>
-    </section>
   );
 }
 
 /** Paid, but the key hasn't been issued yet (the payment webhook can lag). */
 function PendingLicenseCard() {
   return (
-    <section className={cn(CARD, "p-6")}>
-      <h2 className="text-[15px] font-[510]">Your license is on its way</h2>
-      <p className="mt-1.5 text-[14px] text-pretty text-muted-foreground">
-        Your payment went through. The key usually appears within a minute.
-      </p>
-      <Link to="/app/billing" className={cn(siteButton({ variant: "secondary" }), "mt-5")}>
-        Check status
-      </Link>
-    </section>
+    <Card className="border-t-0 pt-0">
+      <CardHeader
+        title="Your license is on its way"
+        description="Your payment went through. The key usually appears within a minute."
+        action={
+          <Link to="/app/billing" className={appButton({ variant: "secondary", size: "sm" })}>
+            Check status
+          </Link>
+        }
+      />
+    </Card>
   );
 }
 
@@ -338,12 +179,14 @@ const PRO_PERKS = [
 
 function UpsellCard({ lapsed }: { lapsed: string | null }) {
   return (
-    <section className={cn(CARD, "overflow-hidden")}>
-      <div className="grid gap-8 p-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+    <Card aria-labelledby="upsell-title" className="border-t-0 pt-0">
+      <CardBody className="grid gap-6 pt-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div>
-          <h2 className="text-[15px] font-[510]">Stroke Pro</h2>
+          <h2 id="upsell-title" className="text-[15px] font-semibold">
+            Stroke Pro
+          </h2>
           <p className="mt-3 flex items-baseline gap-2">
-            <span className="text-[2.5rem] leading-none font-[510] tracking-[-0.03em] tabular-nums">
+            <span className="text-[2.25rem] leading-none font-semibold tracking-[-0.03em] tabular-nums">
               $9.99
             </span>
             <span className="text-[14px] text-muted-foreground">once</span>
@@ -365,20 +208,20 @@ function UpsellCard({ lapsed }: { lapsed: string | null }) {
             </li>
           ))}
         </ul>
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border bg-white/[0.015] px-6 py-4">
-        <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+      </CardBody>
+      <CardFooter className="mt-5 border-t border-border">
+        <span className="flex items-center gap-1.5">
           <ShieldCheckIcon className="size-3.5 shrink-0" />
           Secure checkout via Dodo Payments
-        </p>
+        </span>
         <Link
           to="/app/billing"
           onClick={() => posthog.capture("buy_license_clicked", { source: "app_home" })}
-          className={siteButton()}
+          className={appButton({ size: "sm" })}
         >
           Buy Stroke · $9.99
         </Link>
-      </div>
-    </section>
+      </CardFooter>
+    </Card>
   );
 }

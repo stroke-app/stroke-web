@@ -4,7 +4,7 @@ import { StarIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { siteButton } from "#/components/page";
+import { appButton } from "#/components/app-ui";
 import { licenseQueryOptions } from "#/lib/billing/functions";
 import { $submitReview, myReviewQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
@@ -23,28 +23,28 @@ const MAX_TITLE = 80;
 const STATUS_META = {
   pending: {
     label: "In review",
-    dot: "bg-[#f2c94c]",
+    dot: "bg-amber-400",
     note: "Thanks. Your review is waiting for approval before it shows on the site.",
   },
   approved: {
     label: "Published",
-    dot: "bg-[#4cb782]",
+    dot: "bg-emerald-500",
     note: "Your review is live on stroke.click. Editing it sends it back for review.",
   },
   rejected: {
     label: "Not approved",
-    dot: "bg-white/40",
+    dot: "bg-foreground/30",
     note: "This review wasn't approved. You can edit it and submit it again.",
   },
 } as const;
 
 const FIELD =
-  "w-full rounded-lg border border-border bg-white/[0.03] px-3.5 text-[15px] text-foreground transition-colors outline-none placeholder:text-faint hover:border-white/15 focus-visible:border-white/30 focus-visible:bg-white/[0.04]";
+  "w-full rounded-lg border border-border bg-muted/40 px-3.5 text-[15px] text-foreground transition-colors outline-none placeholder:text-faint hover:border-foreground/20 focus-visible:border-foreground/30 focus-visible:bg-background";
 
 function PageHeader({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <header>
-      <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">{title}</h1>
+      <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.02em]">{title}</h1>
       <p className="mt-2 text-[15px] text-pretty text-muted-foreground">{children}</p>
     </header>
   );
@@ -90,13 +90,13 @@ function ReviewsPage() {
   // ── Not licensed ──────────────────────────────────────────────────────────
   if (!licensePending && !license) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div>
         <PageHeader title="Reviews">
           The reviews on stroke.click are written by people who own Stroke.
         </PageHeader>
 
-        <section className="mt-10 rounded-xl border border-border bg-card p-6 sm:p-8">
-          <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background">
+        <section className="mt-8 border-t border-border pt-6">
+          <span className="flex size-5 items-center">
             <StarIcon className="size-[18px] text-muted-foreground" strokeWidth={1.75} />
           </span>
           <h2 className="mt-5 text-[1.25rem] leading-snug">Write a review once you own Stroke</h2>
@@ -106,10 +106,10 @@ function ReviewsPage() {
             appear on stroke.click.
           </p>
           <div className="mt-7 flex flex-wrap gap-2.5">
-            <Link to="/app/billing" className={siteButton()}>
+            <Link to="/app/billing" className={appButton()}>
               Get a license · $9.99
             </Link>
-            <Link to="/app/downloads" className={siteButton({ variant: "secondary" })}>
+            <Link to="/app/downloads" className={appButton({ variant: "secondary" })}>
               Try Stroke free
             </Link>
           </div>
@@ -124,20 +124,20 @@ function ReviewsPage() {
 
   // ── Licensed: write / edit ──────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageHeader title={myReview ? "Your review" : "Write a review"}>
         Tell other people how Stroke works for you. Approved reviews appear on stroke.click with
         your name.
       </PageHeader>
 
       {meta && (
-        <div className="mt-8 flex items-start gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
+        <div className="mt-6 flex items-start gap-3">
           <span
             aria-hidden="true"
             className={cn("mt-[7px] size-2 shrink-0 rounded-full", meta.dot)}
           />
           <div>
-            <p className="text-[14px] font-[510]">{meta.label}</p>
+            <p className="text-[14px] font-medium">{meta.label}</p>
             <p className="mt-0.5 text-[14px] text-muted-foreground">{meta.note}</p>
           </div>
         </div>
@@ -148,11 +148,11 @@ function ReviewsPage() {
           e.preventDefault();
           doSubmit();
         }}
-        className="mt-8 space-y-6 rounded-xl border border-border bg-card p-6 sm:p-7"
+        className="mt-8 space-y-6 border-t border-border pt-6"
       >
         <div>
           <div className="flex items-baseline justify-between gap-4">
-            <label id="review-body-label" htmlFor="review-body" className="text-[14px] font-[510]">
+            <label id="review-body-label" htmlFor="review-body" className="text-[14px] font-medium">
               Your review
             </label>
             <span
@@ -177,7 +177,7 @@ function ReviewsPage() {
         </div>
 
         <div>
-          <label id="review-title-label" htmlFor="review-title" className="text-[14px] font-[510]">
+          <label id="review-title-label" htmlFor="review-title" className="text-[14px] font-medium">
             Byline <span className="font-normal text-muted-foreground">(optional)</span>
           </label>
           <input
@@ -194,7 +194,7 @@ function ReviewsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 border-t border-border pt-6">
-          <button type="submit" disabled={submit.isPending} className={siteButton()}>
+          <button type="submit" disabled={submit.isPending} className={appButton()}>
             {submit.isPending ? "Submitting…" : myReview ? "Update review" : "Submit review"}
           </button>
           <p className="text-[13px] text-muted-foreground">

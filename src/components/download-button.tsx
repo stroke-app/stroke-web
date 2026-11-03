@@ -232,7 +232,7 @@ export function BrewCommand({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "animate-fade-up flex h-10 max-w-full items-center gap-3 rounded-lg border border-border bg-white/[0.03] pr-1 pl-3.5 font-mono text-[13px]",
+        "animate-fade-up flex h-10 max-w-full items-center gap-3 rounded-lg border border-border bg-muted/50 pr-1 pl-3.5 font-mono text-[13px] [.site_&]:bg-white/[0.03]",
         className,
       )}
     >
@@ -244,7 +244,7 @@ export function BrewCommand({ className }: { className?: string }) {
         type="button"
         onClick={copy}
         aria-label={copied ? "Copied" : "Copy the Homebrew install command"}
-        className="ml-auto flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
+        className="ml-auto flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >
         {copied ? (
           <CheckIcon className="size-3.5 text-foreground" strokeWidth={2.5} />

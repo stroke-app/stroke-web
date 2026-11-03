@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+import { and, desc, eq } from "drizzle-orm";
 import * as z from "zod";
 
 import { env } from "#/env/server";
@@ -12,7 +13,7 @@ import {
 } from "#/lib/billing/enterprise";
 import { getActiveSubscription, getSubscription } from "#/lib/billing/service";
 import { db } from "#/lib/db";
-import { subscriptions } from "#/lib/db/schema";
+import { activations, subscriptions } from "#/lib/db/schema";
 import { getLicense, getOrIssueLicense, resolveLicense } from "#/lib/license";
 
 // Checkout is handled by the @dodopayments/better-auth plugin. See
@@ -104,6 +105,50 @@ export const $recoverLicense = createServerFn({ method: "POST" })
 
     // 4. Fallback: covered by a Team domain (member never checks out).
     return resolveLicense(context.user.id, context.user.email);
+  });
+
+/** The machines the current user's license is active on, most recently seen first. */
+export const $getDevices = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const license = await getLicense(context.user.id);
+    if (!license) return [];
+    return db
+      .select({
+        id: activations.id,
+        hostname: activations.hostname,
+        os: activations.os,
+        appVersion: activations.appVersion,
+        activatedAt: activations.activatedAt,
+        lastSeenAt: activations.lastSeenAt,
+      })
+      .from(activations)
+      .where(eq(activations.licenseId, license.id))
+      .orderBy(desc(activations.lastSeenAt));
+  });
+
+/**
+ * Free a seat from the dashboard, e.g. for a machine the user can no longer
+ * reach. The app on that machine drops its key the next time it checks in
+ * (`/api/license/check` answers `device_not_activated`).
+ */
+export const $removeDevice = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ id: z.string().min(1) }))
+  .handler(async ({ context, data }) => {
+    const license = await getLicense(context.user.id);
+    if (!license) return { removed: false };
+    const deleted = await db
+      .delete(activations)
+      .where(and(eq(activations.id, data.id), eq(activations.licenseId, license.id)))
+      .returning({ id: activations.id });
+    return { removed: deleted.length > 0 };
+  });
+
+export const devicesQueryOptions = () =>
+  queryOptions({
+    queryKey: ["billing", "devices"],
+    queryFn: ({ signal }) => $getDevices({ signal }),
   });
 
 export const billingQueryOptions = () =>
