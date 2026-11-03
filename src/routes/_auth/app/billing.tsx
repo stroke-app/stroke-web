@@ -5,9 +5,6 @@ import {
   Building2Icon,
   CheckIcon,
   ClockIcon,
-  CopyIcon,
-  EyeIcon,
-  EyeOffIcon,
   KeyRoundIcon,
   Loader2Icon,
   LockIcon,
@@ -17,12 +14,14 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { appButton } from "#/components/app-ui";
 import { SmartDownloadButton } from "#/components/download-button";
-import { siteButton } from "#/components/page";
+import { LicensePanel } from "#/components/license-panel";
 import { authClient } from "#/lib/auth/auth-client";
 import {
   $recoverLicense,
   billingQueryOptions,
+  devicesQueryOptions,
   enterpriseQueryOptions,
   licenseQueryOptions,
 } from "#/lib/billing/functions";
@@ -33,6 +32,7 @@ export const Route = createFileRoute("/_auth/app/billing")({
     context.queryClient.prefetchQuery(billingQueryOptions());
     context.queryClient.prefetchQuery(licenseQueryOptions());
     context.queryClient.prefetchQuery(enterpriseQueryOptions());
+    context.queryClient.prefetchQuery(devicesQueryOptions());
   },
   component: BillingPage,
 });
@@ -67,7 +67,7 @@ const BUYER_FAQ = [
   },
   {
     q: "What if I switch computers?",
-    a: "Your key can be active on up to 2 devices at a time. To switch, deactivate it in Stroke on the old machine (Settings → License), or email support@stroke.click if that machine is gone.",
+    a: "Your key can be active on up to 2 devices at a time. To switch, remove the old machine under Devices on this page, even if you no longer have it, or deactivate it in Stroke (Settings → License).",
   },
   {
     q: "Can I try it first?",
@@ -80,22 +80,12 @@ const BUYER_FAQ = [
 ];
 
 // The paid/active status color, the only color on these pages.
-const ACTIVE_PILL = "border-[#4cb782]/25 bg-[#4cb782]/10 text-[#4cb782]";
+const ACTIVE_PILL =
+  "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
 // The plan surface: one step up from the page, with a brighter hairline.
-const PLAN_CARD =
-  "rounded-2xl border border-white/[0.14] bg-[#141516] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]";
+const PLAN_CARD = "border-y border-border";
 const TEXT_LINK =
-  "text-soft underline decoration-white/25 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/60";
-
-/** Fixed locale and zone, so the server and the browser print the same day. */
-function formatDate(value: string | number | Date) {
-  return new Date(value).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
+  "text-soft underline decoration-foreground/25 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-foreground/60";
 
 function BillingPage() {
   const location = useLocation();
@@ -171,7 +161,7 @@ function BillingPage() {
   if (paymentFailed) {
     const cancelled = returnedStatus === "cancelled";
     return (
-      <div className="mx-auto max-w-3xl">
+      <div>
         <StatusMark tone="danger">
           <XIcon className="size-4" strokeWidth={2.25} />
         </StatusMark>
@@ -193,7 +183,7 @@ function BillingPage() {
 
         <div className="mt-8 flex flex-wrap items-center gap-2">
           <BuyButton loading={loading} onClick={handleUpgrade} size="md" label="Try again" />
-          <Link to="/app/billing" className={siteButton({ variant: "ghost", size: "md" })}>
+          <Link to="/app/billing" className={appButton({ variant: "ghost", size: "md" })}>
             Back to billing
           </Link>
         </div>
@@ -204,7 +194,7 @@ function BillingPage() {
   // ── Post-payment activation flow ──────────────────────────────────────────
   if (success) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div>
         {license ? (
           <StatusMark tone="success">
             <CheckIcon className="size-4" strokeWidth={2.25} />
@@ -243,9 +233,9 @@ function BillingPage() {
 
         <div className="mt-10">
           {license ? (
-            <LicenseCard license={license} />
+            <LicensePanel license={license} since={license.createdAt} sinceLabel="purchased" />
           ) : (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/10 px-6 py-14 text-center">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border px-6 py-14 text-center">
               <KeyRoundIcon className="size-5 text-faint" />
               <p className="text-[15px] text-muted-foreground">
                 Your key will appear here once confirmed
@@ -256,10 +246,10 @@ function BillingPage() {
 
         {license && (
           <section aria-labelledby="activate-title" className="mt-14">
-            <h2 id="activate-title" className="text-xl">
+            <h2 id="activate-title" className="text-[16px] font-semibold tracking-[-0.01em]">
               Activate in 3 steps
             </h2>
-            <ol className="mt-5 divide-y divide-border border-y border-border">
+            <ol className="mt-4 divide-y divide-border border-y border-border">
               {[
                 {
                   step: "Download Stroke if you haven't already",
@@ -270,7 +260,7 @@ function BillingPage() {
               ].map(({ step, action }, i) => (
                 <li
                   key={step}
-                  className="flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
+                  className="flex min-h-14 flex-wrap items-center justify-between gap-x-6 gap-y-3 py-3"
                 >
                   <div className="flex items-center gap-4">
                     <span className="w-3 text-[13px] text-faint tabular-nums">{i + 1}</span>
@@ -284,7 +274,7 @@ function BillingPage() {
         )}
 
         <div className="mt-10">
-          <Link to="/app" className={siteButton({ variant: license ? "primary" : "secondary" })}>
+          <Link to="/app" className={appButton({ variant: license ? "primary" : "secondary" })}>
             Go to dashboard
             <ArrowRightIcon className="size-3.5" />
           </Link>
@@ -301,10 +291,10 @@ function BillingPage() {
     : "Get lifetime access to Stroke.";
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageTitle title="License & billing">{subtitle}</PageTitle>
 
-      <div className="mt-10 space-y-4">
+      <div className="mt-8 space-y-4">
         {/* Team owner summary */}
         {enterprise?.role === "owner" && (
           <Notice title={`Team plan · ${enterprise.domain}`}>
@@ -325,9 +315,10 @@ function BillingPage() {
 
         {/* License: personal, team owner, or covered member */}
         {license && (
-          <LicenseCard
+          <LicensePanel
             license={license}
-            dateLabel={enterprise?.role === "member" ? "Issued" : "Purchased"}
+            since={license.createdAt}
+            sinceLabel={enterprise?.role === "member" ? "issued" : "purchased"}
           />
         )}
 
@@ -356,7 +347,7 @@ function BillingPage() {
                 key={p.title}
                 className="border-b border-border py-6 sm:border-b-0 sm:not-first:border-l sm:not-first:pl-6 sm:not-last:pr-6"
               >
-                <p className="text-[15px] font-[510]">{p.title}</p>
+                <p className="text-[15px] font-medium">{p.title}</p>
                 <p className="mt-2 text-[15px] leading-relaxed text-pretty text-muted-foreground">
                   {p.body}
                 </p>
@@ -365,20 +356,20 @@ function BillingPage() {
           </ul>
 
           <section aria-labelledby="buyer-faq" className="mt-16">
-            <h2 id="buyer-faq" className="text-xl">
+            <h2 id="buyer-faq" className="text-[16px] font-semibold tracking-[-0.01em]">
               Questions before you buy
             </h2>
-            <div className="mt-5 divide-y divide-border border-y border-border">
+            <div className="mt-4 divide-y divide-border border-y border-border">
               {BUYER_FAQ.map((item) => (
                 <details key={item.q} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[15px] font-[510] transition-colors hover:text-soft [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[14px] font-medium transition-colors hover:text-soft [&::-webkit-details-marker]:hidden">
                     {item.q}
                     <PlusIcon
                       className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45"
                       strokeWidth={1.75}
                     />
                   </summary>
-                  <p className="-mt-1 pb-5 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+                  <p className="-mt-1 pb-5 text-[14px] leading-relaxed text-pretty text-muted-foreground">
                     {item.a}
                   </p>
                 </details>
@@ -393,9 +384,9 @@ function BillingPage() {
             </p>
           </section>
 
-          <div className="mt-14 flex flex-col gap-5 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div className="mt-14 flex flex-col gap-5 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-[17px] font-[510]">Stroke Pro · $9.99 once</p>
+              <p className="text-[16px] font-semibold">Stroke Pro · $9.99 once</p>
               <p className="mt-1 text-[15px] text-muted-foreground">
                 Every feature and every update, on 2 devices.
               </p>
@@ -420,9 +411,11 @@ function PageTitle({
 }) {
   return (
     <header className={className}>
-      <h1 className="text-[1.75rem] text-balance md:text-[2rem]">{title}</h1>
+      <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.02em] text-balance">
+        {title}
+      </h1>
       {children && (
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
+        <p className="mt-1.5 max-w-xl text-[14px] leading-relaxed text-pretty text-muted-foreground">
           {children}
         </p>
       )}
@@ -449,7 +442,7 @@ function BuyButton({
       type="button"
       onClick={onClick}
       disabled={loading}
-      className={cn(siteButton({ size }), className)}
+      className={cn(appButton({ size }), className)}
     >
       {loading && <Loader2Icon className="size-4 motion-safe:animate-spin" />}
       {loading ? "Redirecting…" : label}
@@ -459,8 +452,8 @@ function BuyButton({
 
 const MARK_TONES = {
   success: ACTIVE_PILL,
-  danger: "border-red-400/25 bg-red-400/10 text-red-300",
-  neutral: "border-border bg-white/[0.04] text-muted-foreground",
+  danger: "border-destructive/25 bg-destructive/10 text-destructive",
+  neutral: "border-border bg-muted text-muted-foreground",
 };
 
 /** A small round status glyph above a state's title. */
@@ -487,13 +480,13 @@ function StatusMark({
 /** A quiet note about the team that covers this account. */
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-5">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-white/[0.04] text-soft">
+    <div className="flex items-start gap-3 border-l-2 border-border py-1 pl-4">
+      <span className="flex size-5 shrink-0 items-center justify-center pt-0.5 text-muted-foreground">
         <Building2Icon className="size-4" />
       </span>
       <div className="min-w-0">
-        <p className="text-[15px] font-[510]">{title}</p>
-        <p className="mt-1 text-[15px] leading-relaxed text-pretty text-muted-foreground [&_strong]:font-[510] [&_strong]:text-foreground">
+        <p className="text-[15px] font-medium">{title}</p>
+        <p className="mt-1 text-[15px] leading-relaxed text-pretty text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
           {children}
         </p>
       </div>
@@ -511,17 +504,17 @@ function ProOffer({ loading, onBuy }: { loading: boolean; onBuy: () => void }) {
       aria-labelledby="pro-title"
       className={cn(PLAN_CARD, "grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]")}
     >
-      <div className="flex flex-col p-6 sm:p-8">
+      <div className="flex flex-col py-6 lg:pr-8">
         <div className="flex h-6 items-center justify-between gap-3">
-          <h2 id="pro-title" className="text-[17px]">
+          <h2 id="pro-title" className="text-[16px] font-semibold">
             Stroke Pro
           </h2>
-          <span className="rounded-full bg-white/[0.08] px-2.5 py-0.5 text-[12px] font-[510] text-soft">
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-[12px] font-medium text-soft">
             Pay once
           </span>
         </div>
         <p className="mt-7 flex items-baseline gap-2">
-          <span className="text-[3rem] leading-none font-[510] tracking-[-0.03em] tabular-nums">
+          <span className="text-[3rem] leading-none font-medium tracking-[-0.03em] tabular-nums">
             $9.99
           </span>
           <span className="text-[15px] text-muted-foreground">once</span>
@@ -538,8 +531,8 @@ function ProOffer({ loading, onBuy }: { loading: boolean; onBuy: () => void }) {
         </div>
       </div>
 
-      <div className="border-t border-white/[0.08] p-6 sm:p-8 lg:border-t-0 lg:border-l">
-        <p className="text-[13px] font-[510] text-muted-foreground">What you get</p>
+      <div className="border-t border-border py-6 lg:border-t-0 lg:border-l lg:pl-8">
+        <p className="text-[13px] font-medium text-muted-foreground">What you get</p>
         <ul className="mt-5 space-y-3.5">
           {PRO_PERKS.map((perk) => (
             <li key={perk} className="flex items-start gap-3 text-[15px]">
@@ -548,128 +541,10 @@ function ProOffer({ loading, onBuy }: { loading: boolean; onBuy: () => void }) {
             </li>
           ))}
         </ul>
-        <p className="mt-6 border-t border-white/[0.08] pt-5 text-[15px] text-pretty text-muted-foreground">
+        <p className="mt-6 border-t border-border pt-5 text-[15px] text-pretty text-muted-foreground">
           Try every feature free for 17 days first, no account needed.
         </p>
       </div>
     </section>
-  );
-}
-
-/** The license the account holds: status, the facts, and the key itself. */
-function LicenseCard({
-  license,
-  dateLabel = "Purchased",
-}: {
-  license: {
-    licenseKey: string;
-    plan: string;
-    maxDevices: number;
-    createdAt: string | number | Date;
-    expiresAt: string | number | Date | null;
-  };
-  dateLabel?: string;
-}) {
-  const facts = [
-    { label: "Plan", value: <span className="capitalize">{license.plan}</span> },
-    {
-      label: "Devices",
-      value: `${license.maxDevices} ${license.maxDevices === 1 ? "device" : "devices"}`,
-    },
-    { label: dateLabel, value: formatDate(license.createdAt) },
-  ];
-
-  return (
-    <section aria-labelledby="license-title" className={cn(PLAN_CARD, "p-6 sm:p-8")}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h2 id="license-title" className="text-xl">
-            Stroke <span className="capitalize">{license.plan}</span>
-          </h2>
-          <p className="mt-2 text-[15px] text-muted-foreground">
-            {license.expiresAt
-              ? `Test license · expires ${formatDate(license.expiresAt)}`
-              : "Lifetime license · no expiry, no renewals"}
-          </p>
-        </div>
-        <span
-          className={cn(
-            "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[13px] font-[510]",
-            ACTIVE_PILL,
-          )}
-        >
-          <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-          Active
-        </span>
-      </div>
-
-      {/* Label-value rows on phones, three columns from sm up. */}
-      <dl className="mt-7 grid grid-cols-1 border-t border-white/[0.08] sm:grid-cols-3 sm:pt-6">
-        {facts.map((f) => (
-          <div
-            key={f.label}
-            className="flex min-w-0 items-baseline justify-between gap-4 border-white/[0.08] py-3 not-first:border-t sm:block sm:py-0 sm:not-first:border-t-0 sm:not-first:border-l sm:not-first:pl-6"
-          >
-            <dt className="text-[13px] text-muted-foreground">{f.label}</dt>
-            <dd className="truncate text-[15px] font-[510] tabular-nums sm:mt-1.5">{f.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <p className="mt-5 text-[13px] font-[510] text-muted-foreground sm:mt-8">License key</p>
-      <LicenseKeyField licenseKey={license.licenseKey} />
-      <p className="mt-4 text-[15px] text-pretty text-muted-foreground">
-        Open <span className="text-foreground">Stroke</span> →{" "}
-        <span className="text-foreground">Settings → License</span> and paste your key to activate.
-      </p>
-    </section>
-  );
-}
-
-/** The key, masked until revealed, with a copy button that never changes width. */
-function LicenseKeyField({ licenseKey }: { licenseKey: string }) {
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  async function copyKey() {
-    await navigator.clipboard.writeText(licenseKey);
-    setCopied(true);
-    toast.success("License key copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  return (
-    <div className="mt-2 flex items-start gap-1 rounded-xl border border-white/[0.08] bg-black/40 py-1 pr-1 pl-4">
-      <code
-        className={cn(
-          "min-w-0 flex-1 py-2 font-mono text-[13px] leading-relaxed text-soft",
-          revealed ? "break-all" : "truncate",
-        )}
-      >
-        {revealed ? licenseKey : licenseKey.slice(0, 6) + "•".repeat(42)}
-      </code>
-      <button
-        type="button"
-        onClick={() => setRevealed((v) => !v)}
-        aria-label={revealed ? "Hide license key" : "Show license key"}
-        aria-pressed={revealed}
-        title={revealed ? "Hide key" : "Reveal key"}
-        className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 outline-none hover:bg-white/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        {revealed ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
-      </button>
-      <button
-        type="button"
-        onClick={copyKey}
-        className="flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[13px] text-muted-foreground transition-colors duration-150 outline-none hover:bg-white/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        {copied ? <CheckIcon className="size-4 text-[#4cb782]" /> : <CopyIcon className="size-4" />}
-        {/* Both labels share one grid cell, so the button never changes width. */}
-        <span className="grid">
-          <span className={cn("col-start-1 row-start-1", copied && "invisible")}>Copy</span>
-          <span className={cn("col-start-1 row-start-1", !copied && "invisible")}>Copied</span>
-        </span>
-      </button>
-    </div>
   );
 }
