@@ -138,6 +138,10 @@ export const activations = sqliteTable(
       .references(() => licenses.id, { onDelete: "cascade" }),
     deviceId: text("device_id").notNull(),
     hostname: text("hostname"),
+    /** "macos" | "windows" | "linux", reported by the app; null for older clients. */
+    os: text("os"),
+    /** App version last reported by this device, e.g. "2.3.0". */
+    appVersion: text("app_version"),
     activatedAt: integer("activated_at", { mode: "timestamp_ms" }).notNull(),
     lastSeenAt: integer("last_seen_at", { mode: "timestamp_ms" }).notNull(),
   },
