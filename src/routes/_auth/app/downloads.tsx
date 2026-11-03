@@ -2,8 +2,8 @@ import { SiApple, SiLinux } from "@icons-pack/react-simple-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRightIcon, DownloadIcon } from "lucide-react";
 
+import { appButton } from "#/components/app-ui";
 import { WindowsLogo } from "#/components/download-targets";
-import { siteButton } from "#/components/page";
 import {
   type Arch,
   type GitHubAsset,
@@ -115,11 +115,11 @@ function DownloadsPage() {
   const currentPlatform = usePlatform();
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
         <div className="min-w-0">
-          <h1 className="text-[1.75rem] md:text-[2rem]">Downloads</h1>
-          <p className="mt-3 text-[15px] text-muted-foreground">
+          <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.02em]">Downloads</h1>
+          <p className="mt-1.5 text-[14px] text-muted-foreground">
             {isLoading ? (
               "Fetching latest release…"
             ) : release ? (
@@ -141,7 +141,7 @@ function DownloadsPage() {
             href={release.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={siteButton({ variant: "secondary", size: "sm" })}
+            className={appButton({ variant: "secondary", size: "sm" })}
           >
             Release notes
             <ArrowUpRightIcon className="size-3.5" />
@@ -149,7 +149,7 @@ function DownloadsPage() {
         )}
       </header>
 
-      <div className="mt-12 space-y-12">
+      <div className="mt-8 space-y-8">
         {PLATFORM_GROUPS.map(({ icon: Icon, os, label, packages }) => {
           const available = release
             ? packages.map((p) => ({ ...p, asset: release.assets.find(p.matcher) ?? null }))
@@ -159,13 +159,16 @@ function DownloadsPage() {
 
           return (
             <section key={os} aria-labelledby={`platform-${os}`}>
-              <div className="flex items-center gap-3 pb-4">
-                <h2 id={`platform-${os}`} className="flex items-center gap-2.5 text-xl">
+              <div className="flex items-center gap-3 pb-3">
+                <h2
+                  id={`platform-${os}`}
+                  className="flex items-center gap-2.5 text-[16px] font-semibold"
+                >
                   <Icon className="size-[17px] text-muted-foreground" />
                   {label}
                 </h2>
                 {currentPlatform?.os === os && (
-                  <span className="rounded-full bg-white/[0.08] px-2.5 py-0.5 text-[12px] font-[510] text-soft">
+                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-[12px] font-medium text-soft">
                     Your platform
                   </span>
                 )}
@@ -173,9 +176,9 @@ function DownloadsPage() {
 
               <ul className="divide-y divide-border border-y border-border">
                 {isLoading ? (
-                  <li className="py-4 text-[15px] text-muted-foreground">Loading…</li>
+                  <li className="py-4 text-[14px] text-muted-foreground">Loading…</li>
                 ) : !hasAny ? (
-                  <li className="py-4 text-[15px] text-muted-foreground">
+                  <li className="py-4 text-[14px] text-muted-foreground">
                     No packages available yet for this platform in the latest release.
                   </li>
                 ) : (
@@ -185,9 +188,12 @@ function DownloadsPage() {
                       const isRecommended =
                         currentPlatform?.os === os && currentPlatform.arch === arch;
                       return (
-                        <li key={pkgLabel} className="flex items-center justify-between gap-4 py-4">
+                        <li
+                          key={pkgLabel}
+                          className="flex items-center justify-between gap-4 py-3.5"
+                        >
                           <div className="min-w-0">
-                            <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[15px] font-[510]">
+                            <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[14px] font-medium">
                               {pkgLabel}
                               {isRecommended && (
                                 <span className="text-[13px] font-normal text-muted-foreground">
@@ -206,7 +212,7 @@ function DownloadsPage() {
                           <a
                             href={asset!.browser_download_url}
                             aria-label={`Download ${label} ${pkgLabel}`}
-                            className={siteButton({
+                            className={appButton({
                               variant: isRecommended ? "primary" : "secondary",
                               size: "sm",
                             })}
@@ -224,7 +230,7 @@ function DownloadsPage() {
         })}
       </div>
 
-      <p className="mt-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[15px] text-muted-foreground">
+      <p className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[14px] text-muted-foreground">
         Older versions and pre-releases
         <a
           href={RELEASES_URL}
