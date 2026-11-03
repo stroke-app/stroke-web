@@ -11,8 +11,8 @@ import {
   SparklesIcon,
 } from "lucide-react";
 
+import { appButton } from "#/components/app-ui";
 import { SUPPORT_EMAIL } from "#/components/legal";
-import { siteButton } from "#/components/page";
 import { REPO_URL } from "#/components/site-chrome";
 
 export const Route = createFileRoute("/_auth/app/support")({
@@ -34,9 +34,9 @@ const FAQ: { q: string; a: React.ReactNode }[] = [
     q: "How many devices can I use?",
     a: (
       <>
-        A license is active on up to 2 devices at a time. To move it to a new machine, deactivate it
-        in Stroke on the old one (Settings → License). If that machine is gone, email{" "}
-        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we'll free the slot.
+        A license is active on up to 2 devices at a time. To move it to a new machine, remove the
+        old one under Devices on <a href="/app/billing">License &amp; billing</a>, even if you no
+        longer have it, or deactivate it in Stroke (Settings → License).
       </>
     ),
   },
@@ -96,40 +96,40 @@ const GUIDES = [
 ];
 
 const ROW =
-  "group flex items-center gap-4 py-4 transition-colors hover:bg-white/[0.02] sm:-mx-3 sm:px-3 sm:rounded-lg";
+  "group -mx-2 flex items-center gap-4 rounded-md px-2 py-3.5 transition-colors hover:bg-accent/50";
 
 function SupportPage() {
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <header>
-        <h1 className="text-[1.75rem] leading-tight md:text-[2rem]">Support</h1>
-        <p className="mt-2 text-[15px] text-muted-foreground">
+        <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.02em]">Support</h1>
+        <p className="mt-1.5 text-[14px] text-muted-foreground">
           Questions, bugs, or a problem with your license. Here's how to reach us.
         </p>
       </header>
 
-      <section className="mt-10 rounded-xl border border-border bg-card p-6 sm:p-7">
+      <section className="mt-8 border-t border-border pt-6">
         <div className="flex items-start gap-4">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background">
+          <span className="flex size-5 shrink-0 items-center justify-center pt-1">
             <MailIcon className="size-[18px] text-muted-foreground" strokeWidth={1.75} />
           </span>
           <div className="min-w-0">
-            <h2 className="text-[17px] leading-snug">Email us</h2>
+            <h2 className="text-[16px] leading-snug font-semibold">Email us</h2>
             <p className="mt-1.5 text-[15px] leading-relaxed text-pretty text-muted-foreground">
               For your license, billing, or anything private. Write from the address on your account
               so we can find your purchase, and we'll reply by email.
             </p>
           </div>
         </div>
-        <div className="mt-6 flex flex-wrap gap-2.5 sm:pl-14">
-          <a href={`mailto:${SUPPORT_EMAIL}`} className={siteButton()}>
+        <div className="mt-5 flex flex-wrap gap-2.5 sm:pl-9">
+          <a href={`mailto:${SUPPORT_EMAIL}`} className={appButton()}>
             {SUPPORT_EMAIL}
           </a>
           <a
             href={`${REPO_URL}/issues/new`}
             target="_blank"
             rel="noopener noreferrer"
-            className={siteButton({ variant: "secondary" })}
+            className={appButton({ variant: "secondary" })}
           >
             <SiGithub className="size-4" />
             Report a bug
@@ -137,16 +137,16 @@ function SupportPage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <h2 className="text-[13px] leading-none text-muted-foreground">Guides</h2>
+      <section className="mt-8">
+        <h2 className="text-[13px] leading-none font-medium text-muted-foreground">Guides</h2>
         <ul className="mt-3 divide-y divide-border border-y border-border">
           {GUIDES.map((g) => (
             <li key={g.to}>
               <Link to={g.to} className={ROW}>
                 <g.icon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-[510]">{g.title}</span>
-                  <span className="mt-0.5 block text-[14px] text-muted-foreground">{g.body}</span>
+                  <span className="block text-[14px] font-medium">{g.title}</span>
+                  <span className="mt-0.5 block text-[13px] text-muted-foreground">{g.body}</span>
                 </span>
                 <ArrowRightIcon className="size-4 shrink-0 text-faint transition-[color,translate] group-hover:translate-x-0.5 group-hover:text-foreground" />
               </Link>
@@ -161,8 +161,8 @@ function SupportPage() {
             >
               <LightbulbIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
               <span className="min-w-0 flex-1">
-                <span className="block text-[15px] font-[510]">Suggest a feature</span>
-                <span className="mt-0.5 block text-[14px] text-muted-foreground">
+                <span className="block text-[14px] font-medium">Suggest a feature</span>
+                <span className="mt-0.5 block text-[13px] text-muted-foreground">
                   Ask for what you need on GitHub, or add your voice to an open request.
                 </span>
               </span>
@@ -172,19 +172,21 @@ function SupportPage() {
         </ul>
       </section>
 
-      <section className="mt-12">
-        <h2 className="text-[13px] leading-none text-muted-foreground">Common questions</h2>
+      <section className="mt-8">
+        <h2 className="text-[13px] leading-none font-medium text-muted-foreground">
+          Common questions
+        </h2>
         <div className="mt-3 divide-y divide-border border-y border-border">
           {FAQ.map((item, i) => (
             <details key={item.q} className="group" open={i === 0}>
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[15px] font-[510] [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[14px] font-medium [&::-webkit-details-marker]:hidden">
                 {item.q}
                 <PlusIcon
                   className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
                   strokeWidth={1.75}
                 />
               </summary>
-              <p className="pb-5 text-[15px] leading-relaxed text-pretty text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-white/25 [&_a]:underline-offset-[3px] [&_a:hover]:decoration-white/60 [&_code]:rounded [&_code]:bg-white/[0.06] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[13px] [&_code]:text-soft">
+              <p className="pb-5 text-[14px] leading-relaxed text-pretty text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-foreground/25 [&_a]:underline-offset-[3px] [&_a:hover]:decoration-foreground/60 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[13px] [&_code]:text-soft">
                 {item.a}
               </p>
             </details>
