@@ -1215,7 +1215,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Can I move my license to a new machine?",
-    a: "Yes. Your license covers 2 devices at once, and you can deactivate it in the app on your old machine whenever you switch, or email us if that machine is gone. Refunds are covered in the Terms of Service.",
+    a: "Yes. Your license covers 2 devices at once, and you can free a seat from your account dashboard whenever you switch, even if the old machine is gone. Refunds are covered in the Terms of Service.",
   },
   {
     q: "Is Stroke open source?",
