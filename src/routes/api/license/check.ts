@@ -3,13 +3,14 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import { activations, licenses } from "#/lib/db/schema";
+import { parseOs, parseVersion } from "#/lib/license/platform";
 import { verifyLicenseKey } from "#/lib/license/verify";
 
 export const Route = createFileRoute("/api/license/check")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let body: { key?: string; device_id?: string };
+        let body: { key?: string; device_id?: string; os?: unknown; version?: unknown };
         try {
           body = await request.json();
         } catch {
@@ -52,9 +53,12 @@ export const Route = createFileRoute("/api/license/check")({
           return Response.json({ valid: false, error: "device_not_activated" });
         }
 
+        // Older clients don't send these; never overwrite a known value with null.
+        const os = parseOs(body.os);
+        const appVersion = parseVersion(body.version);
         await db
           .update(activations)
-          .set({ lastSeenAt: new Date() })
+          .set({ lastSeenAt: new Date(), ...(os && { os }), ...(appVersion && { appVersion }) })
           .where(eq(activations.id, activation[0]!.id));
 
         return Response.json({

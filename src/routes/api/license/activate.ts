@@ -3,13 +3,20 @@ import { and, count, eq } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import { activations, licenses } from "#/lib/db/schema";
+import { parseOs, parseVersion } from "#/lib/license/platform";
 import { verifyLicenseKey } from "#/lib/license/verify";
 
 export const Route = createFileRoute("/api/license/activate")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let body: { key?: string; device_id?: string; hostname?: string };
+        let body: {
+          key?: string;
+          device_id?: string;
+          hostname?: string;
+          os?: unknown;
+          version?: unknown;
+        };
         try {
           body = await request.json();
         } catch {
@@ -43,6 +50,10 @@ export const Route = createFileRoute("/api/license/activate")({
         }
 
         const now = new Date();
+        // Older clients don't send these; never overwrite a known value with null.
+        const os = parseOs(body.os);
+        const appVersion = parseVersion(body.version);
+        const platform = { ...(os && { os }), ...(appVersion && { appVersion }) };
 
         const existing = await db
           .select()
@@ -53,7 +64,7 @@ export const Route = createFileRoute("/api/license/activate")({
         if (existing.length > 0) {
           await db
             .update(activations)
-            .set({ lastSeenAt: now, hostname: hostname ?? null })
+            .set({ lastSeenAt: now, hostname: hostname ?? null, ...platform })
             .where(eq(activations.id, existing[0]!.id));
         } else {
           const countRows = await db
@@ -77,6 +88,7 @@ export const Route = createFileRoute("/api/license/activate")({
             licenseId: license.id,
             deviceId: device_id,
             hostname: hostname ?? null,
+            ...platform,
             activatedAt: now,
             lastSeenAt: now,
           });
