@@ -9,93 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RoadmapRouteImport } from './routes/roadmap'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as GiveawayRouteImport } from './routes/giveaway'
-import { Route as FeaturesRouteImport } from './routes/features'
-import { Route as DownloadRouteImport } from './routes/download'
-import { Route as ChangelogRouteImport } from './routes/changelog'
-import { Route as GuestRouteRouteImport } from './routes/_guest/route'
-import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as IngestSplatRouteImport } from './routes/ingest/$'
-import { Route as DownloadOsRouteImport } from './routes/download_.$os'
-import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
-import { Route as CommitShaRouteImport } from './routes/commit.$sha'
-import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
-import { Route as ApiTagsRouteImport } from './routes/api/tags'
-import { Route as ApiReleasesRouteImport } from './routes/api/releases'
-import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
-import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
-import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
-import { Route as GuestLoginRouteImport } from './routes/_guest/login'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
+import { Route as GuestRouteRouteImport } from './routes/_guest/route'
+import { Route as ChangelogRouteImport } from './routes/changelog'
+import { Route as DownloadRouteImport } from './routes/download'
+import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as GiveawayRouteImport } from './routes/giveaway'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
+import { Route as GuestLoginRouteImport } from './routes/_guest/login'
+import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
+import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
+import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
+import { Route as ApiReleasesRouteImport } from './routes/api/releases'
+import { Route as ApiTagsRouteImport } from './routes/api/tags'
+import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as CommitShaRouteImport } from './routes/commit.$sha'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
+import { Route as DownloadOsRouteImport } from './routes/download_.$os'
+import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
-import { Route as ApiWebhooksProviderRouteImport } from './routes/api/webhooks/$provider'
-import { Route as ApiOauthTokenRouteImport } from './routes/api/oauth/token'
-import { Route as ApiLicenseTrialRouteImport } from './routes/api/license/trial'
-import { Route as ApiLicensePubkeyRouteImport } from './routes/api/license/pubkey'
-import { Route as ApiLicenseDeactivateRouteImport } from './routes/api/license/deactivate'
-import { Route as ApiLicenseCheckRouteImport } from './routes/api/license/check'
-import { Route as ApiLicenseActivateRouteImport } from './routes/api/license/activate'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as ApiAiQuotaRouteImport } from './routes/api/ai/quota'
-import { Route as ApiAiModelsRouteImport } from './routes/api/ai/models'
-import { Route as AuthAppSupportRouteImport } from './routes/_auth/app/support'
-import { Route as AuthAppReviewsRouteImport } from './routes/_auth/app/reviews'
-import { Route as AuthAppDownloadsRouteImport } from './routes/_auth/app/downloads'
 import { Route as AuthAppBillingRouteImport } from './routes/_auth/app/billing'
-import { Route as ApiAiChatCompletionsRouteImport } from './routes/api/ai/chat/completions'
-import { Route as ApiAdminTelemetrySummaryRouteImport } from './routes/api/admin/telemetry/summary'
-import { Route as ApiAdminReviewsModerateRouteImport } from './routes/api/admin/reviews/moderate'
-import { Route as ApiAdminReviewsListRouteImport } from './routes/api/admin/reviews/list'
-import { Route as ApiAdminLicenseUnrevokeRouteImport } from './routes/api/admin/license/unrevoke'
-import { Route as ApiAdminLicenseRevokeRouteImport } from './routes/api/admin/license/revoke'
-import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/license/info'
+import { Route as AuthAppDownloadsRouteImport } from './routes/_auth/app/downloads'
+import { Route as AuthAppReviewsRouteImport } from './routes/_auth/app/reviews'
+import { Route as AuthAppSupportRouteImport } from './routes/_auth/app/support'
+import { Route as ApiAiModelsRouteImport } from './routes/api/ai/models'
+import { Route as ApiAiQuotaRouteImport } from './routes/api/ai/quota'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiLicenseActivateRouteImport } from './routes/api/license/activate'
+import { Route as ApiLicenseCheckRouteImport } from './routes/api/license/check'
+import { Route as ApiLicenseDeactivateRouteImport } from './routes/api/license/deactivate'
+import { Route as ApiLicensePubkeyRouteImport } from './routes/api/license/pubkey'
+import { Route as ApiLicenseTrialRouteImport } from './routes/api/license/trial'
+import { Route as ApiOauthTokenRouteImport } from './routes/api/oauth/token'
+import { Route as ApiWebhooksProviderRouteImport } from './routes/api/webhooks/$provider'
 import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giveaway/draw'
+import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/license/info'
+import { Route as ApiAdminLicenseRevokeRouteImport } from './routes/api/admin/license/revoke'
+import { Route as ApiAdminLicenseUnrevokeRouteImport } from './routes/api/admin/license/unrevoke'
+import { Route as ApiAdminReviewsListRouteImport } from './routes/api/admin/reviews/list'
+import { Route as ApiAdminReviewsModerateRouteImport } from './routes/api/admin/reviews/moderate'
+import { Route as ApiAdminTelemetrySummaryRouteImport } from './routes/api/admin/telemetry/summary'
+import { Route as ApiAiChatCompletionsRouteImport } from './routes/api/ai/chat/completions'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoadmapRoute = RoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GiveawayRoute = GiveawayRouteImport.update({
-  id: '/giveaway',
-  path: '/giveaway',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeaturesRoute = FeaturesRouteImport.update({
-  id: '/features',
-  path: '/features',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DownloadRoute = DownloadRouteImport.update({
-  id: '/download',
-  path: '/download',
+const GuestRouteRoute = GuestRouteRouteImport.update({
+  id: '/_guest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogRoute = ChangelogRouteImport.update({
@@ -103,57 +78,64 @@ const ChangelogRoute = ChangelogRouteImport.update({
   path: '/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestRouteRoute = GuestRouteRouteImport.update({
-  id: '/_guest',
+const DownloadRoute = DownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/_auth',
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const GiveawayRoute = GiveawayRouteImport.update({
+  id: '/giveaway',
+  path: '/giveaway',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsIndexRoute = DocsIndexRouteImport.update({
-  id: '/docs/',
-  path: '/docs/',
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IngestSplatRoute = IngestSplatRouteImport.update({
-  id: '/ingest/$',
-  path: '/ingest/$',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DownloadOsRoute = DownloadOsRouteImport.update({
-  id: '/download_/$os',
-  path: '/download/$os',
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsMcpRoute = DocsMcpRouteImport.update({
-  id: '/docs/mcp',
-  path: '/docs/mcp',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommitShaRoute = CommitShaRouteImport.update({
-  id: '/commit/$sha',
-  path: '/commit/$sha',
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
-  id: '/api/telemetry',
-  path: '/api/telemetry',
-  getParentRoute: () => rootRouteImport,
+const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
-const ApiTagsRoute = ApiTagsRouteImport.update({
-  id: '/api/tags',
-  path: '/api/tags',
-  getParentRoute: () => rootRouteImport,
+const GuestLoginRoute = GuestLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => GuestRouteRoute,
 } as any)
-const ApiReleasesRoute = ApiReleasesRouteImport.update({
-  id: '/api/releases',
-  path: '/api/releases',
+const GuestSignupRoute = GuestSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => GuestRouteRoute,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChangelogRoute = ApiChangelogRouteImport.update({
@@ -161,94 +143,59 @@ const ApiChangelogRoute = ApiChangelogRouteImport.update({
   path: '/api/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminReviewsRoute = AdminReviewsRouteImport.update({
-  id: '/admin/reviews',
-  path: '/admin/reviews',
+const ApiReleasesRoute = ApiReleasesRouteImport.update({
+  id: '/api/releases',
+  path: '/api/releases',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestSignupRoute = GuestSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => GuestRouteRoute,
+const ApiTagsRoute = ApiTagsRouteImport.update({
+  id: '/api/tags',
+  path: '/api/tags',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const GuestLoginRoute = GuestLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => GuestRouteRoute,
+const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
+  id: '/api/telemetry',
+  path: '/api/telemetry',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthRouteRoute,
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommitShaRoute = CommitShaRouteImport.update({
+  id: '/commit/$sha',
+  path: '/commit/$sha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsMcpRoute = DocsMcpRouteImport.update({
+  id: '/docs/mcp',
+  path: '/docs/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadOsRoute = DownloadOsRouteImport.update({
+  id: '/download_/$os',
+  path: '/download/$os',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IngestSplatRoute = IngestSplatRouteImport.update({
+  id: '/ingest/$',
+  path: '/ingest/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAppIndexRoute = AuthAppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthAppRouteRoute,
-} as any)
-const ApiWebhooksProviderRoute = ApiWebhooksProviderRouteImport.update({
-  id: '/api/webhooks/$provider',
-  path: '/api/webhooks/$provider',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiOauthTokenRoute = ApiOauthTokenRouteImport.update({
-  id: '/api/oauth/token',
-  path: '/api/oauth/token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiLicenseTrialRoute = ApiLicenseTrialRouteImport.update({
-  id: '/api/license/trial',
-  path: '/api/license/trial',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiLicensePubkeyRoute = ApiLicensePubkeyRouteImport.update({
-  id: '/api/license/pubkey',
-  path: '/api/license/pubkey',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiLicenseDeactivateRoute = ApiLicenseDeactivateRouteImport.update({
-  id: '/api/license/deactivate',
-  path: '/api/license/deactivate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiLicenseCheckRoute = ApiLicenseCheckRouteImport.update({
-  id: '/api/license/check',
-  path: '/api/license/check',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiLicenseActivateRoute = ApiLicenseActivateRouteImport.update({
-  id: '/api/license/activate',
-  path: '/api/license/activate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAiQuotaRoute = ApiAiQuotaRouteImport.update({
-  id: '/api/ai/quota',
-  path: '/api/ai/quota',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAiModelsRoute = ApiAiModelsRouteImport.update({
-  id: '/api/ai/models',
-  path: '/api/ai/models',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthAppSupportRoute = AuthAppSupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => AuthAppRouteRoute,
-} as any)
-const AuthAppReviewsRoute = AuthAppReviewsRouteImport.update({
-  id: '/reviews',
-  path: '/reviews',
-  getParentRoute: () => AuthAppRouteRoute,
-} as any)
-const AuthAppDownloadsRoute = AuthAppDownloadsRouteImport.update({
-  id: '/downloads',
-  path: '/downloads',
   getParentRoute: () => AuthAppRouteRoute,
 } as any)
 const AuthAppBillingRoute = AuthAppBillingRouteImport.update({
@@ -256,9 +203,99 @@ const AuthAppBillingRoute = AuthAppBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AuthAppRouteRoute,
 } as any)
-const ApiAiChatCompletionsRoute = ApiAiChatCompletionsRouteImport.update({
-  id: '/api/ai/chat/completions',
-  path: '/api/ai/chat/completions',
+const AuthAppDownloadsRoute = AuthAppDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => AuthAppRouteRoute,
+} as any)
+const AuthAppReviewsRoute = AuthAppReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AuthAppRouteRoute,
+} as any)
+const AuthAppSupportRoute = AuthAppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AuthAppRouteRoute,
+} as any)
+const ApiAiModelsRoute = ApiAiModelsRouteImport.update({
+  id: '/api/ai/models',
+  path: '/api/ai/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiQuotaRoute = ApiAiQuotaRouteImport.update({
+  id: '/api/ai/quota',
+  path: '/api/ai/quota',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicenseActivateRoute = ApiLicenseActivateRouteImport.update({
+  id: '/api/license/activate',
+  path: '/api/license/activate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicenseCheckRoute = ApiLicenseCheckRouteImport.update({
+  id: '/api/license/check',
+  path: '/api/license/check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicenseDeactivateRoute = ApiLicenseDeactivateRouteImport.update({
+  id: '/api/license/deactivate',
+  path: '/api/license/deactivate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicensePubkeyRoute = ApiLicensePubkeyRouteImport.update({
+  id: '/api/license/pubkey',
+  path: '/api/license/pubkey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicenseTrialRoute = ApiLicenseTrialRouteImport.update({
+  id: '/api/license/trial',
+  path: '/api/license/trial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOauthTokenRoute = ApiOauthTokenRouteImport.update({
+  id: '/api/oauth/token',
+  path: '/api/oauth/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksProviderRoute = ApiWebhooksProviderRouteImport.update({
+  id: '/api/webhooks/$provider',
+  path: '/api/webhooks/$provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminGiveawayDrawRoute = ApiAdminGiveawayDrawRouteImport.update({
+  id: '/api/admin/giveaway/draw',
+  path: '/api/admin/giveaway/draw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLicenseInfoRoute = ApiAdminLicenseInfoRouteImport.update({
+  id: '/api/admin/license/info',
+  path: '/api/admin/license/info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLicenseRevokeRoute = ApiAdminLicenseRevokeRouteImport.update({
+  id: '/api/admin/license/revoke',
+  path: '/api/admin/license/revoke',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLicenseUnrevokeRoute = ApiAdminLicenseUnrevokeRouteImport.update({
+  id: '/api/admin/license/unrevoke',
+  path: '/api/admin/license/unrevoke',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminReviewsListRoute = ApiAdminReviewsListRouteImport.update({
+  id: '/api/admin/reviews/list',
+  path: '/api/admin/reviews/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminReviewsModerateRoute = ApiAdminReviewsModerateRouteImport.update({
+  id: '/api/admin/reviews/moderate',
+  path: '/api/admin/reviews/moderate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminTelemetrySummaryRoute =
@@ -267,34 +304,9 @@ const ApiAdminTelemetrySummaryRoute =
     path: '/api/admin/telemetry/summary',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminReviewsModerateRoute = ApiAdminReviewsModerateRouteImport.update({
-  id: '/api/admin/reviews/moderate',
-  path: '/api/admin/reviews/moderate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminReviewsListRoute = ApiAdminReviewsListRouteImport.update({
-  id: '/api/admin/reviews/list',
-  path: '/api/admin/reviews/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLicenseUnrevokeRoute = ApiAdminLicenseUnrevokeRouteImport.update({
-  id: '/api/admin/license/unrevoke',
-  path: '/api/admin/license/unrevoke',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLicenseRevokeRoute = ApiAdminLicenseRevokeRouteImport.update({
-  id: '/api/admin/license/revoke',
-  path: '/api/admin/license/revoke',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLicenseInfoRoute = ApiAdminLicenseInfoRouteImport.update({
-  id: '/api/admin/license/info',
-  path: '/api/admin/license/info',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminGiveawayDrawRoute = ApiAdminGiveawayDrawRouteImport.update({
-  id: '/api/admin/giveaway/draw',
-  path: '/api/admin/giveaway/draw',
+const ApiAiChatCompletionsRoute = ApiAiChatCompletionsRouteImport.update({
+  id: '/api/ai/chat/completions',
+  path: '/api/ai/chat/completions',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -317,10 +329,12 @@ export interface FileRoutesByFullPath {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog/': typeof BlogIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
@@ -364,10 +378,12 @@ export interface FileRoutesByTo {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog': typeof BlogIndexRoute
   '/docs': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
@@ -415,10 +431,12 @@ export interface FileRoutesById {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download_/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog/': typeof BlogIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/_auth/app/billing': typeof AuthAppBillingRoute
   '/_auth/app/downloads': typeof AuthAppDownloadsRoute
@@ -465,10 +483,12 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/blog/'
     | '/docs/'
     | '/app/billing'
     | '/app/downloads'
@@ -512,10 +532,12 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/blog'
     | '/docs'
     | '/app/billing'
     | '/app/downloads'
@@ -562,10 +584,12 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
     | '/docs/mcp'
     | '/download_/$os'
     | '/ingest/$'
+    | '/blog/'
     | '/docs/'
     | '/_auth/app/billing'
     | '/_auth/app/downloads'
@@ -610,10 +634,12 @@ export interface RootRouteChildren {
   ApiReleasesRoute: typeof ApiReleasesRoute
   ApiTagsRoute: typeof ApiTagsRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   CommitShaRoute: typeof CommitShaRoute
   DocsMcpRoute: typeof DocsMcpRoute
   DownloadOsRoute: typeof DownloadOsRoute
   IngestSplatRoute: typeof IngestSplatRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   DocsIndexRoute: typeof DocsIndexRoute
   ApiAiModelsRoute: typeof ApiAiModelsRoute
   ApiAiQuotaRoute: typeof ApiAiQuotaRoute
@@ -637,74 +663,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/roadmap': {
-      id: '/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof RoadmapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/giveaway': {
-      id: '/giveaway'
-      path: '/giveaway'
-      fullPath: '/giveaway'
-      preLoaderRoute: typeof GiveawayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/features': {
-      id: '/features'
-      path: '/features'
-      fullPath: '/features'
-      preLoaderRoute: typeof FeaturesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/download': {
-      id: '/download'
-      path: '/download'
-      fullPath: '/download'
-      preLoaderRoute: typeof DownloadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/changelog': {
-      id: '/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof ChangelogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_guest': {
-      id: '/_guest'
-      path: ''
+    '/': {
+      id: '/'
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof GuestRouteRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -714,67 +677,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
+    '/_guest': {
+      id: '/_guest'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof GuestRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs/': {
-      id: '/docs/'
-      path: '/docs'
-      fullPath: '/docs/'
-      preLoaderRoute: typeof DocsIndexRouteImport
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ingest/$': {
-      id: '/ingest/$'
-      path: '/ingest/$'
-      fullPath: '/ingest/$'
-      preLoaderRoute: typeof IngestSplatRouteImport
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/download_/$os': {
-      id: '/download_/$os'
-      path: '/download/$os'
-      fullPath: '/download/$os'
-      preLoaderRoute: typeof DownloadOsRouteImport
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs/mcp': {
-      id: '/docs/mcp'
-      path: '/docs/mcp'
-      fullPath: '/docs/mcp'
-      preLoaderRoute: typeof DocsMcpRouteImport
+    '/giveaway': {
+      id: '/giveaway'
+      path: '/giveaway'
+      fullPath: '/giveaway'
+      preLoaderRoute: typeof GiveawayRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/commit/$sha': {
-      id: '/commit/$sha'
-      path: '/commit/$sha'
-      fullPath: '/commit/$sha'
-      preLoaderRoute: typeof CommitShaRouteImport
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/telemetry': {
-      id: '/api/telemetry'
-      path: '/api/telemetry'
-      fullPath: '/api/telemetry'
-      preLoaderRoute: typeof ApiTelemetryRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/tags': {
-      id: '/api/tags'
-      path: '/api/tags'
-      fullPath: '/api/tags'
-      preLoaderRoute: typeof ApiTagsRouteImport
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/releases': {
-      id: '/api/releases'
-      path: '/api/releases'
-      fullPath: '/api/releases'
-      preLoaderRoute: typeof ApiReleasesRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/app': {
+      id: '/_auth/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthAppRouteRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_guest/login': {
+      id: '/_guest/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof GuestLoginRouteImport
+      parentRoute: typeof GuestRouteRoute
+    }
+    '/_guest/signup': {
+      id: '/_guest/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof GuestSignupRouteImport
+      parentRoute: typeof GuestRouteRoute
+    }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/changelog': {
@@ -784,130 +782,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/reviews': {
-      id: '/admin/reviews'
-      path: '/admin/reviews'
-      fullPath: '/admin/reviews'
-      preLoaderRoute: typeof AdminReviewsRouteImport
+    '/api/releases': {
+      id: '/api/releases'
+      path: '/api/releases'
+      fullPath: '/api/releases'
+      preLoaderRoute: typeof ApiReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_guest/signup': {
-      id: '/_guest/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof GuestSignupRouteImport
-      parentRoute: typeof GuestRouteRoute
+    '/api/tags': {
+      id: '/api/tags'
+      path: '/api/tags'
+      fullPath: '/api/tags'
+      preLoaderRoute: typeof ApiTagsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_guest/login': {
-      id: '/_guest/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof GuestLoginRouteImport
-      parentRoute: typeof GuestRouteRoute
+    '/api/telemetry': {
+      id: '/api/telemetry'
+      path: '/api/telemetry'
+      fullPath: '/api/telemetry'
+      preLoaderRoute: typeof ApiTelemetryRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_auth/app': {
-      id: '/_auth/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthAppRouteRouteImport
-      parentRoute: typeof AuthRouteRoute
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commit/$sha': {
+      id: '/commit/$sha'
+      path: '/commit/$sha'
+      fullPath: '/commit/$sha'
+      preLoaderRoute: typeof CommitShaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/mcp': {
+      id: '/docs/mcp'
+      path: '/docs/mcp'
+      fullPath: '/docs/mcp'
+      preLoaderRoute: typeof DocsMcpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download_/$os': {
+      id: '/download_/$os'
+      path: '/download/$os'
+      fullPath: '/download/$os'
+      preLoaderRoute: typeof DownloadOsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ingest/$': {
+      id: '/ingest/$'
+      path: '/ingest/$'
+      fullPath: '/ingest/$'
+      preLoaderRoute: typeof IngestSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/app/': {
       id: '/_auth/app/'
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AuthAppIndexRouteImport
-      parentRoute: typeof AuthAppRouteRoute
-    }
-    '/api/webhooks/$provider': {
-      id: '/api/webhooks/$provider'
-      path: '/api/webhooks/$provider'
-      fullPath: '/api/webhooks/$provider'
-      preLoaderRoute: typeof ApiWebhooksProviderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/oauth/token': {
-      id: '/api/oauth/token'
-      path: '/api/oauth/token'
-      fullPath: '/api/oauth/token'
-      preLoaderRoute: typeof ApiOauthTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/license/trial': {
-      id: '/api/license/trial'
-      path: '/api/license/trial'
-      fullPath: '/api/license/trial'
-      preLoaderRoute: typeof ApiLicenseTrialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/license/pubkey': {
-      id: '/api/license/pubkey'
-      path: '/api/license/pubkey'
-      fullPath: '/api/license/pubkey'
-      preLoaderRoute: typeof ApiLicensePubkeyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/license/deactivate': {
-      id: '/api/license/deactivate'
-      path: '/api/license/deactivate'
-      fullPath: '/api/license/deactivate'
-      preLoaderRoute: typeof ApiLicenseDeactivateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/license/check': {
-      id: '/api/license/check'
-      path: '/api/license/check'
-      fullPath: '/api/license/check'
-      preLoaderRoute: typeof ApiLicenseCheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/license/activate': {
-      id: '/api/license/activate'
-      path: '/api/license/activate'
-      fullPath: '/api/license/activate'
-      preLoaderRoute: typeof ApiLicenseActivateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/ai/quota': {
-      id: '/api/ai/quota'
-      path: '/api/ai/quota'
-      fullPath: '/api/ai/quota'
-      preLoaderRoute: typeof ApiAiQuotaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/ai/models': {
-      id: '/api/ai/models'
-      path: '/api/ai/models'
-      fullPath: '/api/ai/models'
-      preLoaderRoute: typeof ApiAiModelsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth/app/support': {
-      id: '/_auth/app/support'
-      path: '/support'
-      fullPath: '/app/support'
-      preLoaderRoute: typeof AuthAppSupportRouteImport
-      parentRoute: typeof AuthAppRouteRoute
-    }
-    '/_auth/app/reviews': {
-      id: '/_auth/app/reviews'
-      path: '/reviews'
-      fullPath: '/app/reviews'
-      preLoaderRoute: typeof AuthAppReviewsRouteImport
-      parentRoute: typeof AuthAppRouteRoute
-    }
-    '/_auth/app/downloads': {
-      id: '/_auth/app/downloads'
-      path: '/downloads'
-      fullPath: '/app/downloads'
-      preLoaderRoute: typeof AuthAppDownloadsRouteImport
       parentRoute: typeof AuthAppRouteRoute
     }
     '/_auth/app/billing': {
@@ -917,46 +866,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppBillingRouteImport
       parentRoute: typeof AuthAppRouteRoute
     }
-    '/api/ai/chat/completions': {
-      id: '/api/ai/chat/completions'
-      path: '/api/ai/chat/completions'
-      fullPath: '/api/ai/chat/completions'
-      preLoaderRoute: typeof ApiAiChatCompletionsRouteImport
+    '/_auth/app/downloads': {
+      id: '/_auth/app/downloads'
+      path: '/downloads'
+      fullPath: '/app/downloads'
+      preLoaderRoute: typeof AuthAppDownloadsRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
+    '/_auth/app/reviews': {
+      id: '/_auth/app/reviews'
+      path: '/reviews'
+      fullPath: '/app/reviews'
+      preLoaderRoute: typeof AuthAppReviewsRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
+    '/_auth/app/support': {
+      id: '/_auth/app/support'
+      path: '/support'
+      fullPath: '/app/support'
+      preLoaderRoute: typeof AuthAppSupportRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
+    '/api/ai/models': {
+      id: '/api/ai/models'
+      path: '/api/ai/models'
+      fullPath: '/api/ai/models'
+      preLoaderRoute: typeof ApiAiModelsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/telemetry/summary': {
-      id: '/api/admin/telemetry/summary'
-      path: '/api/admin/telemetry/summary'
-      fullPath: '/api/admin/telemetry/summary'
-      preLoaderRoute: typeof ApiAdminTelemetrySummaryRouteImport
+    '/api/ai/quota': {
+      id: '/api/ai/quota'
+      path: '/api/ai/quota'
+      fullPath: '/api/ai/quota'
+      preLoaderRoute: typeof ApiAiQuotaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/reviews/moderate': {
-      id: '/api/admin/reviews/moderate'
-      path: '/api/admin/reviews/moderate'
-      fullPath: '/api/admin/reviews/moderate'
-      preLoaderRoute: typeof ApiAdminReviewsModerateRouteImport
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/reviews/list': {
-      id: '/api/admin/reviews/list'
-      path: '/api/admin/reviews/list'
-      fullPath: '/api/admin/reviews/list'
-      preLoaderRoute: typeof ApiAdminReviewsListRouteImport
+    '/api/license/activate': {
+      id: '/api/license/activate'
+      path: '/api/license/activate'
+      fullPath: '/api/license/activate'
+      preLoaderRoute: typeof ApiLicenseActivateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/license/unrevoke': {
-      id: '/api/admin/license/unrevoke'
-      path: '/api/admin/license/unrevoke'
-      fullPath: '/api/admin/license/unrevoke'
-      preLoaderRoute: typeof ApiAdminLicenseUnrevokeRouteImport
+    '/api/license/check': {
+      id: '/api/license/check'
+      path: '/api/license/check'
+      fullPath: '/api/license/check'
+      preLoaderRoute: typeof ApiLicenseCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/license/revoke': {
-      id: '/api/admin/license/revoke'
-      path: '/api/admin/license/revoke'
-      fullPath: '/api/admin/license/revoke'
-      preLoaderRoute: typeof ApiAdminLicenseRevokeRouteImport
+    '/api/license/deactivate': {
+      id: '/api/license/deactivate'
+      path: '/api/license/deactivate'
+      fullPath: '/api/license/deactivate'
+      preLoaderRoute: typeof ApiLicenseDeactivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/license/pubkey': {
+      id: '/api/license/pubkey'
+      path: '/api/license/pubkey'
+      fullPath: '/api/license/pubkey'
+      preLoaderRoute: typeof ApiLicensePubkeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/license/trial': {
+      id: '/api/license/trial'
+      path: '/api/license/trial'
+      fullPath: '/api/license/trial'
+      preLoaderRoute: typeof ApiLicenseTrialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/oauth/token': {
+      id: '/api/oauth/token'
+      path: '/api/oauth/token'
+      fullPath: '/api/oauth/token'
+      preLoaderRoute: typeof ApiOauthTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/$provider': {
+      id: '/api/webhooks/$provider'
+      path: '/api/webhooks/$provider'
+      fullPath: '/api/webhooks/$provider'
+      preLoaderRoute: typeof ApiWebhooksProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/giveaway/draw': {
+      id: '/api/admin/giveaway/draw'
+      path: '/api/admin/giveaway/draw'
+      fullPath: '/api/admin/giveaway/draw'
+      preLoaderRoute: typeof ApiAdminGiveawayDrawRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/license/info': {
@@ -966,11 +971,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLicenseInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/giveaway/draw': {
-      id: '/api/admin/giveaway/draw'
-      path: '/api/admin/giveaway/draw'
-      fullPath: '/api/admin/giveaway/draw'
-      preLoaderRoute: typeof ApiAdminGiveawayDrawRouteImport
+    '/api/admin/license/revoke': {
+      id: '/api/admin/license/revoke'
+      path: '/api/admin/license/revoke'
+      fullPath: '/api/admin/license/revoke'
+      preLoaderRoute: typeof ApiAdminLicenseRevokeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/license/unrevoke': {
+      id: '/api/admin/license/unrevoke'
+      path: '/api/admin/license/unrevoke'
+      fullPath: '/api/admin/license/unrevoke'
+      preLoaderRoute: typeof ApiAdminLicenseUnrevokeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/reviews/list': {
+      id: '/api/admin/reviews/list'
+      path: '/api/admin/reviews/list'
+      fullPath: '/api/admin/reviews/list'
+      preLoaderRoute: typeof ApiAdminReviewsListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/reviews/moderate': {
+      id: '/api/admin/reviews/moderate'
+      path: '/api/admin/reviews/moderate'
+      fullPath: '/api/admin/reviews/moderate'
+      preLoaderRoute: typeof ApiAdminReviewsModerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/telemetry/summary': {
+      id: '/api/admin/telemetry/summary'
+      path: '/api/admin/telemetry/summary'
+      fullPath: '/api/admin/telemetry/summary'
+      preLoaderRoute: typeof ApiAdminTelemetrySummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/chat/completions': {
+      id: '/api/ai/chat/completions'
+      path: '/api/ai/chat/completions'
+      fullPath: '/api/ai/chat/completions'
+      preLoaderRoute: typeof ApiAiChatCompletionsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1040,10 +1080,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReleasesRoute: ApiReleasesRoute,
   ApiTagsRoute: ApiTagsRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
+  BlogSlugRoute: BlogSlugRoute,
   CommitShaRoute: CommitShaRoute,
   DocsMcpRoute: DocsMcpRoute,
   DownloadOsRoute: DownloadOsRoute,
   IngestSplatRoute: IngestSplatRoute,
+  BlogIndexRoute: BlogIndexRoute,
   DocsIndexRoute: DocsIndexRoute,
   ApiAiModelsRoute: ApiAiModelsRoute,
   ApiAiQuotaRoute: ApiAiQuotaRoute,
@@ -1067,12 +1109,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

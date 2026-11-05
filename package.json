@@ -31,9 +31,11 @@
     "auth:generate": "pnpm dlx auth@latest generate --config ./src/lib/auth/auth.ts --y --output ./src/lib/db/schema/auth.schema.ts",
     "auth:migrate": "pnpm run auth:generate && pnpm run db generate && pnpm run db push",
     "skills": "pnpm dlx skills@latest",
-    "intent": "pnpm dlx @tanstack/intent@latest"
+    "intent": "pnpm dlx @tanstack/intent@latest",
+    "analyze:trends": "node scripts/analyze-trends.mjs"
   },
   "dependencies": {
+    "@alkalisummer/google-trends-js": "^0.3.7",
     "@base-ui/react": "1.5.0",
     "@better-auth/drizzle-adapter": "1.6.14",
     "@dodopayments/better-auth": "^1.6.3",
