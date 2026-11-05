@@ -33,11 +33,11 @@ Secret: `OPENROUTER_POOL_KEY` (overflow), `ANON_TOKEN_SECRET` (HMAC for device t
 
 ### Endpoints
 
-| Route | Purpose |
-| --- | --- |
-| `POST /v1/anon` | Mint a signed device token. Body: `{ installId }`. Returns `{ token, expiresAt }`. HMAC-SHA256 over `installId + issuedAt` with `ANON_TOKEN_SECRET`; ~30d expiry, renewable. |
-| `GET /v1/models` | Curated free list (OpenAI `{data:[{id}]}` shape) so the existing model picker's live discovery works unchanged. |
-| `POST /v1/chat/completions` | OpenAI-compatible, **must support SSE streaming and tool calls**. Routes to Workers AI, falls through to OpenRouter on cap/error. |
+| Route                       | Purpose                                                                                                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /v1/anon`             | Mint a signed device token. Body: `{ installId }`. Returns `{ token, expiresAt }`. HMAC-SHA256 over `installId + issuedAt` with `ANON_TOKEN_SECRET`; ~30d expiry, renewable. |
+| `GET /v1/models`            | Curated free list (OpenAI `{data:[{id}]}` shape) so the existing model picker's live discovery works unchanged.                                                              |
+| `POST /v1/chat/completions` | OpenAI-compatible, **must support SSE streaming and tool calls**. Routes to Workers AI, falls through to OpenRouter on cap/error.                                            |
 
 ### Quota (D1, drizzle migration)
 

@@ -111,6 +111,18 @@ interface SeoOptions {
   image?: string;
   /** Describes `image` for people who can't see it. Required with a custom image. */
   imageAlt?: string;
+  /** OpenGraph type, "website" (default) or "article" for blog posts */
+  type?: "website" | "article";
+  /** Target keywords for entity mapping and search queries */
+  keywords?: string[] | string;
+  /** Metadata specific to articles / blog posts */
+  articleMeta?: {
+    publishedTime?: string;
+    modifiedTime?: string;
+    author?: string;
+    section?: string;
+    tags?: string[];
+  };
   /**
    * Trail from the home page down to this page, e.g.
    * [{ name: "Download", path: "/download" }, { name: "Linux", path: "/download/linux" }].
@@ -119,6 +131,84 @@ interface SeoOptions {
   breadcrumbs?: { name: string; path: string }[];
   /** More structured-data nodes, emitted in the same JSON-LD graph as the breadcrumbs. */
   schema?: Record<string, unknown>[];
+}
+
+/**
+ * Schema.org BlogPosting node for articles and editorial guides.
+ * Enables rich snippet previews and AI passage citation.
+ */
+export function articleSchema({
+  path,
+  title,
+  description,
+  publishedAt,
+  updatedAt,
+  author,
+  image = DEFAULT_OG_IMAGE,
+  keywords,
+  section,
+  wordCount,
+}: {
+  path: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  updatedAt?: string;
+  author: { name: string; role?: string; url?: string };
+  image?: string;
+  keywords?: string[];
+  section?: string;
+  wordCount?: number;
+}) {
+  const url = `${SITE_URL}${path}`;
+  return {
+    "@type": "BlogPosting",
+    "@id": `${url}#article`,
+    headline: title,
+    description,
+    url,
+    inLanguage: "en-US",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    datePublished: publishedAt,
+    dateModified: updatedAt ?? publishedAt,
+    author: {
+      "@type": "Person",
+      name: author.name,
+      ...(author.role ? { jobTitle: author.role } : {}),
+      ...(author.url ? { url: author.url } : {}),
+    },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    image: {
+      "@type": "ImageObject",
+      url: image,
+      width: 1200,
+      height: 630,
+    },
+    ...(keywords && keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
+    ...(section ? { articleSection: section } : {}),
+    ...(wordCount ? { wordCount } : {}),
+  };
+}
+
+/**
+ * Schema.org FAQPage node for high-intent Q&A sections.
+ * Essential for Google AI Overviews and Perplexity search answers.
+ */
+export function faqPageSchema(faqs: { question: string; answer: string }[]) {
+  return {
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
 }
 
 /**
@@ -134,6 +224,9 @@ export function seo({
   path,
   image = DEFAULT_OG_IMAGE,
   imageAlt = DEFAULT_OG_IMAGE_ALT,
+  type = "website",
+  keywords,
+  articleMeta,
   breadcrumbs,
   schema = [],
 }: SeoOptions) {
@@ -155,30 +248,58 @@ export function seo({
         ]
       : []),
   ];
+
+  const metaList: Record<string, string>[] = [
+    { title },
+    { name: "description", content: description },
+    // Lets search show large screenshots and full snippets for public pages.
+    {
+      name: "robots",
+      content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+    },
+    { property: "og:type", content: type },
+    { property: "og:site_name", content: SITE_NAME },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: imageAlt },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+    { name: "twitter:image:alt", content: imageAlt },
+  ];
+
+  if (keywords) {
+    const kwString = Array.isArray(keywords) ? keywords.join(", ") : keywords;
+    metaList.push({ name: "keywords", content: kwString });
+  }
+
+  if (type === "article" && articleMeta) {
+    if (articleMeta.publishedTime) {
+      metaList.push({ property: "article:published_time", content: articleMeta.publishedTime });
+    }
+    if (articleMeta.modifiedTime) {
+      metaList.push({ property: "article:modified_time", content: articleMeta.modifiedTime });
+    }
+    if (articleMeta.author) {
+      metaList.push({ property: "article:author", content: articleMeta.author });
+    }
+    if (articleMeta.section) {
+      metaList.push({ property: "article:section", content: articleMeta.section });
+    }
+    if (articleMeta.tags) {
+      for (const tag of articleMeta.tags) {
+        metaList.push({ property: "article:tag", content: tag });
+      }
+    }
+  }
+
   return {
-    meta: [
-      { title },
-      { name: "description", content: description },
-      // Lets search show large screenshots and full snippets for public pages.
-      {
-        name: "robots",
-        content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:site_name", content: SITE_NAME },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:url", content: url },
-      { property: "og:image", content: image },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: imageAlt },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: title },
-      { name: "twitter:description", content: description },
-      { name: "twitter:image", content: image },
-      { name: "twitter:image:alt", content: imageAlt },
-    ],
+    meta: metaList,
     links: [{ rel: "canonical", href: url }],
     scripts: graph.length > 0 ? [jsonLd(graph)] : [],
   };

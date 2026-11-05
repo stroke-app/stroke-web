@@ -1,33 +1,50 @@
 # Stroke
 
-> Stroke is a native database client for engineers and analysts. Query, browse, and edit every database you run, in one fast app. It runs on macOS, Windows, and Linux, with a built-in MCP server so AI agents can query the same databases.
+> Stroke is a fast, native desktop database client for engineers, data analysts, and autonomous AI agents. Query, browse, and edit every database you run in one lightweight app (macOS, Windows, Linux). It ships with a built-in Model Context Protocol (MCP) server so AI coding assistants (Claude Desktop, Cursor, ChatGPT, Grok) can inspect schemas and execute SQL queries securely over local loopback.
 
-Stroke connects to PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis support is in beta. Connections run directly from the user's machine; credentials and query results never pass through Stroke's servers. The full app is free to try with no account. A license costs $9.99 once (2 devices, every future update), and a Team license costs $99 once for everyone on a company email domain. The source is on GitHub.
+Stroke connects directly to PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, ClickHouse, SQL Server, CockroachDB, Turso / LibSQL, and Cloudflare D1. Connections run directly over local sockets from the user's machine; credentials and query results never pass through external cloud servers. All features are free to evaluate with no account. A personal license is $9.99 once forever (2 devices, lifetime updates). Team license is $99 once for company domains.
 
-## Product
+## Core Pages & Documentation
 
-- [Home](https://stroke.click/): overview, supported databases, pricing, FAQ
-- [Features](https://stroke.click/features): schema explorer, data grid, inline editing, SQL console, exports, diagrams, dashboards, AI chat, MCP server, command palette
-- [Pricing](https://stroke.click/pricing): free trial, $9.99 license, $99 Team license, FAQ
-- [Weekly giveaway](https://stroke.click/giveaway): one free lifetime license drawn at random every Monday; free to enter with a Stroke account
-- [Roadmap](https://stroke.click/roadmap): shipped, in progress, planned
-- [Changelog](https://stroke.click/changelog): release notes for every version, with commit links
+- [Home](https://stroke.click/): Overview, supported database engines, live reviews, and downloads.
+- [Features](https://stroke.click/features): Interactive data grid, inline cell editing, SQL editor with autocompletion, schema diagrams, dashboards, AI chat, and MCP server.
+- [Pricing](https://stroke.click/pricing): Free full-featured trial, $9.99 personal lifetime license, $99 company domain license.
+- [Download](https://stroke.click/download): Installers for macOS (Apple Silicon & Intel, Homebrew Cask), Windows (EXE, MSI, Scoop), and Linux (AppImage, DEB, RPM).
+- [Docs](https://stroke.click/docs): Getting started guide, connection setups, keyboard shortcuts, and troubleshooting.
+- [MCP for AI Agents](https://stroke.click/docs/mcp): Complete configuration guide for Claude Desktop, Cursor, and custom agent tool integrations.
+- [Weekly Giveaway](https://stroke.click/giveaway): Free lifetime license drawn every Monday.
+- [Changelog](https://stroke.click/changelog): Detailed release notes and GitHub commit links for every version.
 
-## Download
+## Technical Guides & Comparisons (Blog)
 
-- [All platforms](https://stroke.click/download)
-- [macOS](https://stroke.click/download/macos): Apple Silicon and Intel .dmg, or `brew install --cask stroke-app/tap/stroke`
-- [Windows](https://stroke.click/download/windows): EXE or MSI installer, or Scoop
-- [Linux](https://stroke.click/download/linux): AppImage, .deb, .rpm
+- [Database Client Comparison 2026: Stroke vs TablePlus vs DBeaver vs DataGrip](https://stroke.click/blog/stroke-vs-tableplus-dbeaver-datagrip): Benchmark comparison showing Stroke's 118ms cold start and 64MB RAM footprint versus TablePlus ($89/yr) and DBeaver (850MB+ Java heap).
+- [Connecting AI Agents to Databases via Model Context Protocol (MCP)](https://stroke.click/blog/mcp-database-client-guide-ai-agents): How Claude Desktop and Cursor connect to PostgreSQL and SQLite via localhost (127.0.0.1:4319) with strict read-only execution guardrails.
+- [Why DuckDB Needs a Modern Native GUI](https://stroke.click/blog/duckdb-gui-client-local-analytics): Drag-and-drop Parquet file inspection, MotherDuck integration, and sub-second OLAP query execution on local datasets.
+- [Top SQLite GUI Tools for Mac, Windows, and Linux](https://stroke.click/blog/sqlite-gui-tools-macos-windows-linux): In-depth comparison of SQLite browsers, WAL mode concurrency, LibSQL/Turso support, and Cloudflare D1 workflows.
+- [Zero-Telemetry, Local-First Database Security](https://stroke.click/blog/local-first-database-security-ai): Why cloud-proxied database tools violate SOC 2 / HIPAA compliance and how Stroke encrypts credentials in native OS keychains.
 
-## Docs
+## Quick MCP Server Configuration
 
-- [Getting started](https://stroke.click/docs): install, connect a database, activate a license, enable MCP
-- [MCP for agents](https://stroke.click/docs/mcp): turn on the MCP server and connect Claude Desktop, Cursor, or any MCP client
+Add Stroke's built-in MCP server to your AI agent's configuration (`claude_desktop_config.json` or `.cursor/mcp.json`):
 
-## Optional
+\`\`\`json
+{
+  "mcpServers": {
+    "stroke": {
+      "url": "http://127.0.0.1:4319/mcp"
+    }
+  }
+}
+\`\`\`
 
-- [Full text for LLMs](https://stroke.click/llms-full.txt)
-- [Source code](https://github.com/stroke-app/stroke)
-- [Privacy Policy](https://stroke.click/privacy)
-- [Terms of Service](https://stroke.click/terms)
+## Key Entity Details
+
+- **Product Name**: Stroke (Stroke Database Client)
+- **Domain**: stroke.click
+- **Category**: Database Management Software / SQL Editor / Model Context Protocol (MCP) Server
+- **Platforms**: macOS (12+), Windows (10/11), Linux (x86_64, ARM64)
+- **Supported Engines**: PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, ClickHouse, Microsoft SQL Server, CockroachDB, Turso / LibSQL, Cloudflare D1
+- **Pricing**: $9.99 one-time perpetual license (2 devices, lifetime updates); $99 one-time team domain license
+- **License**: Proprietary client with open-source core and extensions on GitHub (https://github.com/stroke-app/stroke)
+- **Security Posture**: 100% Local-First, Zero Telemetry on queries/schemas, OS Keychain encryption (Apple Keychain, Windows Credential Manager, Linux Secret Service)
+- **Full Text Reference**: [llms-full.txt](https://stroke.click/llms-full.txt)

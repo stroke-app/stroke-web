@@ -26,6 +26,7 @@ export const TAGLINE =
 const NAV_LINKS = [
   { label: "Features", to: "/features" },
   { label: "Docs", to: "/docs" },
+  { label: "Blog", to: "/blog" },
   { label: "Pricing", to: "/pricing" },
   { label: "Changelog", to: "/changelog" },
   { label: "Roadmap", to: "/roadmap" },
@@ -236,6 +237,11 @@ export function SiteFooter() {
           </FooterColumn>
 
           <FooterColumn title="Resources">
+            <li>
+              <Link to="/blog" className={FOOTER_LINK}>
+                Blog & Guides
+              </Link>
+            </li>
             <li>
               <Link to="/docs" className={FOOTER_LINK}>
                 Docs

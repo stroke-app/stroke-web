@@ -285,13 +285,70 @@ function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
       continue;
     }
 
+    // markdown table
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+        tableLines.push(lines[i].trim());
+        i++;
+      }
+      if (tableLines.length >= 2) {
+        const headerCells = tableLines[0]
+          .split("|")
+          .slice(1, -1)
+          .map((c) => c.trim());
+        // line 1 is separator |:---|:---|
+        const bodyLines = tableLines.slice(2);
+        const rows = bodyLines.map((l) =>
+          l
+            .split("|")
+            .slice(1, -1)
+            .map((c) => c.trim()),
+        );
+
+        push("text", (gap) => (
+          <div
+            key={key++}
+            className={cn(
+              "my-6 overflow-x-auto rounded-lg border border-border bg-[#0b0c0d]/60",
+              gap,
+            )}
+          >
+            <table className="w-full text-left text-[14px]">
+              <thead className="border-b border-border bg-white/[0.03]">
+                <tr>
+                  {headerCells.map((h, idx) => (
+                    <th key={idx} className="px-4 py-3 font-semibold text-foreground">
+                      {renderInline(h, repoUrl)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {rows.map((row, rIdx) => (
+                  <tr key={rIdx} className="hover:bg-white/[0.02]">
+                    {row.map((cell, cIdx) => (
+                      <td key={cIdx} className="px-4 py-3 text-soft">
+                        {renderInline(cell, repoUrl)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ));
+        continue;
+      }
+    }
+
     // paragraph: consume until blank line or a line that starts another block
     const para: string[] = [line];
     i++;
     while (
       i < lines.length &&
       lines[i].trim() !== "" &&
-      !/^(#{1,6}\s|```|\s*[-*+]\s|\s*\d+[.)]\s|>|-{3,}\s*$)/.test(lines[i])
+      !/^(#{1,6}\s|```|\s*[-*+]\s|\s*\d+[.)]\s|>|-{3,}\s*|\|)/.test(lines[i])
     ) {
       para.push(lines[i]);
       i++;

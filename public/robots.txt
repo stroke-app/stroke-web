@@ -1,7 +1,6 @@
 # Everything public is open to search engines and AI crawlers alike.
 User-agent: *
 Allow: /
-# /app$ and /app/ rather than /app, which would also block /app-screenshot.png.
 Disallow: /app$
 Disallow: /app/
 Disallow: /admin
@@ -11,7 +10,48 @@ Disallow: /api/
 Disallow: /ingest/
 Disallow: /commit/
 
-# A plain-text map of the site for language models lives at /llms.txt
-# (full text at /llms-full.txt).
+# Explicitly welcome AI Search and Model Crawlers (ChatGPT, Grok, Perplexity, Claude, Gemini)
+User-agent: GPTBot
+Allow: /
+Disallow: /app/
+Disallow: /admin
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /app/
+Disallow: /admin
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /app/
+Disallow: /admin
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /app/
+Disallow: /admin
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# LLM-readable representations for AI agents:
+# Short summary: https://stroke.click/llms.txt
+# Comprehensive context: https://stroke.click/llms-full.txt
 
 Sitemap: https://stroke.click/sitemap.xml
