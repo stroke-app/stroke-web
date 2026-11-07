@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { BLOG_POSTS } from "#/lib/blog";
 import { $getLatestRelease } from "#/lib/latest-release";
 import { SITE_URL } from "#/lib/seo";
 
@@ -10,6 +11,7 @@ import { SITE_URL } from "#/lib/seo";
  */
 const PAGES: { path: string; priority: string; changefreq: string; release?: boolean }[] = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
+  { path: "/blog", priority: "0.9", changefreq: "weekly" },
   { path: "/download", priority: "0.9", changefreq: "weekly", release: true },
   { path: "/download/macos", priority: "0.9", changefreq: "weekly", release: true },
   { path: "/download/windows", priority: "0.9", changefreq: "weekly", release: true },
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const release = await $getLatestRelease().catch(() => null);
         const released = release?.published_at.slice(0, 10);
 
-        const urls = PAGES.map((p) => {
+        const staticUrls = PAGES.map((p) => {
           const lastmod = p.release && released ? `\n    <lastmod>${released}</lastmod>` : "";
           return `  <url>
     <loc>${SITE_URL}${p.path === "/" ? "" : p.path}</loc>${lastmod}
@@ -41,9 +43,20 @@ export const Route = createFileRoute("/sitemap.xml")({
   </url>`;
         }).join("\n");
 
+        const blogUrls = BLOG_POSTS.map((post) => {
+          const lastmod = (post.updatedAt || post.publishedAt).slice(0, 10);
+          return `  <url>
+    <loc>${SITE_URL}/blog/${post.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+        }).join("\n");
+
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
+${staticUrls}
+${blogUrls}
 </urlset>
 `;
 

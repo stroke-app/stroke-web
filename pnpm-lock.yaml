@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@alkalisummer/google-trends-js':
+        specifier: ^0.3.7
+        version: 0.3.7
       '@base-ui/react':
         specifier: 1.5.0
         version: 1.5.0(@types/react@19.2.16)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -182,6 +185,9 @@ importers:
         version: 4.98.0(@cloudflare/workers-types@4.20260608.1)
 
 packages:
+
+  '@alkalisummer/google-trends-js@0.3.7':
+    resolution: {integrity: sha512-r5ku6Af53HKKi8u9n2ILw4SLhc+l63Q+2EYfjn0Cl9LDbCy4QoywrsgyUlB+9S6EpcqZZNdYFZAhH+ie0osiPw==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -4839,6 +4845,8 @@ packages:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
+
+  '@alkalisummer/google-trends-js@0.3.7': {}
 
   '@babel/code-frame@7.27.1':
     dependencies:

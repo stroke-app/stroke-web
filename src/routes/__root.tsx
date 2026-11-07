@@ -48,6 +48,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
         { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
         { rel: "manifest", href: "/site.webmanifest" },
+        { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "LLM Summary" },
+        {
+          rel: "alternate",
+          type: "text/plain",
+          href: "/llms-full.txt",
+          title: "LLM Full Documentation",
+        },
+        { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "LLM Summary" },
+        {
+          rel: "alternate",
+          type: "text/plain",
+          href: "/llms-full.txt",
+          title: "LLM Full Documentation",
+        },
         { rel: "stylesheet", href: appCss },
       ],
     };
