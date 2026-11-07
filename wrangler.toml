@@ -1,5 +1,6 @@
 name = "stroke-web"
-account_id = "16b2c363a412bfaaec2a5a2572964728"
+# "stroke" account: kept separate so other projects' free-tier usage can't take stroke.click down.
+account_id = "dd717ae06a58b724464895bb4258c94f"
 compatibility_date = "2025-10-01"
 main = "src/server.ts"
 compatibility_flags = ["nodejs_compat"]
@@ -21,7 +22,7 @@ crons = ["5 0 * * 1"]
 [[d1_databases]]
 binding = "DB"
 database_name = "stroke-web"
-database_id = "9b155570-5614-4d21-b61c-6eb98bb365cd"
+database_id = "eb8fdefd-8064-49b7-83fa-4336580068eb"
 migrations_dir = "drizzle"
 
 [vars]
