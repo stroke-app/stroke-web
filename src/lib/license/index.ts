@@ -28,6 +28,16 @@ function buildPrivKey(hexStr: string) {
 const TEST_EXPIRY_DAYS = 7;
 
 /**
+ * Ed25519-sign `message` with the license key (LICENSE_PRIVATE_KEY_HEX), so the
+ * desktop app can verify it with the public key it already embeds.
+ * Returns the base64url signature.
+ */
+export function signWithLicenseKey(message: Buffer): string {
+  const privKey = createPrivateKey(buildPrivKey(env.LICENSE_PRIVATE_KEY_HEX));
+  return toBase64url(cryptoSign(null, message, privKey));
+}
+
+/**
  * Issue a new Ed25519-signed license key string.
  * In test_mode the key expires in 7 days; in live_mode it is lifetime (exp=0).
  */
@@ -40,9 +50,7 @@ export function issueLicenseKey(
   const exp = isTest ? iat + TEST_EXPIRY_DAYS * 24 * 60 * 60 : 0;
   const message = `v1:${email}:${plan}:${iat}:${exp}`;
   const msgBuf = Buffer.from(message, "utf8");
-  const privKey = createPrivateKey(buildPrivKey(env.LICENSE_PRIVATE_KEY_HEX));
-  const sig = cryptoSign(null, msgBuf, privKey);
-  const key = `${toBase64url(msgBuf)}.${toBase64url(sig)}`;
+  const key = `${toBase64url(msgBuf)}.${signWithLicenseKey(msgBuf)}`;
   const expiresAt = exp > 0 ? new Date(exp * 1000) : null;
   return { key, expiresAt };
 }
