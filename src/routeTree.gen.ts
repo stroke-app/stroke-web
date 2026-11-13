@@ -25,10 +25,12 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as DownloadOsRouteImport } from './routes/download_.$os'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
+import { Route as DesktopSignInRouteImport } from './routes/desktop/sign-in'
 import { Route as CommitShaRouteImport } from './routes/commit.$sha'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as ApiTagsRouteImport } from './routes/api/tags'
 import { Route as ApiReleasesRouteImport } from './routes/api/releases'
+import { Route as ApiMeRouteImport } from './routes/api/me'
 import { Route as ApiChangelogRouteImport } from './routes/api/changelog'
 import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
@@ -36,12 +38,18 @@ import { Route as GuestLoginRouteImport } from './routes/_guest/login'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
 import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
 import { Route as ApiWebhooksProviderRouteImport } from './routes/api/webhooks/$provider'
+import { Route as ApiSyncPushRouteImport } from './routes/api/sync/push'
+import { Route as ApiSyncKeyRouteImport } from './routes/api/sync/key'
+import { Route as ApiSyncChangesRouteImport } from './routes/api/sync/changes'
 import { Route as ApiOauthTokenRouteImport } from './routes/api/oauth/token'
 import { Route as ApiLicenseTrialRouteImport } from './routes/api/license/trial'
 import { Route as ApiLicensePubkeyRouteImport } from './routes/api/license/pubkey'
+import { Route as ApiLicenseLinkRouteImport } from './routes/api/license/link'
 import { Route as ApiLicenseDeactivateRouteImport } from './routes/api/license/deactivate'
 import { Route as ApiLicenseCheckRouteImport } from './routes/api/license/check'
 import { Route as ApiLicenseActivateRouteImport } from './routes/api/license/activate'
+import { Route as ApiDesktopTokenRouteImport } from './routes/api/desktop/token'
+import { Route as ApiDesktopSignOutRouteImport } from './routes/api/desktop/sign-out'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiQuotaRouteImport } from './routes/api/ai/quota'
 import { Route as ApiAiModelsRouteImport } from './routes/api/ai/models'
@@ -136,6 +144,11 @@ const DocsMcpRoute = DocsMcpRouteImport.update({
   path: '/docs/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesktopSignInRoute = DesktopSignInRouteImport.update({
+  id: '/desktop/sign-in',
+  path: '/desktop/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommitShaRoute = CommitShaRouteImport.update({
   id: '/commit/$sha',
   path: '/commit/$sha',
@@ -154,6 +167,11 @@ const ApiTagsRoute = ApiTagsRouteImport.update({
 const ApiReleasesRoute = ApiReleasesRouteImport.update({
   id: '/api/releases',
   path: '/api/releases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMeRoute = ApiMeRouteImport.update({
+  id: '/api/me',
+  path: '/api/me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChangelogRoute = ApiChangelogRouteImport.update({
@@ -191,6 +209,21 @@ const ApiWebhooksProviderRoute = ApiWebhooksProviderRouteImport.update({
   path: '/api/webhooks/$provider',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSyncPushRoute = ApiSyncPushRouteImport.update({
+  id: '/api/sync/push',
+  path: '/api/sync/push',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSyncKeyRoute = ApiSyncKeyRouteImport.update({
+  id: '/api/sync/key',
+  path: '/api/sync/key',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSyncChangesRoute = ApiSyncChangesRouteImport.update({
+  id: '/api/sync/changes',
+  path: '/api/sync/changes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiOauthTokenRoute = ApiOauthTokenRouteImport.update({
   id: '/api/oauth/token',
   path: '/api/oauth/token',
@@ -206,6 +239,11 @@ const ApiLicensePubkeyRoute = ApiLicensePubkeyRouteImport.update({
   path: '/api/license/pubkey',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLicenseLinkRoute = ApiLicenseLinkRouteImport.update({
+  id: '/api/license/link',
+  path: '/api/license/link',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiLicenseDeactivateRoute = ApiLicenseDeactivateRouteImport.update({
   id: '/api/license/deactivate',
   path: '/api/license/deactivate',
@@ -219,6 +257,16 @@ const ApiLicenseCheckRoute = ApiLicenseCheckRouteImport.update({
 const ApiLicenseActivateRoute = ApiLicenseActivateRouteImport.update({
   id: '/api/license/activate',
   path: '/api/license/activate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDesktopTokenRoute = ApiDesktopTokenRouteImport.update({
+  id: '/api/desktop/token',
+  path: '/api/desktop/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDesktopSignOutRoute = ApiDesktopSignOutRouteImport.update({
+  id: '/api/desktop/sign-out',
+  path: '/api/desktop/sign-out',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -314,10 +362,12 @@ export interface FileRoutesByFullPath {
   '/signup': typeof GuestSignupRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/me': typeof ApiMeRoute
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -329,12 +379,18 @@ export interface FileRoutesByFullPath {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
+  '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
   '/api/license/check': typeof ApiLicenseCheckRoute
   '/api/license/deactivate': typeof ApiLicenseDeactivateRoute
+  '/api/license/link': typeof ApiLicenseLinkRoute
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/sync/changes': typeof ApiSyncChangesRoute
+  '/api/sync/key': typeof ApiSyncKeyRoute
+  '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app/': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
@@ -361,10 +417,12 @@ export interface FileRoutesByTo {
   '/signup': typeof GuestSignupRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/me': typeof ApiMeRoute
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -376,12 +434,18 @@ export interface FileRoutesByTo {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
+  '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
   '/api/license/check': typeof ApiLicenseCheckRoute
   '/api/license/deactivate': typeof ApiLicenseDeactivateRoute
+  '/api/license/link': typeof ApiLicenseLinkRoute
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/sync/changes': typeof ApiSyncChangesRoute
+  '/api/sync/key': typeof ApiSyncKeyRoute
+  '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
@@ -412,10 +476,12 @@ export interface FileRoutesById {
   '/_guest/signup': typeof GuestSignupRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/api/changelog': typeof ApiChangelogRoute
+  '/api/me': typeof ApiMeRoute
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download_/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -427,12 +493,18 @@ export interface FileRoutesById {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
+  '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
   '/api/license/check': typeof ApiLicenseCheckRoute
   '/api/license/deactivate': typeof ApiLicenseDeactivateRoute
+  '/api/license/link': typeof ApiLicenseLinkRoute
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/sync/changes': typeof ApiSyncChangesRoute
+  '/api/sync/key': typeof ApiSyncKeyRoute
+  '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/_auth/app/': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
@@ -462,10 +534,12 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/reviews'
     | '/api/changelog'
+    | '/api/me'
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
     | '/commit/$sha'
+    | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
@@ -477,12 +551,18 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/desktop/sign-out'
+    | '/api/desktop/token'
     | '/api/license/activate'
     | '/api/license/check'
     | '/api/license/deactivate'
+    | '/api/license/link'
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/sync/changes'
+    | '/api/sync/key'
+    | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/app/'
     | '/api/admin/giveaway/draw'
@@ -509,10 +589,12 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/reviews'
     | '/api/changelog'
+    | '/api/me'
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
     | '/commit/$sha'
+    | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
@@ -524,12 +606,18 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/desktop/sign-out'
+    | '/api/desktop/token'
     | '/api/license/activate'
     | '/api/license/check'
     | '/api/license/deactivate'
+    | '/api/license/link'
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/sync/changes'
+    | '/api/sync/key'
+    | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/app'
     | '/api/admin/giveaway/draw'
@@ -559,10 +647,12 @@ export interface FileRouteTypes {
     | '/_guest/signup'
     | '/admin/reviews'
     | '/api/changelog'
+    | '/api/me'
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
     | '/commit/$sha'
+    | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download_/$os'
     | '/ingest/$'
@@ -574,12 +664,18 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/desktop/sign-out'
+    | '/api/desktop/token'
     | '/api/license/activate'
     | '/api/license/check'
     | '/api/license/deactivate'
+    | '/api/license/link'
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/sync/changes'
+    | '/api/sync/key'
+    | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/_auth/app/'
     | '/api/admin/giveaway/draw'
@@ -607,10 +703,12 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
+  ApiMeRoute: typeof ApiMeRoute
   ApiReleasesRoute: typeof ApiReleasesRoute
   ApiTagsRoute: typeof ApiTagsRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   CommitShaRoute: typeof CommitShaRoute
+  DesktopSignInRoute: typeof DesktopSignInRoute
   DocsMcpRoute: typeof DocsMcpRoute
   DownloadOsRoute: typeof DownloadOsRoute
   IngestSplatRoute: typeof IngestSplatRoute
@@ -618,12 +716,18 @@ export interface RootRouteChildren {
   ApiAiModelsRoute: typeof ApiAiModelsRoute
   ApiAiQuotaRoute: typeof ApiAiQuotaRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiDesktopSignOutRoute: typeof ApiDesktopSignOutRoute
+  ApiDesktopTokenRoute: typeof ApiDesktopTokenRoute
   ApiLicenseActivateRoute: typeof ApiLicenseActivateRoute
   ApiLicenseCheckRoute: typeof ApiLicenseCheckRoute
   ApiLicenseDeactivateRoute: typeof ApiLicenseDeactivateRoute
+  ApiLicenseLinkRoute: typeof ApiLicenseLinkRoute
   ApiLicensePubkeyRoute: typeof ApiLicensePubkeyRoute
   ApiLicenseTrialRoute: typeof ApiLicenseTrialRoute
   ApiOauthTokenRoute: typeof ApiOauthTokenRoute
+  ApiSyncChangesRoute: typeof ApiSyncChangesRoute
+  ApiSyncKeyRoute: typeof ApiSyncKeyRoute
+  ApiSyncPushRoute: typeof ApiSyncPushRoute
   ApiWebhooksProviderRoute: typeof ApiWebhooksProviderRoute
   ApiAdminGiveawayDrawRoute: typeof ApiAdminGiveawayDrawRoute
   ApiAdminLicenseInfoRoute: typeof ApiAdminLicenseInfoRoute
@@ -749,6 +853,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/desktop/sign-in': {
+      id: '/desktop/sign-in'
+      path: '/desktop/sign-in'
+      fullPath: '/desktop/sign-in'
+      preLoaderRoute: typeof DesktopSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/commit/$sha': {
       id: '/commit/$sha'
       path: '/commit/$sha'
@@ -775,6 +886,13 @@ declare module '@tanstack/react-router' {
       path: '/api/releases'
       fullPath: '/api/releases'
       preLoaderRoute: typeof ApiReleasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/me': {
+      id: '/api/me'
+      path: '/api/me'
+      fullPath: '/api/me'
+      preLoaderRoute: typeof ApiMeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/changelog': {
@@ -826,6 +944,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksProviderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sync/push': {
+      id: '/api/sync/push'
+      path: '/api/sync/push'
+      fullPath: '/api/sync/push'
+      preLoaderRoute: typeof ApiSyncPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sync/key': {
+      id: '/api/sync/key'
+      path: '/api/sync/key'
+      fullPath: '/api/sync/key'
+      preLoaderRoute: typeof ApiSyncKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sync/changes': {
+      id: '/api/sync/changes'
+      path: '/api/sync/changes'
+      fullPath: '/api/sync/changes'
+      preLoaderRoute: typeof ApiSyncChangesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/oauth/token': {
       id: '/api/oauth/token'
       path: '/api/oauth/token'
@@ -847,6 +986,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLicensePubkeyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/license/link': {
+      id: '/api/license/link'
+      path: '/api/license/link'
+      fullPath: '/api/license/link'
+      preLoaderRoute: typeof ApiLicenseLinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/license/deactivate': {
       id: '/api/license/deactivate'
       path: '/api/license/deactivate'
@@ -866,6 +1012,20 @@ declare module '@tanstack/react-router' {
       path: '/api/license/activate'
       fullPath: '/api/license/activate'
       preLoaderRoute: typeof ApiLicenseActivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/desktop/token': {
+      id: '/api/desktop/token'
+      path: '/api/desktop/token'
+      fullPath: '/api/desktop/token'
+      preLoaderRoute: typeof ApiDesktopTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/desktop/sign-out': {
+      id: '/api/desktop/sign-out'
+      path: '/api/desktop/sign-out'
+      fullPath: '/api/desktop/sign-out'
+      preLoaderRoute: typeof ApiDesktopSignOutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -1037,10 +1197,12 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   ApiChangelogRoute: ApiChangelogRoute,
+  ApiMeRoute: ApiMeRoute,
   ApiReleasesRoute: ApiReleasesRoute,
   ApiTagsRoute: ApiTagsRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   CommitShaRoute: CommitShaRoute,
+  DesktopSignInRoute: DesktopSignInRoute,
   DocsMcpRoute: DocsMcpRoute,
   DownloadOsRoute: DownloadOsRoute,
   IngestSplatRoute: IngestSplatRoute,
@@ -1048,12 +1210,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiModelsRoute: ApiAiModelsRoute,
   ApiAiQuotaRoute: ApiAiQuotaRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiDesktopSignOutRoute: ApiDesktopSignOutRoute,
+  ApiDesktopTokenRoute: ApiDesktopTokenRoute,
   ApiLicenseActivateRoute: ApiLicenseActivateRoute,
   ApiLicenseCheckRoute: ApiLicenseCheckRoute,
   ApiLicenseDeactivateRoute: ApiLicenseDeactivateRoute,
+  ApiLicenseLinkRoute: ApiLicenseLinkRoute,
   ApiLicensePubkeyRoute: ApiLicensePubkeyRoute,
   ApiLicenseTrialRoute: ApiLicenseTrialRoute,
   ApiOauthTokenRoute: ApiOauthTokenRoute,
+  ApiSyncChangesRoute: ApiSyncChangesRoute,
+  ApiSyncKeyRoute: ApiSyncKeyRoute,
+  ApiSyncPushRoute: ApiSyncPushRoute,
   ApiWebhooksProviderRoute: ApiWebhooksProviderRoute,
   ApiAdminGiveawayDrawRoute: ApiAdminGiveawayDrawRoute,
   ApiAdminLicenseInfoRoute: ApiAdminLicenseInfoRoute,
