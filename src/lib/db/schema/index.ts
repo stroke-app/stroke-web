@@ -4,3 +4,5 @@ export * from "./billing.schema";
 export * from "./giveaway.schema";
 export * from "./reviews.schema";
 export * from "./telemetry.schema";
+export * from "./desktop.schema";
+export * from "./sync.schema";
