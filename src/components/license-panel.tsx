@@ -47,7 +47,7 @@ function subscribeClock(onChange: () => void) {
   return () => clearInterval(id);
 }
 
-function useNow() {
+export function useNow() {
   return useSyncExternalStore<number | null>(
     subscribeClock,
     () => clock,
@@ -55,7 +55,7 @@ function useNow() {
   );
 }
 
-function timeAgo(value: DateLike, now: number) {
+export function timeAgo(value: DateLike, now: number) {
   const diff = Math.max(0, now - new Date(value).getTime());
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 2) return "just now";
@@ -255,7 +255,7 @@ function DeviceList({ maxDevices }: { maxDevices: number }) {
   );
 }
 
-const PLATFORMS: Record<
+export const PLATFORMS: Record<
   DeviceOs,
   { label: string; fallbackName: string; Icon: (p: { className?: string }) => React.ReactNode }
 > = {
