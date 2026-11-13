@@ -85,6 +85,20 @@
       "when": 1793677392491,
       "tag": "0011_activation_platform",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794299112351,
+      "tag": "0012_desktop_auth",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1794301033752,
+      "tag": "0013_sync",
+      "breakpoints": true
     }
   ]
 }
