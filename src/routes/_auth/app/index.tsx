@@ -13,21 +13,27 @@ import {
 import posthog from "posthog-js";
 
 import { appButton, Badge, Card, CardBody, CardFooter, CardHeader } from "#/components/app-ui";
+import { DesktopSessions } from "#/components/desktop-sessions";
 import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
 import { LicensePanel } from "#/components/license-panel";
+import { SyncStatus } from "#/components/sync-status";
 import { useAuth } from "#/lib/auth/hooks";
 import {
   billingQueryOptions,
   devicesQueryOptions,
   licenseQueryOptions,
 } from "#/lib/billing/functions";
+import { desktopSessionsQueryOptions } from "#/lib/desktop/functions";
 import { RELEASES_URL } from "#/lib/releases";
+import { syncStatusQueryOptions } from "#/lib/sync/functions";
 
 export const Route = createFileRoute("/_auth/app/")({
   loader: ({ context }) => {
     context.queryClient.prefetchQuery(billingQueryOptions());
     context.queryClient.prefetchQuery(licenseQueryOptions());
     context.queryClient.prefetchQuery(devicesQueryOptions());
+    context.queryClient.prefetchQuery(desktopSessionsQueryOptions());
+    context.queryClient.prefetchQuery(syncStatusQueryOptions());
   },
   component: Dashboard,
 });
@@ -121,6 +127,10 @@ function Dashboard() {
           <BrewCommand className="w-full max-w-md" />
         </CardBody>
       </Card>
+
+      <DesktopSessions />
+
+      <SyncStatus />
 
       <Card aria-labelledby="resources-title">
         <CardHeader id="resources-title" title="Resources" />
