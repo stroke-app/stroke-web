@@ -25,6 +25,7 @@ import {
   enterpriseQueryOptions,
   licenseQueryOptions,
 } from "#/lib/billing/functions";
+import { SHIPPED_ENGINES } from "#/lib/engines";
 import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/_auth/app/billing")({
@@ -38,9 +39,9 @@ export const Route = createFileRoute("/_auth/app/billing")({
 });
 
 const PRO_PERKS = [
-  "All ten engines, from Postgres to DuckDB",
+  `All ${SHIPPED_ENGINES.length} engines, from Postgres to MongoDB`,
   "Built-in MCP server for Claude & Cursor",
-  "macOS, Windows & Linux, 2 devices at once",
+  "macOS, Windows & Linux, 3 devices at once",
   "Every future update included",
 ];
 
@@ -67,7 +68,7 @@ const BUYER_FAQ = [
   },
   {
     q: "What if I switch computers?",
-    a: "Your key can be active on up to 2 devices at a time. To switch, remove the old machine under Devices on this page, even if you no longer have it, or deactivate it in Stroke (Settings → License).",
+    a: "Your key can be active on up to 3 devices at a time, and you can ask for more under Devices. To switch, remove the old machine under Devices on this page, even if you no longer have it, or deactivate it in Stroke (Settings → License).",
   },
   {
     q: "Can I try it first?",
@@ -388,7 +389,7 @@ function BillingPage() {
             <div>
               <p className="text-[16px] font-semibold">Stroke Pro · $9.99 once</p>
               <p className="mt-1 text-[15px] text-muted-foreground">
-                Every feature and every update, on 2 devices.
+                Every feature and every update, on 3 devices.
               </p>
             </div>
             <BuyButton loading={loading} onClick={handleUpgrade} className="w-full sm:w-auto" />

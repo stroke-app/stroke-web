@@ -14,6 +14,7 @@ import { ArrowRightIcon } from "lucide-react";
 
 import { NextLinks, PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
 import { REPO_URL } from "#/components/site-chrome";
+import { SHIPPED_ENGINES } from "#/lib/engines";
 import { seo } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
@@ -56,12 +57,25 @@ const PROVIDERS = [
 // Completed items are drawn from the changelog (stroke.click/changelog).
 const SHIPPED: RoadmapItem[] = [
   {
-    title: "Ten database engines",
-    body: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1.",
+    title: `${SHIPPED_ENGINES.length} database engines`,
+    body: SHIPPED_ENGINES.map((e) => e.name).join(", ") + ".",
+    extra: (
+      <ul className="mt-3.5 flex flex-wrap items-center gap-1.5">
+        {SHIPPED_ENGINES.map((e) => (
+          <li
+            key={e.slug}
+            className="flex h-6 items-center gap-1.5 rounded-md bg-white/[0.04] px-2 text-[12px] text-muted-foreground"
+          >
+            <e.Icon className="size-3" color={e.color} />
+            {e.name}
+          </li>
+        ))}
+      </ul>
+    ),
   },
   {
-    title: "Provider sign-in",
-    body: "Authorize once, see every database on your account, and connect in one click. No hunting for connection strings.",
+    title: "Provider sign-in and create",
+    body: "Authorize once, see every database on your account, connect in one click, or create a new one without leaving the app.",
     extra: (
       <ul className="mt-3.5 flex flex-wrap items-center gap-1.5">
         {PROVIDERS.map((p) => (
@@ -77,84 +91,114 @@ const SHIPPED: RoadmapItem[] = [
     ),
   },
   {
-    title: "Built-in MCP server",
-    body: "Expose a connection to Claude, Cursor, and other agents in one click, so they work against the live schema.",
+    title: "AI agent, built in",
+    body: "Plans multi-step work, shows each step, retries what fails, asks before anything destructive, and can work across databases on one server. Opens as a tab beside your tables.",
   },
   {
-    title: "AI chat, built in",
-    body: "A schema-aware assistant that runs queries, explains schemas, and drafts SQL right inside the app.",
+    title: "Built-in MCP server",
+    body: "Claude Code, Cursor and other agents query your database with the access level you choose: read only, read and write, schema changes, or full access.",
+  },
+  {
+    title: "Start a database in Docker",
+    body: "18 images from the command palette, from PostgreSQL to Oracle and MongoDB, connected when ready.",
+  },
+  {
+    title: "Terminal tabs",
+    body: "psql, mysql, sqlcmd, sqlite3, redis-cli, mongosh and more, signed in, in as many tabs as you want.",
+  },
+  {
+    title: "Encrypted sync",
+    body: "Connections, workspaces and settings on every device, end-to-end encrypted with a passphrase only you know.",
+  },
+  { title: "Workspaces", body: "Group connections into named, coloured workspaces." },
+  {
+    title: "Paste any connection string",
+    body: "URLs, .env lines, JDBC, libpq and ADO.NET strings land on the right form. Copy URL goes the other way.",
   },
   {
     title: "Charts and dashboards",
-    body: "Turn query results into bar, line, pie, and scatter charts and pin them to a dashboard.",
+    body: "Turn query results into charts and pin them to a dashboard.",
   },
   {
-    title: "Schema diagrams",
-    body: "Auto-generated ERDs of your tables and relationships, with foreign-key navigation.",
+    title: "Schema diagrams and relation tree",
+    body: "ERDs of your tables and relationships, and a tree of what references what, with row counts.",
   },
   {
     title: "Backup and restore",
-    body: "Export and restore whole databases or a subset, with per-statement savepoints so one bad row can't abort the job.",
+    body: "Parallel dumps with progress, and restores that report exactly what failed.",
   },
   {
-    title: "Signed and notarized builds",
-    body: "Code signing on macOS (Developer ID + notarization) and Windows, so the first launch is clean.",
-  },
-  {
-    title: "Auto-update",
-    body: "Stroke updates itself in place through the built-in updater. No re-downloading installers.",
+    title: "Background updates",
+    body: "Updates download quietly and install when you quit; What's new shows what changed. A Nightly channel gets every change first.",
   },
   {
     title: "OS keychain storage",
-    body: "AI keys and provider tokens live in the OS keychain (Keychain, Credential Manager, Secret Service).",
+    body: "Passwords, AI keys and provider tokens live in the OS keychain.",
   },
   {
-    title: "Command palette and shortcuts",
-    body: "Cmd/Ctrl+K to jump anywhere, plus a deep set of keyboard shortcuts for tabs, search, and navigation.",
+    title: "Keyboard first",
+    body: "A command palette, rebindable shortcuts, and a leader key: ⌘; then one letter.",
   },
+  { title: "Themes", body: "Build your own theme, or use Glass light and dark." },
   {
     title: "SSH tunnels",
     body: "Connect to databases behind a bastion host without leaving the app.",
   },
   {
     title: "Local AI models",
-    body: "Point the AI assistant at a model running on your own machine, so schema and data never leave it.",
+    body: "Point the AI at a model on your own machine, so schema and data never leave it.",
+  },
+  {
+    title: "Offline Pro",
+    body: "A paid license keeps working offline and through outages of stroke.click.",
   },
 ];
 
 const IN_PROGRESS: RoadmapItem[] = [
   {
+    title: "Elasticsearch and OpenSearch",
+    body: "Indices with their mappings as columns, documents in the grid, and Query DSL and SQL in the editor.",
+  },
+  {
     title: "Extension API",
     tag: "Beta",
     body: "Community-built panels and dialect plugins on top of the Extensions panel. Available to try now while the API settles.",
-  },
-  {
-    title: "Redesigned connection experience",
-    body: "A two-pane connect screen: pick your type, driver, and saved connections on the left while editing details in a focused pane on the right.",
-  },
-  {
-    title: "Redis support",
-    tag: "Beta",
-    body: "A Redis client, in the connection picker and available to try now. It leaves beta once it holds up against real workloads.",
   },
 ];
 
 const PLANNED: RoadmapItem[] = [
   {
-    title: "Sync to your Stroke account",
-    body: "Connections, saved queries, and settings saved to your account, so every device you sign in on picks up where you left off.",
+    title: "Signed and notarized builds",
+    body: "A Developer ID and notarization on macOS and a signed installer on Windows, so the first launch needs no workaround.",
   },
   {
-    title: "Shared workspaces",
-    body: "Connections, saved queries, and dashboards shared across a team.",
+    title: "Schema diff and migrations",
+    body: "Compare two databases, or a database and a snapshot, and get the script that makes one match the other.",
   },
   {
-    title: "More engines",
-    body: "New dialects land regularly, decided by what users ask for. BigQuery and others are in the queue.",
+    title: "Import wizard",
+    body: "CSV, JSON and Excel into a new or existing table, with column mapping and type detection.",
   },
   {
     title: "More export formats",
-    body: "Parquet and JSONL export from any grid or query result, alongside the existing CSV and JSON.",
+    body: "Excel, Parquet, JSONL, Markdown tables and SQL INSERT statements from any grid or result.",
+  },
+  {
+    title: "Test data generator",
+    body: "Fill a table with realistic rows that respect its foreign keys.",
+  },
+  { title: "Data warehouses", body: "Snowflake, BigQuery, Redshift and Databricks." },
+  {
+    title: "More engines",
+    body: "Neo4j, InfluxDB, ScyllaDB, YugabyteDB, AlloyDB and Cloud Spanner, in the order people ask for them.",
+  },
+  {
+    title: "Shared workspaces",
+    body: "Connections, saved queries and dashboards shared across a team.",
+  },
+  {
+    title: "Visual relationship editing",
+    body: "Draw a foreign key between two tables on the diagram and get the ALTER statement.",
   },
 ];
 

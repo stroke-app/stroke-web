@@ -182,7 +182,7 @@ function PendingLicenseCard() {
 
 const PRO_PERKS = [
   "Yours forever, nothing to cancel",
-  "Up to 2 devices at once",
+  "Up to 3 devices at once",
   "Every future update included",
   "Priority support",
 ];

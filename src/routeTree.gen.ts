@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SecurityRouteImport } from './routes/security'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GiveawayRouteImport } from './routes/giveaway'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DownloadRouteImport } from './routes/download'
@@ -23,11 +25,17 @@ import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DatabasesIndexRouteImport } from './routes/databases/index'
+import { Route as CompareIndexRouteImport } from './routes/compare/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as DownloadOsRouteImport } from './routes/download_.$os'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
 import { Route as DesktopSignInRouteImport } from './routes/desktop/sign-in'
+import { Route as DatabasesEngineRouteImport } from './routes/databases/$engine'
+import { Route as CompareSlugRouteImport } from './routes/compare/$slug'
 import { Route as CommitShaRouteImport } from './routes/commit.$sha'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as ApiTagsRouteImport } from './routes/api/tags'
 import { Route as ApiReleasesRouteImport } from './routes/api/releases'
@@ -83,6 +91,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoadmapRoute = RoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
@@ -96,6 +109,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GiveawayRoute = GiveawayRouteImport.update({
@@ -136,6 +154,21 @@ const DocsIndexRoute = DocsIndexRouteImport.update({
   path: '/docs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatabasesIndexRoute = DatabasesIndexRouteImport.update({
+  id: '/databases/',
+  path: '/databases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareIndexRoute = CompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IngestSplatRoute = IngestSplatRouteImport.update({
   id: '/ingest/$',
   path: '/ingest/$',
@@ -156,9 +189,24 @@ const DesktopSignInRoute = DesktopSignInRouteImport.update({
   path: '/desktop/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatabasesEngineRoute = DatabasesEngineRouteImport.update({
+  id: '/databases/$engine',
+  path: '/databases/$engine',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareSlugRoute = CompareSlugRouteImport.update({
+  id: '/compare/$slug',
+  path: '/compare/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommitShaRoute = CommitShaRouteImport.update({
   id: '/commit/$sha',
   path: '/commit/$sha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
@@ -364,9 +412,11 @@ export interface FileRoutesByFullPath {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
+  '/legal': typeof LegalRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
@@ -379,11 +429,17 @@ export interface FileRoutesByFullPath {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog/': typeof BlogIndexRoute
+  '/compare/': typeof CompareIndexRoute
+  '/databases/': typeof DatabasesIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
@@ -422,9 +478,11 @@ export interface FileRoutesByTo {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
+  '/legal': typeof LegalRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
@@ -436,11 +494,17 @@ export interface FileRoutesByTo {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog': typeof BlogIndexRoute
+  '/compare': typeof CompareIndexRoute
+  '/databases': typeof DatabasesIndexRoute
   '/docs': typeof DocsIndexRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
@@ -482,9 +546,11 @@ export interface FileRoutesById {
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
+  '/legal': typeof LegalRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
@@ -497,11 +563,17 @@ export interface FileRoutesById {
   '/api/releases': typeof ApiReleasesRoute
   '/api/tags': typeof ApiTagsRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/commit/$sha': typeof CommitShaRoute
+  '/compare/$slug': typeof CompareSlugRoute
+  '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download_/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/blog/': typeof BlogIndexRoute
+  '/compare/': typeof CompareIndexRoute
+  '/databases/': typeof DatabasesIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/_auth/app/billing': typeof AuthAppBillingRoute
   '/_auth/app/downloads': typeof AuthAppDownloadsRoute
@@ -542,9 +614,11 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/giveaway'
+    | '/legal'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
+    | '/security'
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
@@ -557,11 +631,17 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
+    | '/compare/$slug'
+    | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/blog/'
+    | '/compare/'
+    | '/databases/'
     | '/docs/'
     | '/app/billing'
     | '/app/downloads'
@@ -600,9 +680,11 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/giveaway'
+    | '/legal'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
+    | '/security'
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
@@ -614,11 +696,17 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
+    | '/compare/$slug'
+    | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/blog'
+    | '/compare'
+    | '/databases'
     | '/docs'
     | '/app/billing'
     | '/app/downloads'
@@ -659,9 +747,11 @@ export interface FileRouteTypes {
     | '/download'
     | '/features'
     | '/giveaway'
+    | '/legal'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
+    | '/security'
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
@@ -674,11 +764,17 @@ export interface FileRouteTypes {
     | '/api/releases'
     | '/api/tags'
     | '/api/telemetry'
+    | '/blog/$slug'
     | '/commit/$sha'
+    | '/compare/$slug'
+    | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download_/$os'
     | '/ingest/$'
+    | '/blog/'
+    | '/compare/'
+    | '/databases/'
     | '/docs/'
     | '/_auth/app/billing'
     | '/_auth/app/downloads'
@@ -720,9 +816,11 @@ export interface RootRouteChildren {
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
   GiveawayRoute: typeof GiveawayRoute
+  LegalRoute: typeof LegalRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RoadmapRoute: typeof RoadmapRoute
+  SecurityRoute: typeof SecurityRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
   TermsRoute: typeof TermsRoute
@@ -732,11 +830,17 @@ export interface RootRouteChildren {
   ApiReleasesRoute: typeof ApiReleasesRoute
   ApiTagsRoute: typeof ApiTagsRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   CommitShaRoute: typeof CommitShaRoute
+  CompareSlugRoute: typeof CompareSlugRoute
+  DatabasesEngineRoute: typeof DatabasesEngineRoute
   DesktopSignInRoute: typeof DesktopSignInRoute
   DocsMcpRoute: typeof DocsMcpRoute
   DownloadOsRoute: typeof DownloadOsRoute
   IngestSplatRoute: typeof IngestSplatRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+  CompareIndexRoute: typeof CompareIndexRoute
+  DatabasesIndexRoute: typeof DatabasesIndexRoute
   DocsIndexRoute: typeof DocsIndexRoute
   ApiAiModelsRoute: typeof ApiAiModelsRoute
   ApiAiQuotaRoute: typeof ApiAiQuotaRoute
@@ -788,6 +892,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roadmap': {
       id: '/roadmap'
       path: '/roadmap'
@@ -807,6 +918,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/giveaway': {
@@ -865,6 +983,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/databases/': {
+      id: '/databases/'
+      path: '/databases'
+      fullPath: '/databases/'
+      preLoaderRoute: typeof DatabasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/': {
+      id: '/compare/'
+      path: '/compare'
+      fullPath: '/compare/'
+      preLoaderRoute: typeof CompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ingest/$': {
       id: '/ingest/$'
       path: '/ingest/$'
@@ -893,11 +1032,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DesktopSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/databases/$engine': {
+      id: '/databases/$engine'
+      path: '/databases/$engine'
+      fullPath: '/databases/$engine'
+      preLoaderRoute: typeof DatabasesEngineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/$slug': {
+      id: '/compare/$slug'
+      path: '/compare/$slug'
+      fullPath: '/compare/$slug'
+      preLoaderRoute: typeof CompareSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/commit/$sha': {
       id: '/commit/$sha'
       path: '/commit/$sha'
       fullPath: '/commit/$sha'
       preLoaderRoute: typeof CommitShaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/telemetry': {
@@ -1230,9 +1390,11 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
   GiveawayRoute: GiveawayRoute,
+  LegalRoute: LegalRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RoadmapRoute: RoadmapRoute,
+  SecurityRoute: SecurityRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
   TermsRoute: TermsRoute,
@@ -1242,11 +1404,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReleasesRoute: ApiReleasesRoute,
   ApiTagsRoute: ApiTagsRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
+  BlogSlugRoute: BlogSlugRoute,
   CommitShaRoute: CommitShaRoute,
+  CompareSlugRoute: CompareSlugRoute,
+  DatabasesEngineRoute: DatabasesEngineRoute,
   DesktopSignInRoute: DesktopSignInRoute,
   DocsMcpRoute: DocsMcpRoute,
   DownloadOsRoute: DownloadOsRoute,
   IngestSplatRoute: IngestSplatRoute,
+  BlogIndexRoute: BlogIndexRoute,
+  CompareIndexRoute: CompareIndexRoute,
+  DatabasesIndexRoute: DatabasesIndexRoute,
   DocsIndexRoute: DocsIndexRoute,
   ApiAiModelsRoute: ApiAiModelsRoute,
   ApiAiQuotaRoute: ApiAiQuotaRoute,

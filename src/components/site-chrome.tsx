@@ -25,10 +25,11 @@ export const TAGLINE =
 
 const NAV_LINKS = [
   { label: "Features", to: "/features" },
+  { label: "Databases", to: "/databases" },
   { label: "Docs", to: "/docs" },
   { label: "Pricing", to: "/pricing" },
   { label: "Changelog", to: "/changelog" },
-  { label: "Roadmap", to: "/roadmap" },
+  { label: "Blog", to: "/blog" },
 ] as const;
 
 export function SiteHeader() {
@@ -214,6 +215,16 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/databases" className={FOOTER_LINK}>
+                Databases
+              </Link>
+            </li>
+            <li>
+              <Link to="/compare" className={FOOTER_LINK}>
+                Compare
+              </Link>
+            </li>
+            <li>
               <Link to="/giveaway" className={FOOTER_LINK}>
                 Weekly giveaway
               </Link>
@@ -247,6 +258,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/blog" className={FOOTER_LINK}>
+                Blog
+              </Link>
+            </li>
+            <li>
               <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={FOOTER_LINK}>
                 GitHub
               </a>
@@ -277,6 +293,16 @@ export function SiteFooter() {
             <li>
               <Link to="/privacy" className={FOOTER_LINK}>
                 Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/security" className={FOOTER_LINK}>
+                Security
+              </Link>
+            </li>
+            <li>
+              <Link to="/legal" className={FOOTER_LINK}>
+                All legal
               </Link>
             </li>
           </FooterColumn>

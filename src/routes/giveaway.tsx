@@ -41,7 +41,7 @@ const RULES = [
   "A week runs from Monday 00:00 UTC to the next Monday 00:00 UTC. Entries don't carry over, so enter again each week.",
   "Anyone who doesn't already own a Stroke license can enter. That leaves out people covered by a Team purchase, since they already have Stroke. Eligibility is checked again at draw time.",
   "One winner is drawn each week, uniformly at random from the eligible entries, by an automated draw shortly after the week closes.",
-  "The prize is one lifetime Stroke license for up to 2 devices with every future update, the same license the $9.99 purchase gives. It has no cash value and can't be transferred.",
+  "The prize is one lifetime Stroke license for up to 3 devices with every future update, the same license the $9.99 purchase gives. It has no cash value and can't be transferred.",
   "The winner is emailed at the address on their account. Their first name and last initial may be shown on this site as last week's winner.",
   "Entering from multiple accounts, or any other attempt to game the draw, disqualifies every entry involved.",
   "The giveaway may be changed or ended at any time, and is void where prohibited by law.",

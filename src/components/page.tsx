@@ -239,10 +239,13 @@ export function PageHeader({
  */
 export function PageBody({
   aside,
+  rail,
   wide = false,
   children,
 }: {
   aside?: React.ReactNode;
+  /** A right-hand column on wide screens: the sponsor card on docs-style pages. */
+  rail?: React.ReactNode;
   /** Let the content use the full page width (grids, cards). */
   wide?: boolean;
   children: React.ReactNode;
@@ -252,7 +255,10 @@ export function PageBody({
       className={cn(
         WRAP,
         "border-t border-border py-14 md:py-20",
-        aside && "grid grid-cols-1 gap-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-20",
+        aside && !rail && "grid grid-cols-1 gap-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-20",
+        aside &&
+          rail &&
+          "grid grid-cols-1 gap-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[13rem_minmax(0,1fr)_15rem]",
       )}
     >
       {aside && (
@@ -261,6 +267,11 @@ export function PageBody({
         </aside>
       )}
       <div className={cn("min-w-0", !wide && "max-w-3xl")}>{children}</div>
+      {rail && (
+        <aside className="hidden xl:block" aria-label="Sponsors">
+          <div className="sticky top-24">{rail}</div>
+        </aside>
+      )}
     </div>
   );
 }

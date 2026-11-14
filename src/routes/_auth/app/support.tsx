@@ -34,7 +34,7 @@ const FAQ: { q: string; a: React.ReactNode }[] = [
     q: "How many devices can I use?",
     a: (
       <>
-        A license is active on up to 2 devices at a time. To move it to a new machine, remove the
+        A license is active on up to 3 devices at a time. To move it to a new machine, remove the
         old one under Devices on <a href="/app/billing">License &amp; billing</a>, even if you no
         longer have it, or deactivate it in Stroke (Settings → License).
       </>

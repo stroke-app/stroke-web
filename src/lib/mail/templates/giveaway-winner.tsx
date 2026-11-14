@@ -26,7 +26,7 @@ export function GiveawayWinnerEmail({
       <Text style={s.heading}>You won Stroke 🎉</Text>
       <Text style={s.paragraph}>
         Hi {firstName(name)}, your name came up in this week's draw. Stroke is yours: a lifetime
-        license for up to 2 devices, with every future update included. Nothing to pay, nothing to
+        license for up to 3 devices, with every future update included. Nothing to pay, nothing to
         cancel.
       </Text>
 
