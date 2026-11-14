@@ -21,6 +21,7 @@ const PAGES: { path: string; priority: string; changefreq: string; release?: boo
   { path: "/changelog", priority: "0.6", changefreq: "weekly", release: true },
   { path: "/roadmap", priority: "0.5", changefreq: "monthly" },
   { path: "/giveaway", priority: "0.5", changefreq: "weekly" },
+  { path: "/sponsors", priority: "0.4", changefreq: "monthly" },
   { path: "/terms", priority: "0.2", changefreq: "yearly" },
   { path: "/privacy", priority: "0.2", changefreq: "yearly" },
 ];

@@ -261,6 +261,11 @@ export function SiteFooter() {
                 Report an issue
               </a>
             </li>
+            <li>
+              <Link to="/sponsors" className={FOOTER_LINK}>
+                Sponsors
+              </Link>
+            </li>
           </FooterColumn>
 
           <FooterColumn title="Legal">
