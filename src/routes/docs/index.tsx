@@ -61,12 +61,13 @@ const STEPS: Step[] = [
     body: (
       <>
         <p>
-          When you decide to keep Stroke, buy a license and sign in to the app with the same
-          account. One purchase covers three devices, with every future update included.
+          When you decide to keep Stroke, buy a license and paste the key into{" "}
+          <strong>Settings → License</strong>. One purchase covers three devices, with every future
+          update included.
         </p>
         <div className="mt-5">
           <Link to="/app/billing" className={siteButton({ variant: "secondary", size: "sm" })}>
-            Buy a license
+            Get your license key
             <ArrowRightIcon className="size-3.5" />
           </Link>
         </div>

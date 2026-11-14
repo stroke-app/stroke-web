@@ -76,7 +76,7 @@ const BUYER_FAQ = [
   },
   {
     q: "What happens after I pay?",
-    a: "Your account becomes Pro, usually within a minute. Open Stroke and sign in with this account on up to 3 devices.",
+    a: "You come back to this page and your license key appears, usually within a minute. Paste it into Stroke → Settings → License to activate.",
   },
 ];
 

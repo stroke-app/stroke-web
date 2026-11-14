@@ -37,8 +37,6 @@ export function signWithLicenseKey(message: Buffer): string {
   return toBase64url(cryptoSign(null, message, privKey));
 }
 
-export { ACCOUNT_ONLY_SINCE, isAccountOnly } from "#/lib/license/account-only";
-
 /**
  * Issue a new Ed25519-signed license key string.
  * In test_mode the key expires in 7 days; in live_mode it is lifetime (exp=0).

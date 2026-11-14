@@ -41,13 +41,12 @@ const FAQ: { q: string; a: React.ReactNode }[] = [
     ),
   },
   {
-    q: "I paid but Stroke still shows the trial.",
+    q: "I paid but don't see a license key.",
     a: (
       <>
-        Sign in to Stroke with the account you paid with; your license is on that account, and it
-        usually shows up within a minute of payment. If it's still missing after a few minutes,
-        email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the address on your
-        account.
+        Keys usually appear on your dashboard within a minute of payment. If it's still missing
+        after a few minutes, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the
+        address on your account.
       </>
     ),
   },
