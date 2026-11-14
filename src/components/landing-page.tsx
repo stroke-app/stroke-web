@@ -687,7 +687,7 @@ const FREE_PERKS = [
 
 const LICENSE_PERKS = [
   "The app is yours forever, nothing to cancel",
-  "A license key for up to 2 of your devices",
+  "Pro on up to 3 of your devices, through your account",
   "Every future update included",
   "Priority answers on support and feature requests",
 ];

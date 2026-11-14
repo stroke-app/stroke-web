@@ -5,8 +5,8 @@ import { EmailLayout, sharedStyles as s } from "./layout";
 export interface GiveawayWinnerEmailProps {
   /** Recipient's display name. */
   name: string;
-  /** The lifetime license key they won. */
-  licenseKey: string;
+  /** The lifetime license key they won; absent for account-only licenses. */
+  licenseKey?: string;
   /** Link to the in-app billing page, where the key also lives. */
   appUrl: string;
   /** Link to the download page, for winners who haven't installed Stroke. */
@@ -30,17 +30,25 @@ export function GiveawayWinnerEmail({
         cancel.
       </Text>
 
-      <Section style={s.detailBox}>
-        <Text style={{ ...s.detailRow, wordBreak: "break-all" }}>
-          <span style={s.detailLabel}>License key</span>
-          <br />
-          <span style={{ fontFamily: "monospace", color: "#09090b" }}>{licenseKey}</span>
+      {licenseKey ? (
+        <>
+          <Section style={s.detailBox}>
+            <Text style={{ ...s.detailRow, wordBreak: "break-all" }}>
+              <span style={s.detailLabel}>License key</span>
+              <br />
+              <span style={{ fontFamily: "monospace", color: "#09090b" }}>{licenseKey}</span>
+            </Text>
+          </Section>
+          <Text style={s.paragraph}>
+            Paste the key into Settings → License in the app. It's also saved on your account page.
+          </Text>
+        </>
+      ) : (
+        <Text style={s.paragraph}>
+          The license is on your account: open Stroke and sign in with this email address, and Pro
+          turns on.
         </Text>
-      </Section>
-
-      <Text style={s.paragraph}>
-        Paste the key into Settings → License in the app. It's also saved on your account page.
-      </Text>
+      )}
 
       <Button href={appUrl} style={s.button}>
         View your license

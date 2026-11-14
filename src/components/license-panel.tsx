@@ -13,6 +13,7 @@ import {
   deviceRequestQueryOptions,
   devicesQueryOptions,
 } from "#/lib/billing/functions";
+import { isAccountOnly } from "#/lib/license/account-only";
 import { type DeviceOs, guessOs, parseOs } from "#/lib/license/platform";
 import { cn } from "#/lib/utils";
 
@@ -20,6 +21,8 @@ type DateLike = string | number | Date;
 
 export type PanelLicense = {
   licenseKey: string;
+  /** When the license was issued: account-only from ACCOUNT_ONLY_SINCE on. */
+  issuedAt?: DateLike | null;
   plan: string;
   maxDevices: number;
   expiresAt: DateLike | null;
@@ -113,12 +116,23 @@ export function LicensePanel({
           <Badge tone="success">Active</Badge>
         </div>
 
-        <p className="mt-5 text-[13px] font-medium">License key</p>
-        <LicenseKeyField licenseKey={license.licenseKey} />
-        <p className="mt-2 text-[13px] text-pretty text-muted-foreground">
-          Paste it into <span className="text-foreground">Stroke → Settings → License</span> to
-          activate a device.
-        </p>
+        {isAccountOnly(license.issuedAt) ? (
+          // Account-only: no key to copy. Signing in on a device is the activation.
+          <p className="mt-5 text-[13px] text-pretty text-muted-foreground">
+            Your license is your account. Open Stroke and{" "}
+            <span className="text-foreground">sign in with this account</span> on up to{" "}
+            {license.maxDevices} devices; Pro turns on as soon as you do.
+          </p>
+        ) : (
+          <>
+            <p className="mt-5 text-[13px] font-medium">License key</p>
+            <LicenseKeyField licenseKey={license.licenseKey} />
+            <p className="mt-2 text-[13px] text-pretty text-muted-foreground">
+              Sign in to Stroke with this account, or paste the key into{" "}
+              <span className="text-foreground">Stroke → Settings → License</span>.
+            </p>
+          </>
+        )}
       </section>
 
       <DeviceList maxDevices={license.maxDevices} />

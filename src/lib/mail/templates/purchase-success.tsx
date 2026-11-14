@@ -50,6 +50,13 @@ export function PurchaseSuccessEmail({
         ) : null}
       </Section>
 
+      {licenseKey ? null : (
+        <Text style={s.paragraph}>
+          Your license is your account: open Stroke and sign in with this email address on up to 3
+          devices. Pro turns on as soon as you do.
+        </Text>
+      )}
+
       <Button href={appUrl} style={s.button}>
         Open Stroke
       </Button>

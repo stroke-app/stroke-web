@@ -78,7 +78,7 @@ export async function sendPaymentFailedEmail(input: PaymentFailedEmailInput): Pr
 export interface GiveawayWinnerEmailInput {
   to: string;
   name: string;
-  licenseKey: string;
+  licenseKey?: string;
 }
 
 /** Sent to the weekly giveaway winner with the license they won. */
