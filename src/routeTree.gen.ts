@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -69,6 +70,11 @@ import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giv
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsRoute = SponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/login': typeof GuestLoginRoute
@@ -412,6 +419,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
   '/login': typeof GuestLoginRoute
   '/signup': typeof GuestSignupRoute
@@ -470,6 +478,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/_guest/login': typeof GuestLoginRoute
@@ -528,6 +537,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/sponsors'
     | '/terms'
     | '/app'
     | '/login'
@@ -584,6 +594,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/sponsors'
     | '/terms'
     | '/login'
     | '/signup'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/sponsors'
     | '/terms'
     | '/_auth/app'
     | '/_guest/login'
@@ -700,6 +712,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RoadmapRoute: typeof RoadmapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SponsorsRoute: typeof SponsorsRoute
   TermsRoute: typeof TermsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
@@ -746,6 +759,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors': {
+      id: '/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof SponsorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1194,6 +1214,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RoadmapRoute: RoadmapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SponsorsRoute: SponsorsRoute,
   TermsRoute: TermsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   ApiChangelogRoute: ApiChangelogRoute,
