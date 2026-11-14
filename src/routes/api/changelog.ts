@@ -3,8 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { env } from "#/env/server";
 
 // Contents API with the raw media type returns the file body directly, and
-// honours GITHUB_TOKEN for a higher rate limit. Reads from the default branch.
+// honours GITHUB_TOKEN for a higher rate limit. Pinned to a branch: the repo's
+// default branch is `nightly` now, and an unpinned read listed Nightly-only
+// versions as released, to the site and to every app that reads this.
 const CHANGELOG_API = "https://api.github.com/repos/stroke-app/stroke/contents/CHANGELOG.md";
+/** `stable` (the default, what is released) reads master; `nightly` reads nightly. */
+const BRANCH = { stable: "master", nightly: "nightly" } as const;
 const CACHE_SECONDS = 300;
 
 /**
@@ -15,8 +19,10 @@ const CACHE_SECONDS = 300;
 export const Route = createFileRoute("/api/changelog")({
   server: {
     handlers: {
-      GET: async () => {
-        const upstream = await fetch(CHANGELOG_API, {
+      GET: async ({ request }) => {
+        const channel =
+          new URL(request.url).searchParams.get("channel") === "nightly" ? "nightly" : "stable";
+        const upstream = await fetch(`${CHANGELOG_API}?ref=${BRANCH[channel]}`, {
           headers: {
             Accept: "application/vnd.github.raw",
             // GitHub rejects requests without a User-Agent
