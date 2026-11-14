@@ -168,6 +168,10 @@ const IN_PROGRESS: RoadmapItem[] = [
 
 const PLANNED: RoadmapItem[] = [
   {
+    title: "Share links",
+    body: "Send a result, a filtered table, a chart or a dashboard as a link. It is encrypted on your machine, the key stays in the link, and the person you send it to sees a read-only copy in the browser. Expiry, a password and revoke built in; no database access is shared.",
+  },
+  {
     title: "Signed and notarized builds",
     body: "A Developer ID and notarization on macOS and a signed installer on Windows, so the first launch needs no workaround.",
   },
