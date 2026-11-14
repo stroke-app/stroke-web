@@ -8,7 +8,7 @@ import { getCoveringDomain } from "#/lib/billing/enterprise";
 import { db } from "#/lib/db";
 import { licenses } from "#/lib/db/schema";
 
-const DEFAULT_MAX_DEVICES = 2;
+const DEFAULT_MAX_DEVICES = 3;
 
 function fromHex(hex: string): Buffer {
   return Buffer.from(hex, "hex");

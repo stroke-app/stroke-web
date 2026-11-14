@@ -67,6 +67,10 @@ export const licenses = sqliteTable(
       .unique(),
     licenseKey: text("license_key").notNull().unique(),
     plan: text("plan").notNull().default("pro"),
+    // The column default stays 2 (changing it means rebuilding this table,
+    // which activations reference): licenses are issued with
+    // DEFAULT_MAX_DEVICES (3) explicitly, and 0014 raised the existing ones.
+    // More on request, set per license by an admin (device_requests).
     maxDevices: integer("max_devices").notNull().default(2),
     issuedAt: integer("issued_at", { mode: "timestamp_ms" }).notNull(),
     expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
@@ -177,3 +181,31 @@ export const licensesRelations = relations(licenses, ({ one, many }) => ({
 export const activationsRelations = relations(activations, ({ one }) => ({
   license: one(licenses, { fields: [activations.licenseId], references: [licenses.id] }),
 }));
+
+export type DeviceRequestStatus = "pending" | "approved" | "declined";
+
+/**
+ * "I need more devices": a user's request for more seats on their license,
+ * with their reason. An admin sets the new limit (POST
+ * /api/admin/license/devices), which approves the pending request.
+ */
+export const deviceRequests = sqliteTable(
+  "device_requests",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    licenseId: text("license_id")
+      .notNull()
+      .references(() => licenses.id, { onDelete: "cascade" }),
+    requested: integer("requested").notNull(),
+    reason: text("reason").notNull(),
+    status: text("status").$type<DeviceRequestStatus>().notNull().default("pending"),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+      .notNull(),
+    resolvedAt: integer("resolved_at", { mode: "timestamp_ms" }),
+  },
+  (table) => [index("device_requests_license_idx").on(table.licenseId)],
+);

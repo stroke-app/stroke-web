@@ -13,7 +13,8 @@ import {
 } from "#/lib/billing/enterprise";
 import { getActiveSubscription, getSubscription } from "#/lib/billing/service";
 import { db } from "#/lib/db";
-import { activations, subscriptions } from "#/lib/db/schema";
+import { activations, deviceRequests, subscriptions } from "#/lib/db/schema";
+import { overLimit } from "#/lib/desktop/rate-limit";
 import { getLicense, getOrIssueLicense, resolveLicense } from "#/lib/license";
 
 // Checkout is handled by the @dodopayments/better-auth plugin. See
@@ -143,6 +144,73 @@ export const $removeDevice = createServerFn({ method: "POST" })
       .where(and(eq(activations.id, data.id), eq(activations.licenseId, license.id)))
       .returning({ id: activations.id });
     return { removed: deleted.length > 0 };
+  });
+
+/**
+ * "I need more devices": record the request and its reason for an admin to
+ * act on. One pending request per license; a second one updates it.
+ */
+export const $requestMoreDevices = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .inputValidator(
+    z.object({
+      requested: z.number().int().min(2).max(50),
+      reason: z.string().trim().min(10, "Tell us a little about why.").max(1000),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    if ((await overLimit(`device-request:${context.user.id}`, 5, 86_400)) !== null) {
+      throw new Error("You've sent a few requests today. We'll get back to you by email.");
+    }
+    const license = await getLicense(context.user.id);
+    if (!license) throw new Error("There's no license on this account yet.");
+    if (data.requested <= license.maxDevices) {
+      throw new Error(`Your license already covers ${license.maxDevices} devices.`);
+    }
+    const [pending] = await db
+      .select({ id: deviceRequests.id })
+      .from(deviceRequests)
+      .where(and(eq(deviceRequests.licenseId, license.id), eq(deviceRequests.status, "pending")))
+      .limit(1);
+    if (pending) {
+      await db
+        .update(deviceRequests)
+        .set({ requested: data.requested, reason: data.reason, createdAt: new Date() })
+        .where(eq(deviceRequests.id, pending.id));
+    } else {
+      await db.insert(deviceRequests).values({
+        id: crypto.randomUUID(),
+        userId: context.user.id,
+        licenseId: license.id,
+        requested: data.requested,
+        reason: data.reason,
+      });
+    }
+    return { ok: true };
+  });
+
+/** The open request, if any: the panel says it is pending instead of offering the form. */
+export const $getDeviceRequest = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const license = await getLicense(context.user.id);
+    if (!license) return null;
+    const [row] = await db
+      .select({
+        requested: deviceRequests.requested,
+        status: deviceRequests.status,
+        createdAt: deviceRequests.createdAt,
+      })
+      .from(deviceRequests)
+      .where(and(eq(deviceRequests.licenseId, license.id), eq(deviceRequests.status, "pending")))
+      .limit(1);
+    return row ?? null;
+  });
+
+export const deviceRequestQueryOptions = () =>
+  queryOptions({
+    queryKey: ["billing", "device-request"],
+    queryFn: ({ signal }) => $getDeviceRequest({ signal }),
   });
 
 export const devicesQueryOptions = () =>
