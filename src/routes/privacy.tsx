@@ -75,7 +75,7 @@ function PrivacyPage() {
           items={[
             <>
               <strong>License activation and checks.</strong> Your license key, a device identifier,
-              and the device's hostname, used to enforce the 2-device limit and to free a slot when
+              and the device's hostname, used to enforce the 3-device limit and to free a slot when
               you deactivate a device.
             </>,
             <>

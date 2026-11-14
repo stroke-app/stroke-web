@@ -6,7 +6,13 @@ import { toast } from "sonner";
 
 import { appButton, Badge, Card, CardHeader, ROW_LIST } from "#/components/app-ui";
 import { WindowsLogo } from "#/components/download-targets";
-import { $removeDevice, devicesQueryOptions } from "#/lib/billing/functions";
+import { Textarea } from "#/components/ui/textarea";
+import {
+  $removeDevice,
+  $requestMoreDevices,
+  deviceRequestQueryOptions,
+  devicesQueryOptions,
+} from "#/lib/billing/functions";
 import { type DeviceOs, guessOs, parseOs } from "#/lib/license/platform";
 import { cn } from "#/lib/utils";
 
@@ -251,7 +257,97 @@ function DeviceList({ maxDevices }: { maxDevices: number }) {
           ))}
         </ul>
       )}
+      <MoreDevices maxDevices={maxDevices} />
     </Card>
+  );
+}
+
+/**
+ * "Need more devices?": a number and a reason, sent for review. A request
+ * already waiting says so instead of offering the form again.
+ */
+function MoreDevices({ maxDevices }: { maxDevices: number }) {
+  const queryClient = useQueryClient();
+  const { data: pending } = useQuery(deviceRequestQueryOptions());
+  const [open, setOpen] = useState(false);
+  const [requested, setRequested] = useState(maxDevices + 1);
+  const [reason, setReason] = useState("");
+  const send = useMutation({
+    mutationFn: () => $requestMoreDevices({ data: { requested, reason } }),
+    onSuccess: async () => {
+      toast.success("Request sent. We'll reply by email.");
+      setOpen(false);
+      setReason("");
+      await queryClient.invalidateQueries({ queryKey: ["billing", "device-request"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't send the request"),
+  });
+
+  if (pending) {
+    return (
+      <p className="mt-4 text-[13px] text-muted-foreground">
+        You asked for {pending.requested} devices. We'll get back to you by email.
+      </p>
+    );
+  }
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="mt-4 text-[13px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        onClick={() => setOpen(true)}
+      >
+        Need more devices?
+      </button>
+    );
+  }
+  return (
+    <form
+      className="mt-4 flex flex-col gap-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        send.mutate();
+      }}
+    >
+      <label className="flex items-center gap-3 text-[13px] text-muted-foreground">
+        Devices you need
+        <select
+          value={requested}
+          onChange={(e) => setRequested(Number(e.target.value))}
+          className="h-8 rounded-md border border-border bg-background px-2 text-[13px] text-foreground"
+        >
+          {Array.from({ length: 8 }, (_, i) => maxDevices + 1 + i).map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+      </label>
+      <Textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="What are the extra devices for? A work and a home machine, a build server, a test VM…"
+        rows={3}
+        maxLength={1000}
+      />
+      <div className="flex items-center gap-2">
+        <button
+          type="submit"
+          className={appButton({ size: "sm" })}
+          disabled={send.isPending || reason.trim().length < 10}
+        >
+          {send.isPending && <Loader2Icon className="size-3.5 animate-spin" />}
+          Send request
+        </button>
+        <button
+          type="button"
+          className={appButton({ variant: "ghost", size: "sm" })}
+          onClick={() => setOpen(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
 

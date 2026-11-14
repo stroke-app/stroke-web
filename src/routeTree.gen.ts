@@ -65,6 +65,7 @@ import { Route as ApiAdminReviewsListRouteImport } from './routes/api/admin/revi
 import { Route as ApiAdminLicenseUnrevokeRouteImport } from './routes/api/admin/license/unrevoke'
 import { Route as ApiAdminLicenseRevokeRouteImport } from './routes/api/admin/license/revoke'
 import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/license/info'
+import { Route as ApiAdminLicenseDevicesRouteImport } from './routes/api/admin/license/devices'
 import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giveaway/draw'
 
 const TermsRoute = TermsRouteImport.update({
@@ -346,6 +347,11 @@ const ApiAdminLicenseInfoRoute = ApiAdminLicenseInfoRouteImport.update({
   path: '/api/admin/license/info',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminLicenseDevicesRoute = ApiAdminLicenseDevicesRouteImport.update({
+  id: '/api/admin/license/devices',
+  path: '/api/admin/license/devices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminGiveawayDrawRoute = ApiAdminGiveawayDrawRouteImport.update({
   id: '/api/admin/giveaway/draw',
   path: '/api/admin/giveaway/draw',
@@ -401,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app/': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
+  '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -457,6 +464,7 @@ export interface FileRoutesByTo {
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
+  '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -517,6 +525,7 @@ export interface FileRoutesById {
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/_auth/app/': typeof AuthAppIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
+  '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
   '/api/admin/license/revoke': typeof ApiAdminLicenseRevokeRoute
   '/api/admin/license/unrevoke': typeof ApiAdminLicenseUnrevokeRoute
@@ -576,6 +585,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$provider'
     | '/app/'
     | '/api/admin/giveaway/draw'
+    | '/api/admin/license/devices'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -632,6 +642,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$provider'
     | '/app'
     | '/api/admin/giveaway/draw'
+    | '/api/admin/license/devices'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -691,6 +702,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$provider'
     | '/_auth/app/'
     | '/api/admin/giveaway/draw'
+    | '/api/admin/license/devices'
     | '/api/admin/license/info'
     | '/api/admin/license/revoke'
     | '/api/admin/license/unrevoke'
@@ -743,6 +755,7 @@ export interface RootRouteChildren {
   ApiSyncPushRoute: typeof ApiSyncPushRoute
   ApiWebhooksProviderRoute: typeof ApiWebhooksProviderRoute
   ApiAdminGiveawayDrawRoute: typeof ApiAdminGiveawayDrawRoute
+  ApiAdminLicenseDevicesRoute: typeof ApiAdminLicenseDevicesRoute
   ApiAdminLicenseInfoRoute: typeof ApiAdminLicenseInfoRoute
   ApiAdminLicenseRevokeRoute: typeof ApiAdminLicenseRevokeRoute
   ApiAdminLicenseUnrevokeRoute: typeof ApiAdminLicenseUnrevokeRoute
@@ -1146,6 +1159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLicenseInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/license/devices': {
+      id: '/api/admin/license/devices'
+      path: '/api/admin/license/devices'
+      fullPath: '/api/admin/license/devices'
+      preLoaderRoute: typeof ApiAdminLicenseDevicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/giveaway/draw': {
       id: '/api/admin/giveaway/draw'
       path: '/api/admin/giveaway/draw'
@@ -1245,6 +1265,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSyncPushRoute: ApiSyncPushRoute,
   ApiWebhooksProviderRoute: ApiWebhooksProviderRoute,
   ApiAdminGiveawayDrawRoute: ApiAdminGiveawayDrawRoute,
+  ApiAdminLicenseDevicesRoute: ApiAdminLicenseDevicesRoute,
   ApiAdminLicenseInfoRoute: ApiAdminLicenseInfoRoute,
   ApiAdminLicenseRevokeRoute: ApiAdminLicenseRevokeRoute,
   ApiAdminLicenseUnrevokeRoute: ApiAdminLicenseUnrevokeRoute,
