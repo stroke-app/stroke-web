@@ -21,7 +21,9 @@ export const Route = createFileRoute("/")({
     // button shows its version without a flash).
     await Promise.all([
       context.queryClient.ensureQueryData(approvedReviewsQueryOptions()),
-      context.queryClient.ensureQueryData(latestReleaseQueryOptions()),
+      // The download button renders without it; GitHub being slow or down
+      // must never fail the home page (the download routes do the same).
+      context.queryClient.ensureQueryData(latestReleaseQueryOptions()).catch(() => null),
     ]);
   },
   head: () =>

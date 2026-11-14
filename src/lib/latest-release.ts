@@ -20,8 +20,12 @@ export type LatestRelease = z.infer<typeof releaseSchema>;
 const CACHE_MS = 5 * 60 * 1000;
 
 // Kept per isolate, so server-rendered download pages don't call GitHub on
-// every view. A failed fetch is dropped so the next request retries.
-let cached: { at: number; release: Promise<LatestRelease> } | null = null;
+// every view. Only the finished result is kept, never the in-flight promise:
+// Workers drop a promise when the request that created it ends, so a cached
+// promise from a cancelled (or early-finishing) request failed every request
+// after it with "This promise was created by a request that has since ended"
+// for the rest of the cache window, which took the home page down with a 500.
+let cached: { at: number; release: LatestRelease } | null = null;
 
 async function fetchLatestRelease() {
   const res = await fetch(`https://api.github.com/repos/${REPO_SLUG}/releases/latest`, {
@@ -38,15 +42,17 @@ async function fetchLatestRelease() {
 }
 
 /** Latest stable release. Server-side, so pages can render it in their HTML. */
-export const $getLatestRelease = createServerFn({ method: "GET" }).handler(() => {
-  if (!cached || Date.now() - cached.at > CACHE_MS) {
-    const release = fetchLatestRelease();
+export const $getLatestRelease = createServerFn({ method: "GET" }).handler(async () => {
+  if (cached && Date.now() - cached.at <= CACHE_MS) return cached.release;
+  try {
+    const release = await fetchLatestRelease();
     cached = { at: Date.now(), release };
-    release.catch(() => {
-      if (cached?.release === release) cached = null;
-    });
+    return release;
+  } catch (error) {
+    // GitHub down or rate-limited: an older copy beats no download button.
+    if (cached) return cached.release;
+    throw error;
   }
-  return cached.release;
 });
 
 export const latestReleaseQueryOptions = () =>
