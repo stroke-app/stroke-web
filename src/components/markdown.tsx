@@ -174,6 +174,62 @@ function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
       continue;
     }
 
+    // GitHub table: a header row, a |---| divider, then rows. Rendered as a
+    // real table; it used to come out as a paragraph of pipes.
+    if (/^\s*\|.*\|\s*$/.test(line) && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1] ?? "")) {
+      const cells = (row: string) =>
+        row
+          .trim()
+          .replace(/^\||\|$/g, "")
+          .split("|")
+          .map((c) => c.trim());
+      const head = cells(line);
+      const body: string[][] = [];
+      i += 2;
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+        body.push(cells(lines[i]));
+        i++;
+      }
+      push("text", (gap) => (
+        <div key={key++} className={cn("overflow-x-auto rounded-lg border border-border", gap)}>
+          <table className="w-full border-collapse text-left text-[14px]">
+            <thead>
+              <tr>
+                {head.map((h, c) => (
+                  <th
+                    key={c}
+                    scope="col"
+                    className="border-b border-border px-4 py-2.5 text-[13px] font-medium text-faint"
+                  >
+                    {renderInline(h, repoUrl)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {body.map((r, ri) => (
+                <tr key={ri}>
+                  {r.map((v, c) => (
+                    <td
+                      key={c}
+                      className={cn(
+                        "px-4 py-2.5 align-top",
+                        ri < body.length - 1 && "border-b border-border",
+                        c === 0 ? "font-medium whitespace-nowrap text-foreground" : "text-soft",
+                      )}
+                    >
+                      {renderInline(v, repoUrl)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ));
+      continue;
+    }
+
     // horizontal rule
     if (/^-{3,}\s*$/.test(line)) {
       i++;

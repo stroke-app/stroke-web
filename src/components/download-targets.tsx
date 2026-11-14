@@ -359,7 +359,7 @@ const WHAT_YOU_GET = [
   },
   {
     title: "Yours for $9.99",
-    body: "Pay once and keep it: a license key for up to 2 of your devices and every future update. No subscription.",
+    body: "Pay once and keep it: a license on your account for up to 3 of your devices and every future update. No subscription.",
   },
 ];
 
