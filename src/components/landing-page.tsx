@@ -55,6 +55,7 @@ import { Panel, Section, SectionIntro, SITE, siteButton, WRAP } from "#/componen
 import { SchemaShowcase } from "#/components/schema-showcase";
 import { REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { useAuth } from "#/lib/auth/hooks";
+import { SHIPPED_ENGINES } from "#/lib/engines";
 import { useLatestRelease } from "#/lib/releases";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
@@ -214,19 +215,13 @@ function Hero() {
   );
 }
 
-const DATABASES = [
-  { name: "PostgreSQL", Icon: SiPostgresql, color: "#699eca" },
-  { name: "MySQL", Icon: SiMysql, color: "#4f9fd3" },
-  { name: "MariaDB", Icon: SiMariadb, color: "#c0765a" },
-  { name: "SQLite", Icon: SiSqlite, color: "#44a8e0" },
-  { name: "DuckDB", Icon: SiDuckdb, color: "#fff000" },
-  { name: "SQL Server", Icon: DatabaseIcon, color: "#e2574c" },
-  { name: "ClickHouse", Icon: SiClickhouse, color: "#ffcc01" },
-  { name: "CockroachDB", Icon: SiCockroachlabs, color: "#8b6bff" },
-  { name: "Turso / LibSQL", Icon: SiTurso, color: "#4ff8d2" },
-  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020" },
-  { name: "Redis", Icon: SiRedis, color: "#ff4438", tag: "Beta" },
-] as const;
+const DATABASES = SHIPPED_ENGINES.map((e) => ({
+  name: e.name,
+  Icon: e.Icon,
+  color: e.color,
+  slug: e.slug,
+  tag: e.status === "beta" ? "Beta" : undefined,
+}));
 
 // Nile's own mark (thenile.dev/logo.svg), the same one the desktop app draws.
 function NileMark({ className }: { className?: string }) {
@@ -260,14 +255,20 @@ function LogoGrid({
   className,
 }: {
   caption: React.ReactNode;
-  items: readonly { name: string; Icon: React.ElementType; color: string; tag?: string }[];
-  tail: { to: "/roadmap" | "/docs"; label: string };
+  items: readonly {
+    name: string;
+    Icon: React.ElementType;
+    color: string;
+    tag?: string;
+    slug?: string;
+  }[];
+  tail: { to: "/roadmap" | "/docs" | "/databases"; label: string };
   className?: string;
 }) {
   return (
     <div className={className}>
       <p className="text-[15px] text-muted-foreground">{caption}</p>
-      <ul className="mt-8 grid grid-cols-2 border-t border-l border-border sm:grid-cols-3 lg:grid-cols-6">
+      <ul className="mt-8 grid grid-cols-2 border-t border-l border-border sm:grid-cols-4 lg:grid-cols-5">
         {items.map((item) => (
           <EngineCell key={item.name} {...item} />
         ))}
@@ -291,12 +292,12 @@ function Databases() {
       <LogoGrid
         caption={
           <>
-            <span className="text-foreground">Ten engines today,</span> from a local SQLite file to
-            ClickHouse.
+            <span className="text-foreground">{SHIPPED_ENGINES.length} engines today,</span> from a
+            local SQLite file to ClickHouse, MongoDB and DynamoDB.
           </>
         }
         items={DATABASES}
-        tail={{ to: "/roadmap", label: "More on the roadmap" }}
+        tail={{ to: "/databases", label: "Every database" }}
       />
       <LogoGrid
         caption={
@@ -325,11 +326,13 @@ function EngineCell({
   Icon,
   color,
   tag,
+  slug,
 }: {
   name: string;
   Icon: React.ElementType;
   color: string;
   tag?: string;
+  slug?: string;
 }) {
   // null shows the real name; a string is a frame of the scramble.
   const [label, setLabel] = useState<string | null>(null);
@@ -378,6 +381,14 @@ function EngineCell({
       style={{ "--brand": color } as React.CSSProperties}
       className="group/engine relative flex h-20 items-center justify-center gap-2.5 overflow-hidden border-r border-b border-border px-3 text-[14px] text-muted-foreground transition-colors duration-200 hover:text-foreground md:h-24"
     >
+      {slug && (
+        <Link
+          to="/databases/$engine"
+          params={{ engine: slug }}
+          aria-label={`${name} in Stroke`}
+          className="absolute inset-0 z-10 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+        />
+      )}
       {/* Light that follows the pointer, tinted by the engine's brand color. */}
       <span
         aria-hidden="true"
@@ -480,8 +491,7 @@ function Connect() {
       >
         <p>
           Sign in with your database provider and see every database on your account, then{" "}
-          <strong>connect in one click.</strong> Any of the ten engines also takes a plain
-          connection string.
+          <strong>connect in one click.</strong> Every engine also takes a plain connection string.
         </p>
       </SectionIntro>
       <ConnectMockup className="mt-16 md:mt-24" />
@@ -1065,7 +1075,7 @@ function Plan({
 
 const FREE_PERKS = [
   "Every feature unlocked while you evaluate",
-  "All ten engines, from Postgres to DuckDB",
+  `All ${SHIPPED_ENGINES.length} engines, from Postgres to MongoDB`,
   "macOS, Windows & Linux",
   "No sign-in required",
 ];
@@ -1215,7 +1225,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Can I move my license to a new machine?",
-    a: "Yes. Your license covers 2 devices at once, and you can free a seat from your account dashboard whenever you switch, even if the old machine is gone. Refunds are covered in the Terms of Service.",
+    a: "Yes. Your license covers 3 devices at once (ask for more if you need them), and you can free a seat from your account dashboard whenever you switch, even if the old machine is gone. Refunds are covered in the Terms of Service.",
   },
   {
     q: "Is Stroke open source?",

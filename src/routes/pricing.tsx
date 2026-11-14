@@ -10,7 +10,7 @@ export const Route = createFileRoute("/pricing")({
     seo({
       title: "Pricing · Stroke",
       description:
-        "Stroke costs $9.99 once, not $100 a year. Try every feature free, buy a license for 2 devices, or license your whole company's email domain for $99. No subscription.",
+        "Stroke costs $9.99 once, not $100 a year. Try every feature free, buy a license for 3 devices, or license your whole company's email domain for $99. No subscription.",
       path: "/pricing",
       breadcrumbs: [{ name: "Pricing", path: "/pricing" }],
     }),

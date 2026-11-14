@@ -62,7 +62,7 @@ const STEPS: Step[] = [
       <>
         <p>
           When you decide to keep Stroke, buy a license and paste the key into{" "}
-          <strong>Settings → License</strong>. One purchase covers two devices, with every future
+          <strong>Settings → License</strong>. One purchase covers three devices, with every future
           update included.
         </p>
         <div className="mt-5">

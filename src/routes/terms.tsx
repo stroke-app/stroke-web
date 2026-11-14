@@ -10,7 +10,7 @@ export const Route = createFileRoute("/terms")({
     seo({
       title: "Terms of Service · Stroke database client",
       description:
-        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 17-day free trial, a one-time $9.99 license for 2 devices, and a source-available app.",
+        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 17-day free trial, a one-time $9.99 license for 3 devices, and a source-available app.",
       path: "/terms",
       breadcrumbs: [{ name: "Terms of Service", path: "/terms" }],
     }),
@@ -30,8 +30,8 @@ const HIGHLIGHTS = [
   },
   {
     icon: LaptopIcon,
-    title: "Two devices",
-    body: "Each license runs on 2 devices at a time. Move it whenever you like.",
+    title: "Three devices",
+    body: "Each license runs on 3 devices at a time, and you can ask for more. Move it whenever you like.",
   },
   {
     icon: CodeIcon,
@@ -108,7 +108,7 @@ function TermsPage() {
       <LegalSection
         number="05"
         title="Licenses"
-        summary="One payment, yours for good, on up to 2 devices."
+        summary="One payment, yours for good, on up to 3 devices."
       >
         <p>
           A personal license is a <strong>one-time purchase of $9.99</strong>. When you buy one:
@@ -121,7 +121,7 @@ function TermsPage() {
             </>,
             <>
               You get a <strong>license key</strong> tied to your account that can be active on up
-              to <strong>2 devices</strong> at a time. Deactivate it in the app on a device you no
+              to <strong>3 devices</strong> at a time. Deactivate it in the app on a device you no
               longer use to free a slot, or email us if that device is gone.
             </>,
             "The license is personal. Don't publish, resell, or share your key; we may revoke keys that are leaked or abused.",

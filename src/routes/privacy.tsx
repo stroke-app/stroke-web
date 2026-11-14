@@ -20,12 +20,12 @@ const HIGHLIGHTS = [
   {
     icon: HardDriveIcon,
     title: "Your databases stay with you",
-    body: "Credentials, queries, and results never leave your device.",
+    body: "Queries and results never leave your device. Synced credentials are end-to-end encrypted.",
   },
   {
     icon: KeyRoundIcon,
-    title: "Accounts only for licenses",
-    body: "Name, email, and license records, from GitHub or Google sign-in.",
+    title: "Accounts for licenses and sync",
+    body: "Name, email, license records, and encrypted sync data we can't read.",
   },
   {
     icon: ShieldCheckIcon,
@@ -43,7 +43,7 @@ function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      updated="October 6, 2026"
+      updated="November 14, 2026"
       intro="Stroke is built on a simple boundary: the desktop app works with your databases on your machine, and our servers handle accounts, licenses, and a few anonymous counts. This policy describes what crosses that boundary, what never does, and the choices you have."
       highlights={HIGHLIGHTS}
     >
@@ -57,7 +57,17 @@ function PrivacyPage() {
           queries, dashboards, AI provider keys you add, and your preferences are stored locally on
           your device. Stroke connects to your databases directly from your machine. Nothing is
           proxied through our servers, and{" "}
-          <strong>we never receive your credentials, schemas, queries, or query results</strong>.
+          <strong>we never receive your schemas, queries, or query results</strong>, or your
+          credentials in a form we can read.
+        </p>
+        <p>
+          <strong>If you turn on sync</strong> (signed in, with a sync passphrase you choose), your
+          connections (credentials included), workspaces, and settings are encrypted on your device
+          with XChaCha20-Poly1305 before they are uploaded. The key is protected by your passphrase
+          (Argon2id) and never leaves your devices in a readable form, so our servers store only
+          ciphertext they cannot decrypt. If you lose the passphrase we cannot recover the data; you
+          can reset sync, which deletes the encrypted copies, or delete your account, which deletes
+          them with it.
         </p>
         <p>
           If you connect the built-in AI chat to your own AI provider, or connect an MCP client such

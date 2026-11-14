@@ -52,8 +52,69 @@ export function parseChangelog(markdown: string): ChangelogEntry[] {
   return entries;
 }
 
-async function fetchChangelog(): Promise<ChangelogEntry[]> {
-  const res = await fetch(CHANGELOG_API);
+export type ReleaseChannel = "stable" | "nightly";
+
+/**
+ * One minor version with all of its patch releases (2.7.0, 2.7.1, ... 2.7.5):
+ * the changelog reads as a handful of releases, not a patch per merged PR.
+ */
+export interface MinorRelease {
+  /** "2.7" */
+  minor: string;
+  /** Newest first, as in the file. */
+  entries: ChangelogEntry[];
+  /** The newest patch's date, and the oldest's. */
+  latestDate: string | null;
+  firstDate: string | null;
+}
+
+/** Group entries by major.minor, keeping the file's newest-first order. */
+export function groupByMinor(entries: ChangelogEntry[]): MinorRelease[] {
+  const out: MinorRelease[] = [];
+  for (const e of entries) {
+    const m = /^v?(\d+)\.(\d+)/.exec(e.version);
+    const minor = m ? `${m[1]}.${m[2]}` : e.version;
+    const last = out.at(-1);
+    if (last && last.minor === minor) {
+      last.entries.push(e);
+      last.firstDate = e.date ?? last.firstDate;
+    } else {
+      out.push({ minor, entries: [e], latestDate: e.date, firstDate: e.date });
+    }
+  }
+  return out;
+}
+
+/** "### Bug Fixes" style sections across a minor's patches, in one body each. */
+export function mergeSections(
+  entries: ChangelogEntry[],
+): { title: string; items: { text: string; version: string }[] }[] {
+  const order: string[] = [];
+  const by = new Map<string, { text: string; version: string }[]>();
+  for (const e of entries) {
+    let title = "Changes";
+    for (const line of e.body.split("\n")) {
+      const h = /^###\s+(.*)$/.exec(line);
+      if (h) {
+        title = h[1].trim();
+        continue;
+      }
+      const item = /^\s*[-*]\s+(.*)$/.exec(line);
+      if (!item) continue;
+      if (!by.has(title)) {
+        by.set(title, []);
+        order.push(title);
+      }
+      by.get(title)!.push({ text: item[1].trim(), version: e.version });
+    }
+  }
+  return order.map((title) => ({ title, items: by.get(title)! }));
+}
+
+async function fetchChangelog(channel: ReleaseChannel = "stable"): Promise<ChangelogEntry[]> {
+  const res = await fetch(
+    channel === "nightly" ? `${CHANGELOG_API}?channel=nightly` : CHANGELOG_API,
+  );
   // A failed response carries an error object, not markdown, so surface it as a
   // query error instead of rendering the raw JSON.
   if (!res.ok) throw new Error(`Changelog API responded with ${res.status}`);
@@ -65,17 +126,17 @@ async function fetchChangelog(): Promise<ChangelogEntry[]> {
  * Shared query config so the changelog can be prefetched (e.g. on nav hover)
  * and read by the page from the same cache entry.
  */
-export const changelogQueryOptions = () =>
+export const changelogQueryOptions = (channel: ReleaseChannel = "stable") =>
   queryOptions({
-    queryKey: ["changelog"],
-    queryFn: fetchChangelog,
+    queryKey: ["changelog", channel],
+    queryFn: () => fetchChangelog(channel),
     staleTime: 1000 * 60 * 30,
     gcTime: 1000 * 60 * 60,
     retry: 1,
   });
 
-export function useChangelog() {
-  return useQuery(changelogQueryOptions());
+export function useChangelog(channel: ReleaseChannel = "stable") {
+  return useQuery(changelogQueryOptions(channel));
 }
 
 export interface ReleaseTag {

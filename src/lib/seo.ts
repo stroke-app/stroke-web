@@ -90,7 +90,7 @@ export function softwareApplication({
       priceCurrency: "USD",
       url: `${SITE_URL}/pricing`,
       description:
-        "Free to try with every feature unlocked and no account. $9.99 once for a license key on up to 2 devices and every future update.",
+        "Free to try with every feature unlocked and no account. $9.99 once for a license key on up to 3 devices and every future update.",
     },
   };
 }

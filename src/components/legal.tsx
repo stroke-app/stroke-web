@@ -9,9 +9,22 @@ import { cn } from "#/lib/utils";
 
 export const SUPPORT_EMAIL = "support@stroke.click";
 
-const LEGAL_DOCS = [
-  { to: "/privacy", label: "Privacy Policy" },
-  { to: "/terms", label: "Terms of Service" },
+export const LEGAL_DOCS = [
+  {
+    to: "/privacy",
+    label: "Privacy Policy",
+    blurb: "What stays on your device, what reaches us, and your choices.",
+  },
+  {
+    to: "/terms",
+    label: "Terms of Service",
+    blurb: "The trial, the license, refunds, and the rules for using Stroke.",
+  },
+  {
+    to: "/security",
+    label: "Security",
+    blurb: "How Stroke protects your data and how to report a vulnerability.",
+  },
 ] as const;
 
 interface Highlight {

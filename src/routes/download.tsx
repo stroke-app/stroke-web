@@ -19,6 +19,8 @@ import {
   siteButton,
 } from "#/components/page";
 import { latestReleaseQueryOptions } from "#/lib/latest-release";
+import { NIGHTLY_ASSETS, nightlyReleaseQueryOptions, nightlyUrl } from "#/lib/nightly-release";
+import { formatReleaseDate } from "#/lib/releases";
 import { DOWNLOAD_TARGETS, findAsset, RELEASES_URL, usePlatform } from "#/lib/releases";
 import { ORGANIZATION, seo, softwareApplication } from "#/lib/seo";
 
@@ -149,6 +151,7 @@ function DownloadPage() {
         <div className="mt-16 md:mt-24">
           <WhatYouGet />
         </div>
+        <NightlyDownloads />
         <NextLinks>
           {OS_ROWS.map((row) => (
             <Link key={row.os} to="/download/$os" params={{ os: row.os }}>
@@ -182,5 +185,62 @@ function FirstLaunch() {
         </p>
       </div>
     </div>
+  );
+}
+
+/**
+ * The Nightly channel: every merged change, built each night, installed as
+ * its own app beside Stroke. Linked from the changelog's Nightly tab.
+ */
+function NightlyDownloads() {
+  const { data: n } = useQuery(nightlyReleaseQueryOptions());
+  return (
+    <section
+      id="nightly"
+      aria-labelledby="nightly-title"
+      className="mt-20 scroll-mt-24 rounded-2xl border border-border bg-white/[0.02] p-6 md:p-8"
+    >
+      <p className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
+        <span aria-hidden="true" className="size-1.5 rounded-full bg-amber-400" />
+        Nightly channel
+      </p>
+      <h2 id="nightly-title" className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+        Stroke Nightly
+        {n ? (
+          <span className="font-mono text-[0.7em] font-normal text-muted-foreground">
+            {" "}
+            {n.version}
+          </span>
+        ) : null}
+      </h2>
+      <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
+        Every change, the night it lands, before it reaches Stable. It installs as its own app
+        beside Stroke with its own settings, and updates itself.
+        {n ? ` Built ${formatReleaseDate(n.published_at)}.` : ""}{" "}
+        <Link
+          to="/changelog"
+          search={{ channel: "nightly" }}
+          className="text-foreground underline-offset-4 hover:underline"
+        >
+          What's in it
+        </Link>
+      </p>
+      <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {NIGHTLY_ASSETS.map((a) => (
+          <li key={a.file}>
+            <a
+              href={nightlyUrl(a.file)}
+              className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-[14px] transition-[background-color,scale] duration-150 hover:bg-white/[0.04] active:scale-[0.99]"
+            >
+              <span>
+                <span className="font-medium text-foreground">{a.os}</span>
+                <span className="text-muted-foreground"> · {a.detail}</span>
+              </span>
+              <span className="font-mono text-[11.5px] text-faint">{a.file.split(".").pop()}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
