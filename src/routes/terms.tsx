@@ -73,10 +73,9 @@ function TermsPage() {
           product, or offer it to others as a paid product or hosted service.
         </p>
         <p>
-          Pro features in official builds unlock when you sign in with the account that bought them
-          (or, for licenses bought before November 15, 2026, with a license key). Removing or
-          bypassing the license checks in builds you distribute is not permitted. Where this section
-          and the license file differ, the license file governs the software.
+          Pro features in official builds unlock with a license key. Removing or bypassing the
+          license checks in builds you distribute is not permitted. Where this section and the
+          license file differ, the license file governs the software.
         </p>
       </LegalSection>
 
@@ -121,12 +120,11 @@ function TermsPage() {
               never expires, and includes every future update.
             </>,
             <>
-              The license is <strong>your account</strong>: sign in to Stroke on up to{" "}
-              <strong>3 devices</strong> at a time. Sign out on a device you no longer use to free a
-              slot, or email us if that device is gone. Licenses bought before November 15, 2026
-              also come with a license key, which keeps working.
+              You get a <strong>license key</strong> tied to your account that can be active on up
+              to <strong>3 devices</strong> at a time. Deactivate it in the app on a device you no
+              longer use to free a slot, or email us if that device is gone.
             </>,
-            "The license is personal. Don't share your account or publish, resell, or share a license key; we may revoke licenses that are leaked or abused.",
+            "The license is personal. Don't publish, resell, or share your key; we may revoke keys that are leaked or abused.",
           ]}
         />
         <p>

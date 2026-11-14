@@ -5,7 +5,7 @@ import { getCoveringDomain } from "#/lib/billing/enterprise";
 import { userHasActiveLicense } from "#/lib/billing/service";
 import { db } from "#/lib/db";
 import { giveawayDraws, giveawayEntries, user } from "#/lib/db/schema";
-import { getOrIssueLicense, isAccountOnly } from "#/lib/license";
+import { getOrIssueLicense } from "#/lib/license";
 import { sendGiveawayWinnerEmail } from "#/lib/mail";
 
 import { drawTime, previousWeekKey, weekKey } from "./week";
@@ -123,7 +123,7 @@ async function award(week: string, winner: Person) {
   const notified = await sendGiveawayWinnerEmail({
     to: winner.email,
     name: winner.name,
-    licenseKey: isAccountOnly(license.issuedAt) ? undefined : license.licenseKey,
+    licenseKey: license.licenseKey,
   });
   await db
     .update(giveawayDraws)

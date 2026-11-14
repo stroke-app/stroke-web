@@ -3,7 +3,7 @@ import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import { enterpriseDomains, licenses, payments, subscriptions, user } from "#/lib/db/schema";
-import { getOrIssueLicense, isAccountOnly } from "#/lib/license";
+import { getOrIssueLicense } from "#/lib/license";
 import { sendPaymentFailedEmail, sendPurchaseSuccessEmail } from "#/lib/mail";
 
 import { domainFromEmail, getEnterpriseDomain, isPublicEmailDomain, TEAM_PLAN } from "./enterprise";
@@ -300,7 +300,7 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
       // Team purchase: mark the buyer's domain as covered. grantTeamPurchase is
       // fully idempotent, so it also handles retries and the recover flow.
       if (data.plan === TEAM_PLAN) {
-        const { firstPayment } = await grantTeamPurchase({
+        const { licenseKey, firstPayment } = await grantTeamPurchase({
           userId: resolvedUserId,
           email: resolvedEmail,
           paymentId: data.paymentId,
@@ -315,7 +315,7 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
             planLabel: "Stroke Team",
             amount: data.amount,
             currency: data.currency,
-            licenseKey: undefined, // Team purchases from now on are account-only.
+            licenseKey,
           });
         }
         return;
@@ -400,8 +400,7 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
         planLabel: "Stroke Pro",
         amount: data.amount,
         currency: data.currency,
-        // Account-only purchases get no key: the email says to sign in.
-        licenseKey: isAccountOnly(license.issuedAt) ? undefined : license.licenseKey,
+        licenseKey: license.licenseKey,
       });
       break;
     }
