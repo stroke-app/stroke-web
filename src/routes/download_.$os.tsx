@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRightIcon, TriangleAlertIcon } from "lucide-react";
 
-import { SmartDownloadButton } from "#/components/download-button";
+import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
 import {
   BuildList,
   CommandCard,
@@ -260,7 +260,13 @@ function OsDownloadPage() {
         title={`Download Stroke for ${page.short}`}
         lede={page.lede}
         // The line under the button links the other build; the full list is below.
-        action={<SmartDownloadButton os={os} size="lg" variant="default" />}
+        action={
+          <div className="flex flex-col gap-3">
+            <SmartDownloadButton os={os} size="lg" variant="default" />
+            {/* Or one line in a terminal: Homebrew, the install script, Scoop. */}
+            <InstallCommand os={os as "macos" | "linux" | "windows"} className="max-w-md" />
+          </div>
+        }
         release={release}
         shots={page.shots}
       />

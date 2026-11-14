@@ -212,19 +212,38 @@ function AlternateDownloadLink({
 }
 
 const BREW_COMMAND = "brew install --cask stroke-app/tap/stroke";
+const LINUX_COMMAND = "curl -fsSL https://stroke.click/install.sh | sh";
+const SCOOP_COMMAND =
+  "scoop bucket add stroke https://github.com/stroke-app/stroke; scoop install stroke";
+
+/** The one-line install for a platform: Homebrew, the install script, or Scoop. */
+export function installCommandFor(os: string | undefined) {
+  if (os === "macos") return { command: BREW_COMMAND, label: "Homebrew" };
+  if (os === "linux")
+    return { command: LINUX_COMMAND, label: "Arch, Debian, Ubuntu, Fedora and the rest" };
+  if (os === "windows") return { command: SCOOP_COMMAND, label: "Scoop" };
+  return null;
+}
 
 /**
- * The Homebrew install line, shown to Mac visitors only (platform is detected
- * after hydration, so it never renders on the server or for other systems).
+ * The install line for the visitor's own system (detected after hydration, so
+ * it never renders on the server). `os` pins one platform, for the download
+ * pages.
  */
-export function BrewCommand({ className }: { className?: string }) {
+export function InstallCommand({
+  className,
+  os,
+}: {
+  className?: string;
+  os?: "macos" | "linux" | "windows";
+}) {
   const platform = usePlatform();
   const [copied, setCopied] = useState(false);
-
-  if (platform?.os !== "macos") return null;
+  const cmd = installCommandFor(os ?? platform?.os);
+  if (!cmd) return null;
 
   const copy = async () => {
-    await navigator.clipboard.writeText(BREW_COMMAND);
+    await navigator.clipboard.writeText(cmd.command);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
@@ -235,16 +254,17 @@ export function BrewCommand({ className }: { className?: string }) {
         "animate-fade-up flex h-10 max-w-full items-center gap-3 rounded-lg border border-border bg-muted/50 pr-1 pl-3.5 font-mono text-[13px] [.site_&]:bg-white/[0.03]",
         className,
       )}
+      title={cmd.label}
     >
       <span aria-hidden="true" className="text-faint select-none">
         $
       </span>
-      <code className="truncate text-soft">{BREW_COMMAND}</code>
+      <code className="truncate text-soft">{cmd.command}</code>
       <button
         type="button"
         onClick={copy}
-        aria-label={copied ? "Copied" : "Copy the Homebrew install command"}
-        className="ml-auto flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        aria-label={copied ? "Copied" : `Copy the install command (${cmd.label})`}
+        className="ml-auto flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,scale] duration-150 ease-out hover:bg-accent hover:text-foreground active:scale-[0.97]"
       >
         {copied ? (
           <CheckIcon className="size-3.5 text-foreground" strokeWidth={2.5} />
@@ -254,4 +274,9 @@ export function BrewCommand({ className }: { className?: string }) {
       </button>
     </div>
   );
+}
+
+/** Kept for existing call sites: the install line on a Mac. */
+export function BrewCommand({ className }: { className?: string }) {
+  return <InstallCommand className={className} os={undefined} />;
 }

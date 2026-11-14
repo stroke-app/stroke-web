@@ -32,7 +32,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { LaunchVideo } from "#/components/app-window";
-import { SmartDownloadButton } from "#/components/download-button";
+import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
 import { GiveawayCard } from "#/components/giveaway";
 import { AgentsMockup, NeonGlyph } from "#/components/landing-mockups";
 import { Section, SectionIntro, SITE, siteButton, WRAP } from "#/components/page";
@@ -157,6 +157,7 @@ function Hero() {
             $9.99 once, no subscription
           </Link>
         </div>
+        <InstallCommand className="mt-5" />
         <p
           className="animate-fade-up mt-4 text-[13px] text-muted-foreground"
           style={{ animationDelay: "180ms" }}
