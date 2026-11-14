@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 
+import { BlogWidget } from "#/components/blog-widgets";
 import { Markdown } from "#/components/markdown";
 import { NextLinks, PageBody, PageHeader, PageShell } from "#/components/page";
 import { SponsorRail } from "#/components/sponsor-rail";
@@ -77,7 +78,16 @@ function PostPage() {
         }
       >
         <article>
-          <Markdown text={p.body} />
+          {/* A line holding only {{name}} places an interactive widget. */}
+          {p.body
+            .split(/^\{\{([a-z-]+)\}\}$/m)
+            .map((part, i) =>
+              i % 2 ? (
+                <BlogWidget key={i} name={part} />
+              ) : part.trim() ? (
+                <Markdown key={i} text={part} />
+              ) : null,
+            )}
         </article>
         <NextLinks>
           <Link to="/blog">All posts</Link>

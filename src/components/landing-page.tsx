@@ -1,17 +1,9 @@
 import {
-  SiClickhouse,
   SiCloudflare,
-  SiCockroachlabs,
-  SiDuckdb,
-  SiMariadb,
-  SiMysql,
   SiPlanetscale,
-  SiPostgresql,
   SiPosthog,
   SiPrisma,
   SiRailway,
-  SiRedis,
-  SiSqlite,
   SiSupabase,
   SiTidb,
   SiTurso,
@@ -22,37 +14,29 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
   BotIcon,
-  BracesIcon,
-  ChartLineIcon,
   CheckIcon,
   CodeIcon,
-  DatabaseIcon,
   DownloadIcon,
-  GitForkIcon,
   GitPullRequestIcon,
-  Grid3x3Icon,
   KeyboardIcon,
   LayoutDashboardIcon,
   ListChecksIcon,
-  MapIcon,
   MousePointerClickIcon,
   PencilLineIcon,
   PlugIcon,
   PlusIcon,
   ReplaceIcon,
   StarIcon,
-  StickyNoteIcon,
   TerminalIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { LaunchVideo, VideoDemo } from "#/components/app-window";
-import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
-import { FeatureShot } from "#/components/feature-shot";
+import { LaunchVideo } from "#/components/app-window";
+import { SmartDownloadButton } from "#/components/download-button";
 import { GiveawayCard } from "#/components/giveaway";
-import { AgentsMockup, ConnectMockup, NeonGlyph, QueryMockup } from "#/components/landing-mockups";
-import { Panel, Section, SectionIntro, SITE, siteButton, WRAP } from "#/components/page";
-import { SchemaShowcase } from "#/components/schema-showcase";
+import { AgentsMockup, NeonGlyph } from "#/components/landing-mockups";
+import { Section, SectionIntro, SITE, siteButton, WRAP } from "#/components/page";
+import { ProductTour } from "#/components/product-tour";
 import { REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
@@ -66,12 +50,8 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <Pillars />
-        <Connect />
-        <QuerySection />
-        <Views />
-        <SchemaSection />
-        <Editing />
+        <Tour />
+        <Features />
         <Agents />
         <Demo />
         <Reviews />
@@ -146,67 +126,61 @@ const LAUNCH_VERSION = "?v=1";
 function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
-      {/* A faint light at the top of the page, nothing more. */}
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(50%_70%_at_50%_0%,rgb(255_255_255/0.045),transparent)]"
-      />
-      <div className={cn(WRAP, "pt-20 pb-16 md:pt-32 md:pb-24")}>
+        className={cn(WRAP, "flex flex-col items-center pt-20 pb-16 text-center md:pt-28 md:pb-20")}
+      >
         <div className="animate-fade-up">
           <ReleasePill />
         </div>
 
         <h1
-          className="animate-fade-up mt-8 max-w-[18ch] text-[2.5rem] text-balance min-[430px]:text-[3rem] sm:text-[3.75rem] md:text-[4.5rem]"
+          className="animate-fade-up mt-7 max-w-[16ch] text-[2.5rem] leading-[1.05] font-semibold tracking-[-0.035em] text-balance min-[430px]:text-[3rem] sm:text-[3.5rem] md:text-[4.25rem]"
           style={{ animationDelay: "60ms" }}
         >
           The database studio for agents and humans.
         </h1>
 
-        <div
-          className="animate-fade-up mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 md:mt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-16"
-          style={{ animationDelay: "140ms" }}
+        <p
+          className="animate-fade-up mt-6 max-w-[52ch] text-[17px] leading-[1.6] text-pretty text-muted-foreground"
+          style={{ animationDelay: "120ms" }}
         >
-          <p className="max-w-xl text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-lg">
-            A native database client for engineers and analysts. Query, browse, and edit every
-            database you run in one fast app, and hand the same database to your AI agents through a
-            built-in MCP server.
-          </p>
-          <div className="flex min-w-0 flex-col gap-3 md:items-end">
-            <div className="flex flex-wrap items-center gap-3">
-              <SmartDownloadButton size="lg" variant="default" alternates={false} />
-              <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
-                $9.99 · Own it forever
-              </Link>
-            </div>
-            <BrewCommand />
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
-              <span>macOS, Windows, and Linux</span>
-              <span aria-hidden="true">·</span>
-              <span>Free to try, no account needed</span>
-              <span aria-hidden="true">·</span>
-              <Link
-                to="/download"
-                className="underline-offset-4 hover:text-foreground hover:underline"
-              >
-                Other downloads
-              </Link>
-            </p>
-          </div>
-        </div>
+          Browse, query and edit {SHIPPED_ENGINES.length} databases in one native app, and hand the
+          same database to Claude, Cursor or any agent through a built-in MCP server.
+        </p>
 
-        <div className="animate-fade-up mt-16 md:mt-24" style={{ animationDelay: "240ms" }}>
-          <LaunchVideo
-            sources={[
-              {
-                src: `${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4${LAUNCH_VERSION}`,
-                media: "(min-width: 1280px)",
-              },
-              { src: `${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4${LAUNCH_VERSION}` },
-            ]}
-            poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg${LAUNCH_VERSION}`}
-            title="Stroke in 44 seconds: the launch video"
-          />
+        <div
+          className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-3"
+          style={{ animationDelay: "180ms" }}
+        >
+          <SmartDownloadButton size="lg" variant="default" align="center" alternates={false} />
+          <Link to="/pricing" className={siteButton({ variant: "ghost", size: "lg" })}>
+            $9.99 once, no subscription
+          </Link>
+        </div>
+        <p
+          className="animate-fade-up mt-4 text-[13px] text-muted-foreground"
+          style={{ animationDelay: "180ms" }}
+        >
+          macOS, Windows and Linux · Free to try, no account needed ·{" "}
+          <Link to="/download" className="underline-offset-4 hover:text-foreground hover:underline">
+            Other downloads
+          </Link>
+        </p>
+
+        {/* The product itself, not a mockup: a real screenshot in a window
+            frame, the largest thing on the page. */}
+        <div className="animate-fade-up mt-14 w-full md:mt-20" style={{ animationDelay: "260ms" }}>
+          <div className="overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_32px_80px_-20px_rgb(0_0_0/0.8)]">
+            <img
+              src="/features/view-table.webp"
+              width={1472}
+              height={1040}
+              alt="Stroke showing a table in the grid, the sidebar of tables and the status bar"
+              fetchPriority="high"
+              decoding="async"
+              className="block h-auto w-full"
+            />
+          </div>
         </div>
       </div>
 
@@ -418,89 +392,7 @@ function EngineCell({
 
 // ── Principles ───────────────────────────────────────────────────────────────
 
-const PILLARS = [
-  {
-    title: "Fast from the first click",
-    body: "Stroke opens in an instant and stays light no matter how large your tables get. It never makes your fans spin.",
-  },
-  {
-    title: "Made for agents and people",
-    body: "Stroke ships an MCP server, so Claude, Cursor, or any agent can read your schema and run queries in one click. The same schema-aware AI chat lives right inside the app for you.",
-  },
-  {
-    title: "Yours, not rented",
-    body: "$9.99 buys the app outright. No subscription, no renewals, no locked features. Try everything free, and pay when you decide to keep it.",
-  },
-];
-
-function Pillars() {
-  return (
-    <Section>
-      <SectionIntro title="A database client that respects your time.">
-        <p>
-          Stroke is built for the hours you spend inside your databases.{" "}
-          <strong>Three ideas shape every part of it.</strong>
-        </p>
-      </SectionIntro>
-      <ol className="mt-16 grid grid-cols-1 border-t border-border md:mt-24 md:grid-cols-3">
-        {PILLARS.map((p, i) => (
-          <li
-            key={p.title}
-            className="border-b border-border py-10 md:border-b-0 md:border-l md:px-10 md:first:border-l-0 md:first:pl-0 md:last:pr-0"
-          >
-            <span className="font-mono text-[12px] text-faint tabular-nums">0{i + 1}</span>
-            <h3 className="mt-5 text-xl font-[560] tracking-[-0.02em]">{p.title}</h3>
-            <p className="mt-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
-              {p.body}
-            </p>
-          </li>
-        ))}
-      </ol>
-    </Section>
-  );
-}
-
 // ── 1.0 Connect ──────────────────────────────────────────────────────────────
-
-const CONNECT_STEPS = [
-  {
-    icon: PlugIcon,
-    title: "Sign in with your provider",
-    body: "Authorize Stroke once from the connection screen. Neon, Supabase, Prisma Postgres, PlanetScale, TiDB Cloud, Turso, Railway, Nile, Upstash, PostHog, and Cloudflare D1.",
-  },
-  {
-    icon: DatabaseIcon,
-    title: "Pick a database",
-    body: "Every database on your account shows up, ready to open.",
-  },
-  {
-    icon: CheckIcon,
-    title: "You're connected",
-    body: "No connection strings to find, copy, or paste. Everything else still takes a plain connection string.",
-  },
-];
-
-function Connect() {
-  return (
-    <Section id="connect">
-      <SectionIntro
-        index="1.0"
-        eyebrow="Connect"
-        title="Sign in. Pick a database. You're in."
-        link={{ to: "/docs", label: "How connecting works" }}
-      >
-        <p>
-          Sign in with your database provider and see every database on your account, then{" "}
-          <strong>connect in one click.</strong> Every engine also takes a plain connection string.
-        </p>
-      </SectionIntro>
-      <ConnectMockup className="mt-16 md:mt-24" />
-      <FeatureRow items={CONNECT_STEPS} />
-    </Section>
-  );
-}
-
-// ── 2.0 Query ────────────────────────────────────────────────────────────────
 
 const QUERY_FEATURES = [
   {
@@ -525,309 +417,6 @@ const QUERY_FEATURES = [
   },
 ];
 
-function QuerySection() {
-  return (
-    <Section id="query">
-      <SectionIntro
-        index="2.0"
-        eyebrow="Query"
-        title="Write SQL with the schema at hand."
-        link={{ to: "/features", label: "Every feature" }}
-      >
-        <p>
-          A full editor that knows your tables and columns as you type.{" "}
-          <strong>Run it, read the result, and keep going</strong> without leaving the keyboard.
-        </p>
-      </SectionIntro>
-      <QueryMockup className="mt-16 md:mt-24" />
-      <FeatureRow items={QUERY_FEATURES} />
-    </Section>
-  );
-}
-
-// ── 3.0 Views ────────────────────────────────────────────────────────────────
-
-interface ViewInfo {
-  key: string;
-  label: string;
-  icon: React.ElementType;
-  title: string;
-  what: string;
-  why: string;
-  shot: { src: string; width: number; height: number; alt: string };
-}
-
-const VIEWS: ViewInfo[] = [
-  {
-    key: "table",
-    label: "Table",
-    icon: Grid3x3Icon,
-    title: "Scan, sort, and edit rows",
-    what: "The grid: typed column headers, sort, filter, search, and inline editing, paging smoothly through a million rows.",
-    why: "Your everyday view, for scanning lots of rows or fixing values in place.",
-    shot: {
-      src: "/features/view-table.webp",
-      width: 1472,
-      height: 1040,
-      alt: "Table view of the events table: 1,000,000 rows with typed columns id, ts, device_id, and session",
-    },
-  },
-  {
-    key: "json",
-    label: "JSON",
-    icon: BracesIcon,
-    title: "The rows as a JSON array",
-    what: "Every row as a JSON object, with a JSONPath bar ($.field, [0], .items[*].name) to pull out just the part you need, and a column picker to hide the rest.",
-    why: "When columns hold documents, or you want rows ready to paste into code, a fixture, or an API call.",
-    shot: {
-      src: "/features/view-json.webp",
-      width: 1472,
-      height: 1040,
-      alt: "JSON view of the vector_zoo table as a syntax-highlighted JSON array, with the JSONPath filter bar and the column visibility picker open",
-    },
-  },
-  {
-    key: "text",
-    label: "Text",
-    icon: StickyNoteIcon,
-    title: "Copy-ready text in four formats",
-    what: "The result as CSV, TSV, Markdown, or JSON Lines, with one click to copy or download it.",
-    why: "Dropping a result into a README, a ticket, or a spreadsheet, or handing it to another tool.",
-    shot: {
-      src: "/features/view-text.webp",
-      width: 1472,
-      height: 1040,
-      alt: "Text view of the vector_zoo table as a Markdown table, with CSV, TSV, Markdown, and JSON Lines tabs and a Copy button",
-    },
-  },
-  {
-    key: "chart",
-    label: "Chart",
-    icon: ChartLineIcon,
-    title: "See the shape of the data",
-    what: "Pick a category and a value column, optionally group by a third, then switch between bar, area, step, and more.",
-    why: "Trends, spikes, and gaps that never show up in a list of rows.",
-    shot: {
-      src: "/features/view-chart.webp",
-      width: 1472,
-      height: 1040,
-      alt: "Chart view of the events table: an area chart of amount over ts across 1,000 rows",
-    },
-  },
-  {
-    key: "erd",
-    label: "ERD",
-    icon: GitForkIcon,
-    title: "How the tables connect",
-    what: "The current table and the tables it references, with primary and foreign keys marked, 1:N and 1:1 links, zoom, and a minimap.",
-    why: "Before writing a join, or on your first day with an unfamiliar schema.",
-    shot: {
-      src: "/features/view-erd.webp",
-      width: 1472,
-      height: 1040,
-      alt: "ERD view of a Cloudflare D1 database: invoice_item linked by foreign keys to invoice and item, with a PK, FK, 1:N, and 1:1 legend and a minimap",
-    },
-  },
-  {
-    key: "map",
-    label: "Map",
-    icon: MapIcon,
-    title: "Geometry, on a map",
-    what: "Geometry columns plotted on a world map and clustered, so a million points stay readable, with the SRID and live coordinates shown.",
-    why: "Spatial data you would otherwise read as raw geometry. See where the points actually are.",
-    shot: {
-      src: "/features/view-map.webp",
-      width: 1472,
-      height: 1040,
-      alt: "Map view of the gps_pings table: 1,000,000 points in 89 clusters on a world map, SRID 4326",
-    },
-  },
-];
-
-/** How long each view stays on stage while the section plays on its own. */
-const VIEW_DWELL_MS = 5000;
-
-function Views() {
-  const [active, setActive] = useState(0);
-  const [autoplay, setAutoplay] = useState(true);
-  const [hovered, setHovered] = useState(false);
-  const [inView, setInView] = useState(false);
-  const section = useRef<HTMLDivElement>(null);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const view = VIEWS[active];
-
-  useEffect(() => {
-    const el = section.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
-      threshold: 0.35,
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const choose = (i: number, focus = false) => {
-    const next = (i + VIEWS.length) % VIEWS.length;
-    setAutoplay(false);
-    setActive(next);
-    if (focus) tabs.current[next]?.focus();
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const keys: Record<string, number> = {
-      ArrowRight: active + 1,
-      ArrowDown: active + 1,
-      ArrowLeft: active - 1,
-      ArrowUp: active - 1,
-      Home: 0,
-      End: VIEWS.length - 1,
-    };
-    if (e.key in keys) {
-      e.preventDefault();
-      choose(keys[e.key], true);
-    }
-  };
-
-  const playing = autoplay && inView && !hovered;
-
-  return (
-    <Section id="views">
-      <div ref={section}>
-        <SectionIntro index="3.0" eyebrow="Views" title="One result, six ways to read it.">
-          <p>
-            Switch how any table or query result is shown, without running it again.{" "}
-            <strong>Each view is built for a different question.</strong>
-          </p>
-        </SectionIntro>
-
-        {/* The switcher, styled after the app's own view menu. */}
-        <div
-          role="tablist"
-          aria-label="Views"
-          className="mt-16 flex max-w-full gap-1 overflow-x-auto rounded-xl border border-border bg-white/[0.02] p-1 md:mt-24 md:w-fit"
-        >
-          {VIEWS.map((v, i) => {
-            const selected = i === active;
-            return (
-              <button
-                key={v.key}
-                ref={(el) => {
-                  tabs.current[i] = el;
-                }}
-                type="button"
-                role="tab"
-                id={`view-tab-${v.key}`}
-                aria-selected={selected}
-                aria-controls="view-panel"
-                tabIndex={selected ? 0 : -1}
-                onClick={() => choose(i)}
-                onKeyDown={onKeyDown}
-                className={cn(
-                  "relative flex h-9 shrink-0 items-center gap-2 overflow-hidden rounded-lg px-3.5 text-[13px] whitespace-nowrap transition-colors duration-150",
-                  selected
-                    ? "bg-white/[0.08] text-foreground"
-                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground",
-                )}
-              >
-                <v.icon className="size-4 shrink-0" strokeWidth={1.75} />
-                {v.label}
-                {selected && autoplay && (
-                  <span
-                    key={`${v.key}-progress`}
-                    aria-hidden="true"
-                    onAnimationEnd={() => setActive((i + 1) % VIEWS.length)}
-                    style={{
-                      animationDuration: `${VIEW_DWELL_MS}ms`,
-                      animationPlayState: playing ? "running" : "paused",
-                    }}
-                    className="view-progress absolute inset-x-3 bottom-0.5 h-px origin-left rounded-full bg-foreground/70"
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* The stage: one app window, every view stacked in it, cross-fading in place. */}
-        <div
-          role="tabpanel"
-          id="view-panel"
-          aria-labelledby={`view-tab-${view.key}`}
-          onPointerEnter={() => setHovered(true)}
-          onPointerLeave={() => setHovered(false)}
-          onFocus={() => setHovered(true)}
-          onBlur={() => setHovered(false)}
-          className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-14"
-        >
-          <Panel>
-            <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-4 py-2.5">
-              <span className="size-2.5 rounded-full bg-white/12" />
-              <span className="size-2.5 rounded-full bg-white/12" />
-              <span className="size-2.5 rounded-full bg-white/12" />
-              <span className="ml-3 flex items-center gap-1.5 text-xs text-white/50">
-                <view.icon className="size-3.5" strokeWidth={1.75} />
-                {view.label} view
-              </span>
-            </div>
-            <div className="grid">
-              {VIEWS.map((v, i) => (
-                <div
-                  key={v.key}
-                  inert={i !== active}
-                  className={cn(
-                    "transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] [grid-area:1/1]",
-                    i === active
-                      ? "scale-100 opacity-100"
-                      : "pointer-events-none scale-[1.01] opacity-0",
-                  )}
-                >
-                  <FeatureShot {...v.shot} flush />
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          {/* Caption: what it is and why you would reach for it. */}
-          <div key={view.key} className="animate-fade-up lg:pt-4">
-            <h3 className="text-xl font-[560] tracking-[-0.02em]">{view.title}</h3>
-            <p className="mt-3 text-[15px] leading-relaxed text-pretty text-muted-foreground">
-              {view.what}
-            </p>
-            <div className="mt-6 border-t border-border pt-6">
-              <p className="text-[13px] font-medium text-foreground">Reach for it when</p>
-              <p className="mt-2 text-[15px] leading-relaxed text-pretty text-soft">{view.why}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-// ── 4.0 Schema ───────────────────────────────────────────────────────────────
-
-function SchemaSection() {
-  return (
-    <Section id="schema">
-      <SectionIntro
-        index="4.0"
-        eyebrow="Schema"
-        title="One schema, six ways to see it."
-        link={{ to: "/features", hash: "schema", label: "Schema features" }}
-      >
-        <p>
-          Open the schema diagram on any connection and switch how it's drawn: an ER diagram, a
-          hierarchy, Mermaid for your docs, a tree of foreign keys, a data dictionary, or the DDL.{" "}
-          <strong>Try it below on a sample store.</strong>
-        </p>
-      </SectionIntro>
-      <SchemaShowcase className="mt-16 md:mt-24" />
-    </Section>
-  );
-}
-
-// ── 5.0 Editing ──────────────────────────────────────────────────────────────
-
 const EDITING_FEATURES = [
   {
     icon: ListChecksIcon,
@@ -851,49 +440,52 @@ const EDITING_FEATURES = [
   },
 ];
 
-function Editing() {
+// ── Tour and features ────────────────────────────────────────────────────────
+
+function Tour() {
   return (
-    <Section id="editing">
-      <SectionIntro
-        index="5.0"
-        eyebrow="Editing"
-        title="Change data without holding your breath."
-        link={{ to: "/features", label: "Learn more" }}
-      >
-        <p>
-          <strong>Nothing touches the database until you say so.</strong> Every change is previewed
-          first, and every action on a cell is one right-click away.
+    <Section id="tour">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <h2 className="text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-balance md:text-[2.75rem]">
+          Every view you need, one window.
+        </h2>
+        <p className="mt-4 max-w-[52ch] text-[17px] leading-[1.6] text-pretty text-muted-foreground">
+          A SQL console, an AI agent, charts, diagrams and a command palette, beside the grid you
+          just saw.
         </p>
-      </SectionIntro>
-
-      {/* The staged-changes grid, with the cell menu laid over its right edge. */}
-      <div className="relative mt-16 md:mt-24 md:pb-24">
-        <Panel className="md:w-[78%]">
-          <FeatureShot
-            src="/features/staged-edits.webp"
-            width={1472}
-            height={750}
-            alt="Staged changes in the openai_docs table: a new row at the top, a row marked for deletion in red, and a cell being edited with Stage change"
-            flush
-          />
-        </Panel>
-        <Panel className="mt-4 w-[78%] md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[36%]">
-          <FeatureShot
-            src="/features/context-menu.webp"
-            width={864}
-            height={715}
-            alt="The cell context menu with Open row, Preview cell, Preview row JSON, Pin column, Edit, Copy as, Filter, Transform, Duplicate row, and Delete row, and the Filter submenu open"
-            flush
-          />
-        </Panel>
       </div>
-
-      <FeatureRow items={EDITING_FEATURES} />
+      <ProductTour className="mt-12 md:mt-16" />
     </Section>
   );
 }
 
-// ── 6.0 Agents ───────────────────────────────────────────────────────────────
+const FEATURES = [...QUERY_FEATURES, ...EDITING_FEATURES];
+
+function Features() {
+  return (
+    <Section id="features">
+      <SectionIntro
+        title="Small things, done properly."
+        link={{ to: "/features", label: "Every feature" }}
+      >
+        <p>The details you notice after a week of using it every day.</p>
+      </SectionIntro>
+      <ul className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-4">
+        {FEATURES.map((f) => (
+          <li key={f.title} className="flex flex-col gap-2">
+            <f.icon className="size-4 text-muted-foreground" strokeWidth={1.5} aria-hidden="true" />
+            <h3 className="mt-2 text-[15px] font-[560] tracking-[-0.01em] text-foreground">
+              {f.title}
+            </h3>
+            <p className="text-[14px] leading-relaxed text-pretty text-muted-foreground">
+              {f.body}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
 
 const AGENT_FEATURES = [
   {
@@ -939,14 +531,27 @@ function Agents() {
 function Demo() {
   return (
     <Section>
-      <SectionIntro title="A quick tour of Stroke.">
-        <p>Connect, browse, query, and hand the same database to an agent.</p>
-      </SectionIntro>
-      <VideoDemo
-        videoId="xmeVKZShJtQ"
-        title="A quick tour of the Stroke database client"
-        className="mt-16 md:mt-24"
-      />
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <h2 className="text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-balance md:text-[2.75rem]">
+          Stroke in 44 seconds.
+        </h2>
+        <p className="mt-4 max-w-[52ch] text-[17px] leading-[1.6] text-pretty text-muted-foreground">
+          Connect, browse, query, and hand the same database to an agent.
+        </p>
+      </div>
+      <div className="mt-12 md:mt-16">
+        <LaunchVideo
+          sources={[
+            {
+              src: `${LAUNCH_MEDIA}/stroke-launch-2160p60.mp4${LAUNCH_VERSION}`,
+              media: "(min-width: 1280px)",
+            },
+            { src: `${LAUNCH_MEDIA}/stroke-launch-1080p60.mp4${LAUNCH_VERSION}` },
+          ]}
+          poster={`${LAUNCH_MEDIA}/stroke-launch-poster.jpg${LAUNCH_VERSION}`}
+          title="Stroke in 44 seconds: the launch video"
+        />
+      </div>
     </Section>
   );
 }
