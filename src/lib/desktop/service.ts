@@ -13,9 +13,11 @@ import {
   userTrials,
 } from "#/lib/db/schema";
 import type { DesktopSignInParams } from "#/lib/desktop/params";
+import { requestGeo } from "#/lib/geo";
 import { resolveLicense, signWithLicenseKey } from "#/lib/license";
 import { parseOs, parseVersion } from "#/lib/license/platform";
 import { verifyLicenseKey } from "#/lib/license/verify";
+import { recordSignIn } from "#/lib/signins";
 
 /**
  * Desktop sign-in and account entitlement (docs/accounts-and-sync.md,
@@ -90,7 +92,7 @@ export type TokenRequest = {
   version: unknown;
 };
 
-export async function exchangeDesktopCode(req: TokenRequest): Promise<Response> {
+export async function exchangeDesktopCode(req: TokenRequest, request?: Request): Promise<Response> {
   const now = new Date();
 
   // Burn the code first, atomically: a code is single use even when the rest
@@ -128,7 +130,9 @@ export async function exchangeDesktopCode(req: TokenRequest): Promise<Response> 
     );
 
   const token = randomSecret();
+  const geo = requestGeo(request);
   await db.insert(desktopTokens).values({
+    country: geo.country,
     id: crypto.randomUUID(),
     userId: account.id,
     deviceId: req.deviceId,
@@ -137,6 +141,14 @@ export async function exchangeDesktopCode(req: TokenRequest): Promise<Response> 
     version: parseVersion(req.version) ?? null,
     tokenHash: sha256Hex(token),
     lastSeenAt: now,
+  });
+  await recordSignIn({
+    userId: account.id,
+    source: "desktop",
+    geo,
+    deviceId: req.deviceId,
+    appVersion: parseVersion(req.version) ?? null,
+    os: parseOs(req.os) ?? null,
   });
 
   return Response.json({ token, user: publicUser(account) });

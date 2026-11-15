@@ -6,3 +6,4 @@ export * from "./reviews.schema";
 export * from "./telemetry.schema";
 export * from "./desktop.schema";
 export * from "./sync.schema";
+export * from "./signins.schema";
