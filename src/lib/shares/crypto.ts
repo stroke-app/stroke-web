@@ -21,6 +21,7 @@ export type SharePayload =
       title: string;
       createdAt: number;
       source?: string;
+      by?: string;
       columns: { name: string; type?: string }[];
       rows: unknown[][];
       totalRows?: number;
@@ -33,6 +34,7 @@ export type SharePayload =
       title: string;
       createdAt: number;
       source?: string;
+      by?: string;
       sql: string;
       dialect?: string;
     }
@@ -42,16 +44,26 @@ export type SharePayload =
       title: string;
       createdAt: number;
       source?: string;
+      by?: string;
       tables: ErdTable[];
       links: ErdLink[];
     }
-  | { v: 1; kind: "mermaid"; title: string; createdAt: number; source?: string; code: string }
+  | {
+      v: 1;
+      kind: "mermaid";
+      title: string;
+      createdAt: number;
+      source?: string;
+      by?: string;
+      code: string;
+    }
   | {
       v: 1;
       kind: "chart";
       title: string;
       createdAt: number;
       source?: string;
+      by?: string;
       chart: { type: string; x: string; y: string[]; group?: string | null };
       columns: { name: string; type?: string }[];
       rows: unknown[][];
