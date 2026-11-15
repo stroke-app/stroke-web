@@ -1,22 +1,14 @@
 import { Popover } from "@base-ui/react/popover";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ClockIcon, EyeIcon, InfoIcon, KeyRoundIcon, LockIcon } from "lucide-react";
-import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
+import { type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 
-import { CopyButton, ShareTable } from "#/components/share/share-table";
+import { EmbedDialog } from "#/components/share/embed-dialog";
+import { Body, Center } from "#/components/share/share-body";
+import { CopyButton } from "#/components/share/share-table";
 import { iconBtn, ThemeMenu, Tip, TipProvider } from "#/components/share/share-ui";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { b64urlDecode, deriveKey, openShare, type SharePayload } from "#/lib/shares/crypto";
-
-const ShareErd = lazy(() =>
-  import("#/components/share/share-canvas").then((m) => ({ default: m.ShareErd })),
-);
-const ShareMermaid = lazy(() =>
-  import("#/components/share/share-canvas").then((m) => ({ default: m.ShareMermaid })),
-);
-const ShareChart = lazy(() =>
-  import("#/components/share/share-chart").then((m) => ({ default: m.ShareChart })),
-);
 
 /**
  * /s/:id - a share link. Everything happens in the browser: the page fetches
@@ -160,6 +152,9 @@ function SharePage() {
                 text={sql}
                 label={ready?.payload.kind === "query" ? "Copy SQL" : "Copy the query"}
               />
+            )}
+            {ready && (
+              <EmbedDialog id={id} title={ready.payload.title} viewsLeft={ready.meta.viewsLeft} />
             )}
             {ready && <InfoButton meta={ready.meta} payload={ready.payload} />}
             <ThemeMenu />
@@ -362,54 +357,4 @@ function InfoButton({ meta, payload }: { meta: Meta; payload: SharePayload }) {
       </Popover.Portal>
     </Popover.Root>
   );
-}
-
-function Center({ children }: { children: React.ReactNode }) {
-  return <div className="flex min-h-0 flex-1 items-center justify-center p-6">{children}</div>;
-}
-
-function Body({ payload, status }: { payload: SharePayload; status?: ReactNode }) {
-  switch (payload.kind) {
-    case "table":
-    case "result":
-      return (
-        <ShareTable
-          columns={payload.columns}
-          rows={payload.rows}
-          title={payload.title}
-          masked={payload.masked}
-          totalRows={payload.totalRows}
-          status={status}
-        />
-      );
-    case "query":
-      return (
-        <div className="min-h-0 flex-1 overflow-auto p-6">
-          <pre className="mx-auto max-w-4xl rounded-xl bg-muted/60 p-5 font-mono text-[13px] leading-6 whitespace-pre-wrap text-soft shadow-[0_0_0_1px_var(--border)]">
-            {payload.sql}
-          </pre>
-        </div>
-      );
-    case "erd":
-      return <ShareErd tables={payload.tables} links={payload.links} title={payload.title} />;
-    case "mermaid":
-      return <ShareMermaid code={payload.code} />;
-    case "chart":
-      return (
-        <ShareChart
-          spec={payload.chart}
-          columns={payload.columns}
-          rows={payload.rows}
-          title={payload.title}
-        />
-      );
-    default:
-      return (
-        <Center>
-          <p className="text-[13px] text-muted-foreground">
-            This share was made by a newer Stroke. Reload the page.
-          </p>
-        </Center>
-      );
-  }
 }

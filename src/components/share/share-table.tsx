@@ -49,6 +49,7 @@ export function ShareTable({
   masked = [],
   totalRows,
   status,
+  toolbar = true,
 }: {
   columns: { name: string; type?: string }[];
   rows: unknown[][];
@@ -57,6 +58,8 @@ export function ShareTable({
   totalRows?: number;
   /** Items for the right of the status bar (expiry, views left). */
   status?: ReactNode;
+  /** The search / filter / columns / download bar. Embeds can turn it off. */
+  toolbar?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const q = useDeferredValue(query.trim().toLowerCase());
@@ -204,7 +207,12 @@ export function ShareTable({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Toolbar: search, the active filters, then columns and download. */}
-      <div className="flex min-h-11 shrink-0 flex-wrap items-center gap-2 border-b border-border px-3 py-1.5">
+      <div
+        className={cn(
+          "flex min-h-11 shrink-0 flex-wrap items-center gap-2 border-b border-border px-3 py-1.5",
+          !toolbar && "hidden",
+        )}
+      >
         <div className="relative w-64 max-w-full">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <input
