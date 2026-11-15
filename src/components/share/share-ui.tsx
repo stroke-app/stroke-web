@@ -1,6 +1,9 @@
+import { Menu } from "@base-ui/react/menu";
 import { Tooltip } from "@base-ui/react/tooltip";
+import { CheckIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
+import { useTheme } from "#/components/theme-provider";
 import { cn } from "#/lib/utils";
 
 /** The popup look every menu on the share page uses (dropdowns and the right-click menu). */
@@ -47,3 +50,44 @@ export function Tip({
 }
 
 export const TipProvider = Tooltip.Provider;
+
+/** System, light or dark, for the share page (the whole site follows it). */
+export function ThemeMenu() {
+  const { theme, setTheme } = useTheme();
+  const Icon = theme === "light" ? SunIcon : theme === "dark" ? MoonIcon : MonitorIcon;
+  return (
+    <Menu.Root>
+      <Tip label="Theme" side="bottom">
+        <Menu.Trigger className={iconBtn} aria-label="Theme">
+          <Icon />
+        </Menu.Trigger>
+      </Tip>
+      <Menu.Portal>
+        <Menu.Positioner align="end" sideOffset={4} className="z-50">
+          <Menu.Popup className={cn(menuPopup, "min-w-36")}>
+            <Menu.RadioGroup
+              value={theme}
+              onValueChange={(v) => setTheme(v as "system" | "light" | "dark")}
+            >
+              {(
+                [
+                  ["system", "System", MonitorIcon],
+                  ["light", "Light", SunIcon],
+                  ["dark", "Dark", MoonIcon],
+                ] as const
+              ).map(([v, l, I]) => (
+                <Menu.RadioItem key={v} value={v} className={menuItem}>
+                  <I />
+                  <span className="flex-1">{l}</span>
+                  <Menu.RadioItemIndicator>
+                    <CheckIcon className="text-foreground!" />
+                  </Menu.RadioItemIndicator>
+                </Menu.RadioItem>
+              ))}
+            </Menu.RadioGroup>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  );
+}

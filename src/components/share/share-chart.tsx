@@ -1,4 +1,21 @@
-import { useMemo, useState } from "react";
+import { Menu } from "@base-ui/react/menu";
+import { CheckIcon, ChevronDownIcon, DownloadIcon } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+
+import { cn } from "#/lib/utils";
+
+import { downloadFile, exportRows, fileStem } from "./share-export";
+import { menuItem, menuLabel, menuPopup, textBtn } from "./share-ui";
+
+/** Chart kinds a viewer can switch between: the ones that read the same data. */
+const KINDS: { id: string; label: string }[] = [
+  { id: "bar", label: "Bar" },
+  { id: "bar-horizontal", label: "Horizontal bar" },
+  { id: "line", label: "Line" },
+  { id: "area", label: "Area" },
+  { id: "pie", label: "Pie" },
+  { id: "donut", label: "Donut" },
+];
 
 /**
  * A shared chart, drawn as SVG: bar (vertical or horizontal), line, area,
@@ -54,12 +71,19 @@ export function ShareChart({
   spec,
   columns,
   rows,
+  title = "chart",
 }: {
   spec: Spec;
   columns: { name: string }[];
   rows: unknown[][];
+  title?: string;
 }) {
   const [hover, setHover] = useState<{ x: number; y: number; label: string } | null>(null);
+  // The viewer can redraw it as another kind, and hide series from the legend.
+  const switchable = !["scatter", "bubble"].includes(spec.type);
+  const [kind, setKind] = useState(KINDS.some((k) => k.id === spec.type) ? spec.type : "bar");
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+  const svgRef = useRef<SVGSVGElement>(null);
   const idx = (name: string | null | undefined) =>
     name ? columns.findIndex((c) => c.name === name) : -1;
 
@@ -87,10 +111,39 @@ export function ShareChart({
     }
     for (const arr of series.values()) for (let i = 0; i < cats.length; i++) arr[i] ??= 0;
     const points = rows.map((r) => [num(r[xi]), num(r[yi])] as const);
-    return { cats, series: [...series.entries()], xi, yi, points };
+    return { cats, allSeries: [...series.entries()], xi, yi, points };
   }, [spec, columns, rows]);
+  const visibleSeries = model.allSeries.filter(([g]) => !hidden.has(g));
+  const series = visibleSeries.length ? visibleSeries : model.allSeries;
+  const colorOf = (g: string) =>
+    PALETTE[
+      Math.max(
+        0,
+        model.allSeries.findIndex(([x]) => x === g),
+      ) % PALETTE.length
+    ]!;
+  const toggle = (g: string) =>
+    setHidden((h) => {
+      const n = new Set(h);
+      if (n.has(g)) n.delete(g);
+      else if (model.allSeries.length - n.size > 1) n.add(g);
+      return n;
+    });
 
-  const type = spec.type;
+  const type = switchable ? kind : spec.type;
+  const frame = {
+    title,
+    kind: switchable ? kind : null,
+    onKind: setKind,
+    svgRef,
+    columns: columns.map((c) => c.name),
+    rows,
+    legend:
+      model.allSeries.length > 1 && type !== "pie" && type !== "donut"
+        ? model.allSeries.map(([g]) => ({ label: g, color: colorOf(g), off: hidden.has(g) }))
+        : undefined,
+    onLegend: toggle,
+  };
   const W = 960,
     H = 520,
     P = { l: 64, r: 24, t: 24, b: 56 };
@@ -100,26 +153,36 @@ export function ShareChart({
   if (type === "pie" || type === "donut") {
     const vals = model.cats.map((c, i) => ({
       c,
-      v: model.series.reduce((s, [, arr]) => s + (arr[i] ?? 0), 0),
+      v: series.reduce((s, [, arr]) => s + (arr[i] ?? 0), 0),
     }));
     const total = vals.reduce((s, x) => s + x.v, 0) || 1;
-    let a0 = -Math.PI / 2;
+    // Each slice's start and end angle, worked out before drawing.
+    const slices = vals.reduce<{ a0: number; a1: number }[]>((acc, x) => {
+      const a0 = acc.length ? acc[acc.length - 1]!.a1 : -Math.PI / 2;
+      acc.push({ a0, a1: a0 + (x.v / total) * Math.PI * 2 });
+      return acc;
+    }, []);
     const R = 190,
       r0 = type === "donut" ? 112 : 0,
       cx = 300,
       cy = H / 2;
     return (
-      <Frame>
-        <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="Pie chart">
+      <Frame {...frame}>
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${W} ${H}`}
+          className="h-full w-full"
+          role="img"
+          aria-label="Pie chart"
+        >
           {vals.map((x, i) => {
-            const a1 = a0 + (x.v / total) * Math.PI * 2;
+            const { a0, a1 } = slices[i]!;
             const large = a1 - a0 > Math.PI ? 1 : 0;
             const p = (a: number, rad: number) =>
               `${cx + rad * Math.cos(a)},${cy + rad * Math.sin(a)}`;
             const d = r0
               ? `M${p(a0, R)} A${R},${R} 0 ${large} 1 ${p(a1, R)} L${p(a1, r0)} A${r0},${r0} 0 ${large} 0 ${p(a0, r0)} Z`
               : `M${cx},${cy} L${p(a0, R)} A${R},${R} 0 ${large} 1 ${p(a1, R)} Z`;
-            a0 = a1;
             return (
               <path
                 key={i}
@@ -167,8 +230,9 @@ export function ShareChart({
     const sx = (v: number) => P.l + ((v - xt[0]!) / (xt.at(-1)! - xt[0]! || 1)) * iw;
     const sy = (v: number) => P.t + ih - ((v - yt[0]!) / (yt.at(-1)! - yt[0]! || 1)) * ih;
     return (
-      <Frame>
+      <Frame {...frame}>
         <svg
+          ref={svgRef}
           viewBox={`0 0 ${W} ${H}`}
           className="h-full w-full"
           role="img"
@@ -195,8 +259,8 @@ export function ShareChart({
   }
 
   const horizontal = type === "bar-horizontal";
-  const max = Math.max(0, ...model.series.flatMap(([, a]) => a));
-  const min = Math.min(0, ...model.series.flatMap(([, a]) => a));
+  const max = Math.max(0, ...series.flatMap(([, a]) => a));
+  const min = Math.min(0, ...series.flatMap(([, a]) => a));
   const ticks = niceTicks(max, min);
   const top = ticks.at(-1)!,
     bottom = ticks[0]!;
@@ -204,17 +268,17 @@ export function ShareChart({
   const n = model.cats.length || 1;
   const band = (horizontal ? ih : iw) / n;
   const line = type === "line" || type === "area";
-  const nSeries = model.series.length;
+  const nSeries = series.length;
 
   return (
-    <Frame
-      legend={
-        nSeries > 1
-          ? model.series.map(([g], i) => ({ label: g, color: PALETTE[i % PALETTE.length]! }))
-          : undefined
-      }
-    >
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="Chart">
+    <Frame {...frame}>
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        className="h-full w-full"
+        role="img"
+        aria-label="Chart"
+      >
         {horizontal ? (
           ticks.map((t) => (
             <g key={t}>
@@ -238,8 +302,8 @@ export function ShareChart({
         ) : (
           <Grid ticks={ticks} y={(v) => P.t + ih - scale(v)} x0={P.l} x1={W - P.r} />
         )}
-        {model.series.map(([g, arr], si) => {
-          const color = PALETTE[si % PALETTE.length]!;
+        {series.map(([g, arr], si) => {
+          const color = colorOf(g);
           if (line) {
             const pts = arr.map(
               (v, i) => [P.l + band * i + band / 2, P.t + ih - scale(v)] as const,
@@ -384,31 +448,186 @@ function Grid({
   );
 }
 
+type FrameProps = {
+  children: React.ReactNode;
+  title: string;
+  kind: string | null;
+  onKind: (k: string) => void;
+  svgRef: React.RefObject<SVGSVGElement | null>;
+  columns: string[];
+  rows: unknown[][];
+  legend?: { label: string; color: string; off: boolean }[];
+  onLegend: (g: string) => void;
+};
+
+/** A card around the chart: its title, the kind switcher, Export, and a legend that toggles series. */
 function Frame({
   children,
+  title,
+  kind,
+  onKind,
+  svgRef,
+  columns,
+  rows,
   legend,
-}: {
-  children: React.ReactNode;
-  legend?: { label: string; color: string }[];
-}) {
+  onLegend,
+}: FrameProps) {
+  const current = KINDS.find((k) => k.id === kind);
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6 md:p-10">
-      {legend && (
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-          {legend.slice(0, 12).map((l) => (
-            <span
-              key={l.label}
-              className="inline-flex items-center gap-2 text-[13px] text-muted-foreground"
-            >
-              <span className="size-2.5 rounded-[3px]" style={{ background: l.color }} />
-              {l.label || "(empty)"}
-            </span>
-          ))}
+    <div className="flex min-h-0 flex-1 flex-col items-center overflow-auto p-4 md:p-8">
+      <div className="flex w-full max-w-3xl flex-col rounded-xl bg-card shadow-[0_0_0_1px_var(--border)]">
+        <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+          <h2 className="min-w-0 flex-1 truncate text-[14px] font-medium">{title}</h2>
+          {kind && (
+            <Menu.Root>
+              <Menu.Trigger className={textBtn}>
+                {current?.label ?? "Chart"}
+                <ChevronDownIcon />
+              </Menu.Trigger>
+              <Menu.Portal>
+                <Menu.Positioner align="end" sideOffset={4} className="z-50">
+                  <Menu.Popup className={cn(menuPopup, "min-w-40")}>
+                    <Menu.RadioGroup value={kind} onValueChange={(v) => onKind(String(v))}>
+                      {KINDS.map((k) => (
+                        <Menu.RadioItem key={k.id} value={k.id} className={menuItem}>
+                          <span className="flex-1">{k.label}</span>
+                          <Menu.RadioItemIndicator>
+                            <CheckIcon className="text-foreground!" />
+                          </Menu.RadioItemIndicator>
+                        </Menu.RadioItem>
+                      ))}
+                    </Menu.RadioGroup>
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          )}
+          <Menu.Root>
+            <Menu.Trigger className={textBtn}>
+              <DownloadIcon />
+              Export
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner align="end" sideOffset={4} className="z-50">
+                <Menu.Popup className={cn(menuPopup, "w-56")}>
+                  <div className={menuLabel}>Download</div>
+                  <Menu.Item
+                    className={menuItem}
+                    onClick={() => void exportChart(svgRef.current, title, "png")}
+                  >
+                    PNG image
+                  </Menu.Item>
+                  <Menu.Item
+                    className={menuItem}
+                    onClick={() => void exportChart(svgRef.current, title, "svg")}
+                  >
+                    SVG image
+                  </Menu.Item>
+                  <Menu.Item
+                    className={menuItem}
+                    onClick={() => {
+                      const r = exportRows("csv", columns, rows, title);
+                      downloadFile(`${fileStem(title)}.csv`, r.body, r.type);
+                    }}
+                  >
+                    Data as CSV
+                  </Menu.Item>
+                  <Menu.Item
+                    className={menuItem}
+                    onClick={() => {
+                      const r = exportRows("json", columns, rows, title);
+                      downloadFile(`${fileStem(title)}.json`, r.body, r.type);
+                    }}
+                  >
+                    Data as JSON
+                  </Menu.Item>
+                </Menu.Popup>
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
         </div>
-      )}
-      <div className="relative aspect-[960/520] w-full max-w-5xl">{children}</div>
+        {legend && (
+          <div className="flex flex-wrap gap-x-1 gap-y-1 px-3 pt-3">
+            {legend.slice(0, 16).map((l) => (
+              <button
+                key={l.label}
+                type="button"
+                onClick={() => onLegend(l.label)}
+                aria-pressed={!l.off}
+                title={l.off ? "Show" : "Hide"}
+                className={cn(
+                  "inline-flex h-7 items-center gap-2 rounded-md px-2 text-[12.5px] transition-colors hover:bg-accent",
+                  l.off ? "text-faint line-through" : "text-muted-foreground",
+                )}
+              >
+                <span
+                  className="size-2.5 rounded-[3px]"
+                  style={{ background: l.off ? "var(--border)" : l.color }}
+                />
+                {l.label || "(empty)"}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="relative aspect-[960/520] w-full p-2">{children}</div>
+      </div>
     </div>
   );
+}
+
+/** The chart as a standalone SVG or PNG: its colours inlined from the page. */
+async function exportChart(svg: SVGSVGElement | null, title: string, fmt: "svg" | "png") {
+  if (!svg) return;
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  const src = svg.querySelectorAll<SVGElement>("*");
+  const dst = clone.querySelectorAll<SVGElement>("*");
+  src.forEach((el, i) => {
+    const cs = getComputedStyle(el);
+    const d = dst[i]!;
+    d.removeAttribute("class");
+    if (cs.fill && cs.fill !== "none") d.setAttribute("fill", cs.fill);
+    if (cs.stroke && cs.stroke !== "none") d.setAttribute("stroke", cs.stroke);
+    if (el.tagName === "text") {
+      d.setAttribute("font-size", cs.fontSize);
+      d.setAttribute("font-family", cs.fontFamily);
+    }
+  });
+  const vb = svg.viewBox.baseVal;
+  const w = vb?.width || 960;
+  const h = vb?.height || 520;
+  const bg = getComputedStyle(document.body).backgroundColor || "#ffffff";
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", String(w));
+  clone.setAttribute("height", String(h));
+  clone.insertAdjacentHTML("afterbegin", `<rect width="100%" height="100%" fill="${bg}"/>`);
+  const text = new XMLSerializer().serializeToString(clone);
+  if (fmt === "svg") {
+    downloadFile(`${fileStem(title)}.svg`, text, "image/svg+xml");
+    return;
+  }
+  const img = new Image();
+  const url = URL.createObjectURL(new Blob([text], { type: "image/svg+xml;charset=utf-8" }));
+  await new Promise<void>((res, rej) => {
+    img.onload = () => res();
+    img.onerror = () => rej(new Error("Couldn't draw the chart"));
+    img.src = url;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = w * 2;
+  canvas.height = h * 2;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.scale(2, 2);
+  ctx.drawImage(img, 0, 0);
+  URL.revokeObjectURL(url);
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${fileStem(title)}.png`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }, "image/png");
 }
 
 function Tip({ hover }: { hover: { x: number; y: number; label: string } | null }) {
