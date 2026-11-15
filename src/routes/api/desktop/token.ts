@@ -48,14 +48,17 @@ export const Route = createFileRoute("/api/desktop/token")({
                 .slice(0, 80) || null
             : null;
 
-        return exchangeDesktopCode({
-          code,
-          codeVerifier,
-          deviceId,
-          deviceName,
-          os: body.os,
-          version: body.version,
-        });
+        return exchangeDesktopCode(
+          {
+            code,
+            codeVerifier,
+            deviceId,
+            deviceName,
+            os: body.os,
+            version: body.version,
+          },
+          request,
+        );
       },
     },
   },

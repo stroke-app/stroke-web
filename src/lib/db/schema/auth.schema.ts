@@ -33,6 +33,8 @@ export const session = sqliteTable(
       .notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
+    /** ISO country code of the sign-in request, from Cloudflare. */
+    country: text("country"),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),

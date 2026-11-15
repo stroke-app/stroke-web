@@ -46,6 +46,8 @@ export const desktopTokens = sqliteTable(
     os: text("os"),
     /** App version at sign-in, e.g. "2.4.0". */
     version: text("version"),
+    /** ISO country code of the sign-in request, from Cloudflare. */
+    country: text("country"),
     /** Hex SHA-256 of the bearer token. Never the token itself. */
     tokenHash: text("token_hash").notNull().unique(),
     createdAt: integer("created_at", { mode: "timestamp_ms" })

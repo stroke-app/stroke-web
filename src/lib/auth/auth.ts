@@ -17,7 +17,9 @@ import {
 import { handleBillingEvent, userHasActiveLicense } from "#/lib/billing/service";
 import { db } from "#/lib/db";
 import * as schema from "#/lib/db/schema";
+import { requestGeo } from "#/lib/geo";
 import { createPlunkContact } from "#/lib/mail/client";
+import { recordSignIn } from "#/lib/signins";
 
 export const dodoClient = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY,
@@ -124,6 +126,23 @@ export const auth = betterAuth({
         },
       },
     },
+    // Where each web sign-in came from: the session keeps its country, and
+    // sign_ins gets the full row (see lib/geo.ts).
+    session: {
+      create: {
+        before: async (session, ctx) => {
+          const geo = requestGeo(ctx?.request);
+          return { data: { ...session, country: geo.country } };
+        },
+        after: async (session, ctx) => {
+          await recordSignIn({
+            userId: session.userId,
+            source: "web",
+            geo: requestGeo(ctx?.request),
+          });
+        },
+      },
+    },
   },
 
   // https://www.better-auth.com/docs/integrations/tanstack#usage-tips
@@ -185,6 +204,10 @@ export const auth = betterAuth({
 
   // https://www.better-auth.com/docs/concepts/session-management#session-caching
   session: {
+    // Set by the session hook above, never by the client.
+    additionalFields: {
+      country: { type: "string", required: false, input: false },
+    },
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // 5 minutes
