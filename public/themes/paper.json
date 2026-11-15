@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "name": "Paper",
+  "author": "Stroke",
+  "appearance": "light",
+  "colors": {
+    "background": "#fbfaf7",
+    "foreground": "#24221f",
+    "primary": "#c2552d",
+    "primaryForeground": "#ffffff",
+    "card": "#ffffff",
+    "popover": "#ffffff",
+    "muted": "#f1eee8",
+    "mutedForeground": "#77716a",
+    "accent": "#ece8e0",
+    "border": "#e3ded5",
+    "input": "#dcd6cc",
+    "sidebar": "#f4f1eb",
+    "sidebarForeground": "#3a3631",
+    "sidebarAccent": "#e9e4db",
+    "tableGrid": "#ebe6dd",
+    "editorSurface": "#fdfcf9",
+    "editorLineHighlight": "#f3efe8"
+  }
+}

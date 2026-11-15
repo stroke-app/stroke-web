@@ -210,6 +210,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/themes" className={FOOTER_LINK}>
+                Themes
+              </Link>
+            </li>
+            <li>
               <Link to="/roadmap" className={FOOTER_LINK}>
                 Roadmap
               </Link>

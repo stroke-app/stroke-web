@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "themes": [
+    {
+      "id": "bro",
+      "name": "Bro",
+      "author": "Stroke",
+      "appearance": "dark",
+      "file": "bro.json",
+      "description": "Pure black, a lifted sidebar, quiet grey and one blue.",
+      "preview": {
+        "bg": "#0b0b0c",
+        "fg": "#f2f2f3",
+        "accent": "#4d8dff",
+        "sidebar": "#131315",
+        "border": "#232326",
+        "muted": "#8e8e93"
+      }
+    },
+    {
+      "id": "paper",
+      "name": "Paper",
+      "author": "Stroke",
+      "appearance": "light",
+      "file": "paper.json",
+      "description": "Warm off-white with ink text and a terracotta accent.",
+      "preview": {
+        "bg": "#fbfaf7",
+        "fg": "#24221f",
+        "accent": "#c2552d",
+        "sidebar": "#f4f1eb",
+        "border": "#e3ded5",
+        "muted": "#77716a"
+      }
+    }
+  ]
+}
