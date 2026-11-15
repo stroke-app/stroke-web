@@ -25,6 +25,11 @@ database_name = "stroke-web"
 database_id = "eb8fdefd-8064-49b7-83fa-4336580068eb"
 migrations_dir = "drizzle"
 
+# Encrypted share-link blobs (ciphertext only; keys never reach the server).
+[[r2_buckets]]
+binding = "SHARES"
+bucket_name = "stroke-shares"
+
 [vars]
 VITE_BASE_URL = "https://stroke.click"
 DODO_ENVIRONMENT = "live_mode"

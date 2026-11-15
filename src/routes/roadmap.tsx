@@ -156,6 +156,11 @@ const SHIPPED: RoadmapItem[] = [
 
 const IN_PROGRESS: RoadmapItem[] = [
   {
+    title: "Share links",
+    tag: "Nightly",
+    body: "Send results, rows, a query, a chart or a schema diagram as a link, from the app or by asking the AI. It's encrypted on your machine and the key stays in the link, so stroke.click can't read it. Expiry, one-time links, view limits, a password, masking of personal data, and revoke from My shares; no database access is shared.",
+  },
+  {
     title: "Elasticsearch and OpenSearch",
     body: "Indices with their mappings as columns, documents in the grid, and Query DSL and SQL in the editor.",
   },
@@ -167,10 +172,6 @@ const IN_PROGRESS: RoadmapItem[] = [
 ];
 
 const PLANNED: RoadmapItem[] = [
-  {
-    title: "Share links",
-    body: "Send a result, a filtered table, a chart or a dashboard as a link. It is encrypted on your machine, the key stays in the link, and the person you send it to sees a read-only copy in the browser. Expiry, a password and revoke built in; no database access is shared.",
-  },
   {
     title: "Signed and notarized builds",
     body: "A Developer ID and notarization on macOS and a signed installer on Windows, so the first launch needs no workaround.",

@@ -28,6 +28,7 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DatabasesIndexRouteImport } from './routes/databases/index'
 import { Route as CompareIndexRouteImport } from './routes/compare/index'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as SIdRouteImport } from './routes/s.$id'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as DownloadOsRouteImport } from './routes/download_.$os'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
@@ -45,11 +46,13 @@ import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
 import { Route as GuestLoginRouteImport } from './routes/_guest/login'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
+import { Route as ApiSharesIndexRouteImport } from './routes/api/shares/index'
 import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
 import { Route as ApiWebhooksProviderRouteImport } from './routes/api/webhooks/$provider'
 import { Route as ApiSyncPushRouteImport } from './routes/api/sync/push'
 import { Route as ApiSyncKeyRouteImport } from './routes/api/sync/key'
 import { Route as ApiSyncChangesRouteImport } from './routes/api/sync/changes'
+import { Route as ApiSharesIdRouteImport } from './routes/api/shares/$id'
 import { Route as ApiOauthTokenRouteImport } from './routes/api/oauth/token'
 import { Route as ApiLicenseTrialRouteImport } from './routes/api/license/trial'
 import { Route as ApiLicensePubkeyRouteImport } from './routes/api/license/pubkey'
@@ -66,6 +69,7 @@ import { Route as AuthAppSupportRouteImport } from './routes/_auth/app/support'
 import { Route as AuthAppReviewsRouteImport } from './routes/_auth/app/reviews'
 import { Route as AuthAppDownloadsRouteImport } from './routes/_auth/app/downloads'
 import { Route as AuthAppBillingRouteImport } from './routes/_auth/app/billing'
+import { Route as ApiSharesIdContentRouteImport } from './routes/api/shares/$id.content'
 import { Route as ApiAiChatCompletionsRouteImport } from './routes/api/ai/chat/completions'
 import { Route as ApiAdminTelemetrySummaryRouteImport } from './routes/api/admin/telemetry/summary'
 import { Route as ApiAdminReviewsModerateRouteImport } from './routes/api/admin/reviews/moderate'
@@ -169,6 +173,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SIdRoute = SIdRouteImport.update({
+  id: '/s/$id',
+  path: '/s/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IngestSplatRoute = IngestSplatRouteImport.update({
   id: '/ingest/$',
   path: '/ingest/$',
@@ -254,6 +263,11 @@ const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ApiSharesIndexRoute = ApiSharesIndexRouteImport.update({
+  id: '/api/shares/',
+  path: '/api/shares/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthAppIndexRoute = AuthAppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -277,6 +291,11 @@ const ApiSyncKeyRoute = ApiSyncKeyRouteImport.update({
 const ApiSyncChangesRoute = ApiSyncChangesRouteImport.update({
   id: '/api/sync/changes',
   path: '/api/sync/changes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSharesIdRoute = ApiSharesIdRouteImport.update({
+  id: '/api/shares/$id',
+  path: '/api/shares/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOauthTokenRoute = ApiOauthTokenRouteImport.update({
@@ -359,6 +378,11 @@ const AuthAppBillingRoute = AuthAppBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AuthAppRouteRoute,
 } as any)
+const ApiSharesIdContentRoute = ApiSharesIdContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => ApiSharesIdRoute,
+} as any)
 const ApiAiChatCompletionsRoute = ApiAiChatCompletionsRouteImport.update({
   id: '/api/ai/chat/completions',
   path: '/api/ai/chat/completions',
@@ -437,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/s/$id': typeof SIdRoute
   '/blog/': typeof BlogIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/databases/': typeof DatabasesIndexRoute
@@ -457,11 +482,13 @@ export interface FileRoutesByFullPath {
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/shares/$id': typeof ApiSharesIdRouteWithChildren
   '/api/sync/changes': typeof ApiSyncChangesRoute
   '/api/sync/key': typeof ApiSyncKeyRoute
   '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app/': typeof AuthAppIndexRoute
+  '/api/shares/': typeof ApiSharesIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
@@ -471,6 +498,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/shares/$id/content': typeof ApiSharesIdContentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -502,6 +530,7 @@ export interface FileRoutesByTo {
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/s/$id': typeof SIdRoute
   '/blog': typeof BlogIndexRoute
   '/compare': typeof CompareIndexRoute
   '/databases': typeof DatabasesIndexRoute
@@ -522,11 +551,13 @@ export interface FileRoutesByTo {
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/shares/$id': typeof ApiSharesIdRouteWithChildren
   '/api/sync/changes': typeof ApiSyncChangesRoute
   '/api/sync/key': typeof ApiSyncKeyRoute
   '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/app': typeof AuthAppIndexRoute
+  '/api/shares': typeof ApiSharesIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
@@ -536,6 +567,7 @@ export interface FileRoutesByTo {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/shares/$id/content': typeof ApiSharesIdContentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -571,6 +603,7 @@ export interface FileRoutesById {
   '/docs/mcp': typeof DocsMcpRoute
   '/download_/$os': typeof DownloadOsRoute
   '/ingest/$': typeof IngestSplatRoute
+  '/s/$id': typeof SIdRoute
   '/blog/': typeof BlogIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/databases/': typeof DatabasesIndexRoute
@@ -591,11 +624,13 @@ export interface FileRoutesById {
   '/api/license/pubkey': typeof ApiLicensePubkeyRoute
   '/api/license/trial': typeof ApiLicenseTrialRoute
   '/api/oauth/token': typeof ApiOauthTokenRoute
+  '/api/shares/$id': typeof ApiSharesIdRouteWithChildren
   '/api/sync/changes': typeof ApiSyncChangesRoute
   '/api/sync/key': typeof ApiSyncKeyRoute
   '/api/sync/push': typeof ApiSyncPushRoute
   '/api/webhooks/$provider': typeof ApiWebhooksProviderRoute
   '/_auth/app/': typeof AuthAppIndexRoute
+  '/api/shares/': typeof ApiSharesIndexRoute
   '/api/admin/giveaway/draw': typeof ApiAdminGiveawayDrawRoute
   '/api/admin/license/devices': typeof ApiAdminLicenseDevicesRoute
   '/api/admin/license/info': typeof ApiAdminLicenseInfoRoute
@@ -605,6 +640,7 @@ export interface FileRoutesById {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/shares/$id/content': typeof ApiSharesIdContentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -639,6 +675,7 @@ export interface FileRouteTypes {
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/s/$id'
     | '/blog/'
     | '/compare/'
     | '/databases/'
@@ -659,11 +696,13 @@ export interface FileRouteTypes {
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/shares/$id'
     | '/api/sync/changes'
     | '/api/sync/key'
     | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/app/'
+    | '/api/shares/'
     | '/api/admin/giveaway/draw'
     | '/api/admin/license/devices'
     | '/api/admin/license/info'
@@ -673,6 +712,7 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/shares/$id/content'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -704,6 +744,7 @@ export interface FileRouteTypes {
     | '/docs/mcp'
     | '/download/$os'
     | '/ingest/$'
+    | '/s/$id'
     | '/blog'
     | '/compare'
     | '/databases'
@@ -724,11 +765,13 @@ export interface FileRouteTypes {
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/shares/$id'
     | '/api/sync/changes'
     | '/api/sync/key'
     | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/app'
+    | '/api/shares'
     | '/api/admin/giveaway/draw'
     | '/api/admin/license/devices'
     | '/api/admin/license/info'
@@ -738,6 +781,7 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/shares/$id/content'
   id:
     | '__root__'
     | '/'
@@ -772,6 +816,7 @@ export interface FileRouteTypes {
     | '/docs/mcp'
     | '/download_/$os'
     | '/ingest/$'
+    | '/s/$id'
     | '/blog/'
     | '/compare/'
     | '/databases/'
@@ -792,11 +837,13 @@ export interface FileRouteTypes {
     | '/api/license/pubkey'
     | '/api/license/trial'
     | '/api/oauth/token'
+    | '/api/shares/$id'
     | '/api/sync/changes'
     | '/api/sync/key'
     | '/api/sync/push'
     | '/api/webhooks/$provider'
     | '/_auth/app/'
+    | '/api/shares/'
     | '/api/admin/giveaway/draw'
     | '/api/admin/license/devices'
     | '/api/admin/license/info'
@@ -806,6 +853,7 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/shares/$id/content'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -838,6 +886,7 @@ export interface RootRouteChildren {
   DocsMcpRoute: typeof DocsMcpRoute
   DownloadOsRoute: typeof DownloadOsRoute
   IngestSplatRoute: typeof IngestSplatRoute
+  SIdRoute: typeof SIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
   CompareIndexRoute: typeof CompareIndexRoute
   DatabasesIndexRoute: typeof DatabasesIndexRoute
@@ -854,10 +903,12 @@ export interface RootRouteChildren {
   ApiLicensePubkeyRoute: typeof ApiLicensePubkeyRoute
   ApiLicenseTrialRoute: typeof ApiLicenseTrialRoute
   ApiOauthTokenRoute: typeof ApiOauthTokenRoute
+  ApiSharesIdRoute: typeof ApiSharesIdRouteWithChildren
   ApiSyncChangesRoute: typeof ApiSyncChangesRoute
   ApiSyncKeyRoute: typeof ApiSyncKeyRoute
   ApiSyncPushRoute: typeof ApiSyncPushRoute
   ApiWebhooksProviderRoute: typeof ApiWebhooksProviderRoute
+  ApiSharesIndexRoute: typeof ApiSharesIndexRoute
   ApiAdminGiveawayDrawRoute: typeof ApiAdminGiveawayDrawRoute
   ApiAdminLicenseDevicesRoute: typeof ApiAdminLicenseDevicesRoute
   ApiAdminLicenseInfoRoute: typeof ApiAdminLicenseInfoRoute
@@ -1004,6 +1055,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/s/$id': {
+      id: '/s/$id'
+      path: '/s/$id'
+      fullPath: '/s/$id'
+      preLoaderRoute: typeof SIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ingest/$': {
       id: '/ingest/$'
       path: '/ingest/$'
@@ -1123,6 +1181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppRouteRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/api/shares/': {
+      id: '/api/shares/'
+      path: '/api/shares'
+      fullPath: '/api/shares/'
+      preLoaderRoute: typeof ApiSharesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/app/': {
       id: '/_auth/app/'
       path: '/'
@@ -1156,6 +1221,13 @@ declare module '@tanstack/react-router' {
       path: '/api/sync/changes'
       fullPath: '/api/sync/changes'
       preLoaderRoute: typeof ApiSyncChangesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/shares/$id': {
+      id: '/api/shares/$id'
+      path: '/api/shares/$id'
+      fullPath: '/api/shares/$id'
+      preLoaderRoute: typeof ApiSharesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/oauth/token': {
@@ -1270,6 +1342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppBillingRouteImport
       parentRoute: typeof AuthAppRouteRoute
     }
+    '/api/shares/$id/content': {
+      id: '/api/shares/$id/content'
+      path: '/content'
+      fullPath: '/api/shares/$id/content'
+      preLoaderRoute: typeof ApiSharesIdContentRouteImport
+      parentRoute: typeof ApiSharesIdRoute
+    }
     '/api/ai/chat/completions': {
       id: '/api/ai/chat/completions'
       path: '/api/ai/chat/completions'
@@ -1382,6 +1461,18 @@ const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(
   GuestRouteRouteChildren,
 )
 
+interface ApiSharesIdRouteChildren {
+  ApiSharesIdContentRoute: typeof ApiSharesIdContentRoute
+}
+
+const ApiSharesIdRouteChildren: ApiSharesIdRouteChildren = {
+  ApiSharesIdContentRoute: ApiSharesIdContentRoute,
+}
+
+const ApiSharesIdRouteWithChildren = ApiSharesIdRoute._addFileChildren(
+  ApiSharesIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
@@ -1412,6 +1503,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsMcpRoute: DocsMcpRoute,
   DownloadOsRoute: DownloadOsRoute,
   IngestSplatRoute: IngestSplatRoute,
+  SIdRoute: SIdRoute,
   BlogIndexRoute: BlogIndexRoute,
   CompareIndexRoute: CompareIndexRoute,
   DatabasesIndexRoute: DatabasesIndexRoute,
@@ -1428,10 +1520,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLicensePubkeyRoute: ApiLicensePubkeyRoute,
   ApiLicenseTrialRoute: ApiLicenseTrialRoute,
   ApiOauthTokenRoute: ApiOauthTokenRoute,
+  ApiSharesIdRoute: ApiSharesIdRouteWithChildren,
   ApiSyncChangesRoute: ApiSyncChangesRoute,
   ApiSyncKeyRoute: ApiSyncKeyRoute,
   ApiSyncPushRoute: ApiSyncPushRoute,
   ApiWebhooksProviderRoute: ApiWebhooksProviderRoute,
+  ApiSharesIndexRoute: ApiSharesIndexRoute,
   ApiAdminGiveawayDrawRoute: ApiAdminGiveawayDrawRoute,
   ApiAdminLicenseDevicesRoute: ApiAdminLicenseDevicesRoute,
   ApiAdminLicenseInfoRoute: ApiAdminLicenseInfoRoute,
