@@ -211,17 +211,21 @@ function AlternateDownloadLink({
   );
 }
 
-const BREW_COMMAND = "brew install --cask stroke-app/tap/stroke";
-const LINUX_COMMAND = "curl -fsSL https://stroke.click/install.sh | sh";
-const SCOOP_COMMAND =
-  "scoop bucket add stroke https://github.com/stroke-app/stroke; scoop install stroke";
+const UNIX_COMMAND = "curl -fsSL https://stroke.click/install.sh | sh";
+const WINDOWS_COMMAND = "irm https://stroke.click/install.ps1 | iex";
 
-/** The one-line install for a platform: Homebrew, the install script, or Scoop. */
+/**
+ * The one-line install for a platform. Each works on a bare machine and
+ * hands off to the package manager when there is one: Homebrew on macOS, the
+ * AUR, apt or dnf on Linux, Scoop on Windows.
+ */
 export function installCommandFor(os: string | undefined) {
-  if (os === "macos") return { command: BREW_COMMAND, label: "Homebrew" };
+  if (os === "macos")
+    return { command: UNIX_COMMAND, label: "Terminal · uses Homebrew when it's installed" };
   if (os === "linux")
-    return { command: LINUX_COMMAND, label: "Arch, Debian, Ubuntu, Fedora and the rest" };
-  if (os === "windows") return { command: SCOOP_COMMAND, label: "Scoop" };
+    return { command: UNIX_COMMAND, label: "Arch, Debian, Ubuntu, Fedora and the rest" };
+  if (os === "windows")
+    return { command: WINDOWS_COMMAND, label: "PowerShell · uses Scoop when it's installed" };
   return null;
 }
 
