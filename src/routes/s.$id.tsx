@@ -4,7 +4,7 @@ import { ClockIcon, EyeIcon, InfoIcon, KeyRoundIcon, LockIcon } from "lucide-rea
 import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 
 import { CopyButton, ShareTable } from "#/components/share/share-table";
-import { iconBtn, Tip, TipProvider } from "#/components/share/share-ui";
+import { iconBtn, ThemeMenu, Tip, TipProvider } from "#/components/share/share-ui";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { b64urlDecode, deriveKey, openShare, type SharePayload } from "#/lib/shares/crypto";
 
@@ -162,6 +162,7 @@ function SharePage() {
               />
             )}
             {ready && <InfoButton meta={ready.meta} payload={ready.payload} />}
+            <ThemeMenu />
             <Link
               to="/download"
               className="ms-1 inline-flex h-8 items-center rounded-lg bg-foreground px-3 text-[13px] font-medium text-background transition-[opacity,scale] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
@@ -390,11 +391,18 @@ function Body({ payload, status }: { payload: SharePayload; status?: ReactNode }
         </div>
       );
     case "erd":
-      return <ShareErd tables={payload.tables} links={payload.links} />;
+      return <ShareErd tables={payload.tables} links={payload.links} title={payload.title} />;
     case "mermaid":
       return <ShareMermaid code={payload.code} />;
     case "chart":
-      return <ShareChart spec={payload.chart} columns={payload.columns} rows={payload.rows} />;
+      return (
+        <ShareChart
+          spec={payload.chart}
+          columns={payload.columns}
+          rows={payload.rows}
+          title={payload.title}
+        />
+      );
     default:
       return (
         <Center>
