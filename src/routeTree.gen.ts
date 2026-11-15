@@ -32,6 +32,7 @@ import { Route as CompareIndexRouteImport } from './routes/compare/index'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as SIdRouteImport } from './routes/s.$id'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
+import { Route as EIdRouteImport } from './routes/e.$id'
 import { Route as DownloadOsRouteImport } from './routes/download_.$os'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
 import { Route as DesktopSignInRouteImport } from './routes/desktop/sign-in'
@@ -193,6 +194,11 @@ const SIdRoute = SIdRouteImport.update({
 const IngestSplatRoute = IngestSplatRouteImport.update({
   id: '/ingest/$',
   path: '/ingest/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EIdRoute = EIdRouteImport.update({
+  id: '/e/$id',
+  path: '/e/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadOsRoute = DownloadOsRouteImport.update({
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
+  '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
   '/s/$id': typeof SIdRoute
   '/blog/': typeof BlogIndexRoute
@@ -545,6 +552,7 @@ export interface FileRoutesByTo {
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download/$os': typeof DownloadOsRoute
+  '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
   '/s/$id': typeof SIdRoute
   '/blog': typeof BlogIndexRoute
@@ -620,6 +628,7 @@ export interface FileRoutesById {
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
   '/download_/$os': typeof DownloadOsRoute
+  '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
   '/s/$id': typeof SIdRoute
   '/blog/': typeof BlogIndexRoute
@@ -694,6 +703,7 @@ export interface FileRouteTypes {
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
+    | '/e/$id'
     | '/ingest/$'
     | '/s/$id'
     | '/blog/'
@@ -765,6 +775,7 @@ export interface FileRouteTypes {
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download/$os'
+    | '/e/$id'
     | '/ingest/$'
     | '/s/$id'
     | '/blog'
@@ -839,6 +850,7 @@ export interface FileRouteTypes {
     | '/desktop/sign-in'
     | '/docs/mcp'
     | '/download_/$os'
+    | '/e/$id'
     | '/ingest/$'
     | '/s/$id'
     | '/blog/'
@@ -911,6 +923,7 @@ export interface RootRouteChildren {
   DesktopSignInRoute: typeof DesktopSignInRoute
   DocsMcpRoute: typeof DocsMcpRoute
   DownloadOsRoute: typeof DownloadOsRoute
+  EIdRoute: typeof EIdRoute
   IngestSplatRoute: typeof IngestSplatRoute
   SIdRoute: typeof SIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -1107,6 +1120,13 @@ declare module '@tanstack/react-router' {
       path: '/ingest/$'
       fullPath: '/ingest/$'
       preLoaderRoute: typeof IngestSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e/$id': {
+      id: '/e/$id'
+      path: '/e/$id'
+      fullPath: '/e/$id'
+      preLoaderRoute: typeof EIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/download_/$os': {
@@ -1544,6 +1564,7 @@ const rootRouteChildren: RootRouteChildren = {
   DesktopSignInRoute: DesktopSignInRoute,
   DocsMcpRoute: DocsMcpRoute,
   DownloadOsRoute: DownloadOsRoute,
+  EIdRoute: EIdRoute,
   IngestSplatRoute: IngestSplatRoute,
   SIdRoute: SIdRoute,
   BlogIndexRoute: BlogIndexRoute,
