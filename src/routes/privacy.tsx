@@ -43,7 +43,7 @@ function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      updated="November 14, 2026"
+      updated="November 15, 2026"
       intro="Stroke is built on a simple boundary: the desktop app works with your databases on your machine, and our servers handle accounts, licenses, and a few anonymous counts. This policy describes what crosses that boundary, what never does, and the choices you have."
       highlights={HIGHLIGHTS}
     >
@@ -121,6 +121,16 @@ function PrivacyPage() {
             "Your name, email address, and avatar from the provider you chose. We never see your password.",
             "If you later sign in with the other provider using the same verified email, both sign-ins are linked to one account.",
             "Session data: a cookie that keeps you signed in, plus your IP address and browser user agent, kept for session security.",
+            <>
+              <strong>Where you sign in from</strong>: each time you sign in, on the website or in
+              the app, we record your IP address and the approximate location it maps to (country,
+              region, city, time zone and network), which our host, Cloudflare, provides with the
+              request. No other service is asked. From the app we also record its version, your
+              operating system and a random device identifier. We use this only to understand where
+              Stroke is used and how it grows, and to spot sign-ins that look wrong on your account.
+              It is never sold, never shared for advertising, and never used to locate you more
+              precisely. It is deleted with your account.
+            </>,
             <>
               <strong>License records</strong>: your license key, plan, and the devices it's active
               on.
