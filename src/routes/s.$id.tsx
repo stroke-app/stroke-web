@@ -1,8 +1,10 @@
+import { Popover } from "@base-ui/react/popover";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock, Eye, KeyRound, Lock, ShieldCheck } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { ClockIcon, EyeIcon, InfoIcon, KeyRoundIcon, LockIcon } from "lucide-react";
+import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 
 import { CopyButton, ShareTable } from "#/components/share/share-table";
+import { iconBtn, Tip, TipProvider } from "#/components/share/share-ui";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { b64urlDecode, deriveKey, openShare, type SharePayload } from "#/lib/shares/crypto";
 
@@ -130,126 +132,234 @@ function SharePage() {
   }
 
   const ready = state.s === "ready" ? state : null;
+  const tabular = ready && (ready.payload.kind === "result" || ready.payload.kind === "table");
+  const facts = ready ? <ShareFacts meta={ready.meta} /> : null;
+  const sql = ready && "sql" in ready.payload && ready.payload.sql ? ready.payload.sql : null;
   return (
-    <div className="flex h-dvh flex-col bg-background text-foreground">
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border px-4">
-        <Link to="/" className="flex items-center gap-2" aria-label="Stroke">
-          <StrokeIcon className="size-5" />
-        </Link>
-        <span className="h-4 w-px bg-border" aria-hidden="true" />
-        <span className="min-w-0 truncate text-[14px] font-medium">
-          {ready?.payload.title ?? "Shared from Stroke"}
-        </span>
-        {ready?.payload.source && (
-          <span className="hidden truncate text-[13px] text-muted-foreground md:inline">
-            {ready.payload.source}
-          </span>
-        )}
-        <div className="ms-auto flex items-center gap-1">
-          {ready && ready.payload.kind === "query" && (
-            <CopyButton text={ready.payload.sql} label="Copy SQL" />
-          )}
-          {ready &&
-            "sql" in ready.payload &&
-            ready.payload.kind !== "query" &&
-            ready.payload.sql && <CopyButton text={ready.payload.sql} label="Copy query" />}
+    <TipProvider>
+      <div className="flex h-dvh flex-col bg-background text-foreground">
+        {/* Breadcrumb bar: the mark, "stroke", the share's title; tools on the right. */}
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-3">
           <Link
-            to="/download"
-            className="inline-flex h-8 items-center rounded-lg bg-foreground px-3 text-[13px] font-medium text-background transition-[opacity,scale] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
+            to="/"
+            className="flex shrink-0 items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-accent"
+            aria-label="Stroke"
           >
-            Get Stroke
+            <StrokeIcon className="size-5" />
+            <span className="text-[14px] text-muted-foreground">stroke</span>
           </Link>
-        </div>
-      </header>
-
-      {state.s === "loading" || state.s === "opening" ? (
-        <Center>
-          <p className="text-[13px] text-muted-foreground">
-            {state.s === "loading" ? "Opening the link…" : "Decrypting in your browser…"}
-          </p>
-        </Center>
-      ) : state.s === "gone" || state.s === "error" ? (
-        <Center>
-          <div className="max-w-sm text-center">
-            <p className="text-[15px] font-medium">
-              {state.s === "gone" ? "This link is no longer available" : "Can't open this link"}
-            </p>
-            <p className="mt-2 text-[13px] text-pretty text-muted-foreground">{state.message}</p>
-          </div>
-        </Center>
-      ) : state.s === "password" ? (
-        <Center>
-          <form
-            className="flex w-full max-w-xs flex-col items-center gap-3 text-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (password) void open(state.meta, password);
-            }}
-          >
-            <span className="grid size-10 place-items-center rounded-lg bg-muted">
-              <Lock className="size-4" />
-            </span>
-            <p className="text-[15px] font-medium">This share needs a password</p>
-            <input
-              type="password"
-              autoFocus
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              aria-label="Password"
-              placeholder="Password"
-              className="h-9 w-full rounded-lg bg-muted px-3 text-[14px] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            />
-            {state.wrong && (
-              <p className="text-[13px] text-red-600 dark:text-red-400">
-                That password doesn't open it.
-              </p>
+          <span className="text-[14px] text-faint" aria-hidden="true">
+            /
+          </span>
+          <h1 className="min-w-0 truncate text-[14px] font-medium">
+            {ready?.payload.title ?? "Shared from Stroke"}
+          </h1>
+          <div className="ms-auto flex items-center gap-1">
+            {sql && (
+              <CopyButton
+                text={sql}
+                label={ready?.payload.kind === "query" ? "Copy SQL" : "Copy the query"}
+              />
             )}
-            <button
-              type="submit"
-              className="h-9 w-full rounded-lg bg-foreground text-[14px] font-medium text-background transition-[opacity,scale] duration-150 hover:opacity-90 active:scale-[0.98]"
+            {ready && <InfoButton meta={ready.meta} payload={ready.payload} />}
+            <Link
+              to="/download"
+              className="ms-1 inline-flex h-8 items-center rounded-lg bg-foreground px-3 text-[13px] font-medium text-background transition-[opacity,scale] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
             >
-              Open
-            </button>
-          </form>
-        </Center>
-      ) : (
-        <Suspense
-          fallback={
-            <Center>
-              <p className="text-[13px] text-muted-foreground">Loading…</p>
-            </Center>
-          }
-        >
-          <Body payload={state.payload} />
-        </Suspense>
-      )}
+              Get Stroke
+            </Link>
+          </div>
+        </header>
 
-      <footer className="flex h-9 shrink-0 items-center gap-4 border-t border-border px-4 text-[12px] text-faint">
-        <span className="inline-flex items-center gap-1.5">
-          <ShieldCheck className="size-3.5" /> End-to-end encrypted. Stroke's servers can't read it.
-        </span>
-        {ready?.meta.passwordSalt && (
-          <span className="hidden items-center gap-1.5 sm:inline-flex">
-            <KeyRound className="size-3.5" /> Password protected
-          </span>
-        )}
-        {ready && (
-          <span className="ms-auto inline-flex items-center gap-3">
-            {ready.meta.viewsLeft !== null && (
-              <span className="inline-flex items-center gap-1.5">
-                <Eye className="size-3.5" />{" "}
-                {ready.meta.viewsLeft <= 1 ? "Last view" : `${ready.meta.viewsLeft - 1} views left`}
+        {state.s === "loading" || state.s === "opening" ? (
+          <Center>
+            <p className="text-[13px] text-muted-foreground">
+              {state.s === "loading" ? "Opening the link…" : "Decrypting in your browser…"}
+            </p>
+          </Center>
+        ) : state.s === "gone" || state.s === "error" ? (
+          <Center>
+            <div className="max-w-sm text-center">
+              <p className="text-[15px] font-medium">
+                {state.s === "gone" ? "This link is no longer available" : "Can't open this link"}
+              </p>
+              <p className="mt-2 text-[13px] text-pretty text-muted-foreground">{state.message}</p>
+            </div>
+          </Center>
+        ) : state.s === "password" ? (
+          <Center>
+            <form
+              className="flex w-full max-w-xs flex-col items-center gap-3 text-center"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (password) void open(state.meta, password);
+              }}
+            >
+              <span className="grid size-10 place-items-center rounded-lg bg-muted">
+                <LockIcon className="size-4" />
               </span>
-            )}
-            {ready.meta.expiresAt && (
-              <span className="inline-flex items-center gap-1.5">
-                <Clock className="size-3.5" /> Expires {relative(ready.meta.expiresAt)}
-              </span>
-            )}
-          </span>
+              <p className="text-[15px] font-medium">This share needs a password</p>
+              <input
+                type="password"
+                autoFocus
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-label="Password"
+                placeholder="Password"
+                className="h-9 w-full rounded-lg bg-muted px-3 text-[14px] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              {state.wrong && (
+                <p className="text-[13px] text-red-600 dark:text-red-400">
+                  That password doesn't open it.
+                </p>
+              )}
+              <button
+                type="submit"
+                className="h-9 w-full rounded-lg bg-foreground text-[14px] font-medium text-background transition-[opacity,scale] duration-150 hover:opacity-90 active:scale-[0.98]"
+              >
+                Open
+              </button>
+            </form>
+          </Center>
+        ) : (
+          <Suspense
+            fallback={
+              <Center>
+                <p className="text-[13px] text-muted-foreground">Loading…</p>
+              </Center>
+            }
+          >
+            <Body payload={state.payload} status={facts} />
+          </Suspense>
         )}
-      </footer>
-    </div>
+
+        {/* The table has its own status bar (with the pager); everything else gets this one. */}
+        {!tabular && (
+          <footer className="flex h-9 shrink-0 items-center gap-3 border-t border-border px-3 text-[12px] text-muted-foreground">
+            <Tip label="Decrypted in this browser with the key in the link. The server only ever held ciphertext.">
+              <span className="inline-flex cursor-default items-center gap-1.5">
+                <LockIcon className="size-3.5" /> End-to-end encrypted
+              </span>
+            </Tip>
+            <span className="ms-auto flex items-center gap-3">{facts}</span>
+          </footer>
+        )}
+      </div>
+    </TipProvider>
+  );
+}
+
+/** Expiry, views left and password, as small items with an explanation on hover. */
+function ShareFacts({ meta }: { meta: Meta }) {
+  return (
+    <>
+      {meta.passwordSalt && (
+        <Tip label="Opened with a password. The link alone can't decrypt it.">
+          <span className="inline-flex cursor-default items-center gap-1.5">
+            <KeyRoundIcon className="size-3.5" /> Password
+          </span>
+        </Tip>
+      )}
+      {meta.viewsLeft !== null && (
+        <Tip label="The link stops working after its last view.">
+          <span className="inline-flex cursor-default items-center gap-1.5">
+            <EyeIcon className="size-3.5" />
+            {meta.viewsLeft <= 1 ? "Last view" : `${meta.viewsLeft - 1} views left`}
+          </span>
+        </Tip>
+      )}
+      {meta.expiresAt && (
+        <Tip label={`Expires ${new Date(meta.expiresAt).toLocaleString()}`}>
+          <span className="inline-flex cursor-default items-center gap-1.5">
+            <ClockIcon className="size-3.5" /> Expires {relative(meta.expiresAt)}
+          </span>
+        </Tip>
+      )}
+    </>
+  );
+}
+
+const KIND_LABEL: Record<string, string> = {
+  result: "Query results",
+  table: "Table rows",
+  query: "SQL query",
+  erd: "Schema diagram",
+  mermaid: "Diagram",
+  chart: "Chart",
+};
+
+/** The (i): who shared what, from where, when, and how the link is limited. */
+function InfoButton({ meta, payload }: { meta: Meta; payload: SharePayload }) {
+  const rowsCols =
+    "rows" in payload && "columns" in payload
+      ? `${payload.rows.length.toLocaleString()} rows · ${payload.columns.length} columns`
+      : null;
+  const masked = "masked" in payload && payload.masked?.length ? payload.masked.join(", ") : null;
+  const items: [string, ReactNode][] = [
+    ["Type", KIND_LABEL[payload.kind] ?? payload.kind],
+    ...(rowsCols ? ([["Size", rowsCols]] as [string, ReactNode][]) : []),
+    ...(payload.source
+      ? ([
+          [
+            "From",
+            <span key="from" className="font-mono text-[12px] break-all">
+              {payload.source}
+            </span>,
+          ],
+        ] as [string, ReactNode][])
+      : []),
+    ...(payload.by ? ([["Shared by", payload.by]] as [string, ReactNode][]) : []),
+    [
+      "Shared",
+      `${new Date(payload.createdAt || meta.createdAt).toLocaleString()} (${relative(payload.createdAt || meta.createdAt)})`,
+    ],
+    [
+      "Expires",
+      meta.expiresAt
+        ? `${new Date(meta.expiresAt).toLocaleString()} (${relative(meta.expiresAt)})`
+        : "Never",
+    ],
+    [
+      "Views",
+      meta.viewsLeft === null
+        ? "Unlimited"
+        : meta.viewsLeft <= 1
+          ? "This was the last"
+          : `${meta.viewsLeft - 1} left`,
+    ],
+    ...(masked ? ([["Masked", masked]] as [string, ReactNode][]) : []),
+    ["Password", meta.passwordSalt ? "Required" : "None"],
+  ];
+  return (
+    <Popover.Root>
+      <Tip label="About this share" side="bottom">
+        <Popover.Trigger className={iconBtn} aria-label="About this share">
+          <InfoIcon />
+        </Popover.Trigger>
+      </Tip>
+      <Popover.Portal>
+        <Popover.Positioner align="end" sideOffset={6} className="z-50">
+          <Popover.Popup className="w-80 origin-(--transform-origin) rounded-xl bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/8 transition-[opacity,scale] duration-100 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+            <div className="px-3 pt-2.5 pb-2">
+              <Popover.Title className="truncate text-[14px] font-medium">
+                {payload.title}
+              </Popover.Title>
+              <Popover.Description className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                <LockIcon className="size-3" /> End-to-end encrypted, decrypted in this browser
+              </Popover.Description>
+            </div>
+            <dl className="border-t border-border px-3 py-1.5">
+              {items.map(([k, v]) => (
+                <div key={k} className="flex gap-3 py-1 text-[12.5px]">
+                  <dt className="w-20 shrink-0 text-muted-foreground">{k}</dt>
+                  <dd className="min-w-0 flex-1 text-foreground">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
@@ -257,7 +367,7 @@ function Center({ children }: { children: React.ReactNode }) {
   return <div className="flex min-h-0 flex-1 items-center justify-center p-6">{children}</div>;
 }
 
-function Body({ payload }: { payload: SharePayload }) {
+function Body({ payload, status }: { payload: SharePayload; status?: ReactNode }) {
   switch (payload.kind) {
     case "table":
     case "result":
@@ -268,6 +378,7 @@ function Body({ payload }: { payload: SharePayload }) {
           title={payload.title}
           masked={payload.masked}
           totalRows={payload.totalRows}
+          status={status}
         />
       );
     case "query":
