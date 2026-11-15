@@ -18,7 +18,10 @@ import { apiError } from "#/lib/desktop/service";
  * increasing per user.
  */
 
-export const SYNC_KINDS = ["workspace", "connection", "settings"] as const;
+// "query": one saved query. "library": one connection's saved charts, chart
+// groups, dashboards and query folders. Clients skip kinds they do not know,
+// so older apps ignore these.
+export const SYNC_KINDS = ["workspace", "connection", "settings", "query", "library"] as const;
 export type SyncKind = (typeof SYNC_KINDS)[number];
 
 export const MAX_PUSH_RECORDS = 200;
