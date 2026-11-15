@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { SmartDownloadButton } from "#/components/download-button";
 import { CommandCard } from "#/components/download-targets";
 import { PageHeader, PageShell, WRAP } from "#/components/page";
-import { Studio } from "#/components/studio";
+import { Studio } from "#/components/studio/studio";
 import { seo } from "#/lib/seo";
 import { forgetSession, takeSession, type Session } from "#/lib/studio-bridge";
 import { cn } from "#/lib/utils";
