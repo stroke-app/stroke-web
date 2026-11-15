@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "name": "Bro",
+  "author": "Stroke",
+  "appearance": "dark",
+  "colors": {
+    "background": "#0b0b0c",
+    "foreground": "#f2f2f3",
+    "primary": "#4d8dff",
+    "primaryForeground": "#ffffff",
+    "card": "#151517",
+    "popover": "#18181a",
+    "muted": "#1c1c1f",
+    "mutedForeground": "#8e8e93",
+    "accent": "#202023",
+    "border": "#232326",
+    "input": "#28282c",
+    "sidebar": "#131315",
+    "sidebarForeground": "#e4e4e7",
+    "sidebarAccent": "#1f1f22",
+    "tableGrid": "#1f1f22",
+    "editorSurface": "#0e0e10",
+    "editorLineHighlight": "#18181b"
+  }
+}

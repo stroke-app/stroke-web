@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -80,6 +81,11 @@ import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/lice
 import { Route as ApiAdminLicenseDevicesRouteImport } from './routes/api/admin/license/devices'
 import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giveaway/draw'
 
+const ThemesRoute = ThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -444,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
+  '/themes': typeof ThemesRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/login': typeof GuestLoginRoute
   '/signup': typeof GuestSignupRoute
@@ -514,6 +521,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
+  '/themes': typeof ThemesRoute
   '/login': typeof GuestLoginRoute
   '/signup': typeof GuestSignupRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -586,6 +594,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/terms': typeof TermsRoute
+  '/themes': typeof ThemesRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/_guest/login': typeof GuestLoginRoute
   '/_guest/signup': typeof GuestSignupRoute
@@ -658,6 +667,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
+    | '/themes'
     | '/app'
     | '/login'
     | '/signup'
@@ -728,6 +738,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
+    | '/themes'
     | '/login'
     | '/signup'
     | '/admin/reviews'
@@ -799,6 +810,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/terms'
+    | '/themes'
     | '/_auth/app'
     | '/_guest/login'
     | '/_guest/signup'
@@ -872,6 +884,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
   TermsRoute: typeof TermsRoute
+  ThemesRoute: typeof ThemesRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   ApiChangelogRoute: typeof ApiChangelogRoute
   ApiMeRoute: typeof ApiMeRoute
@@ -922,6 +935,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/themes': {
+      id: '/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof ThemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -1489,6 +1509,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
   TermsRoute: TermsRoute,
+  ThemesRoute: ThemesRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   ApiChangelogRoute: ApiChangelogRoute,
   ApiMeRoute: ApiMeRoute,
