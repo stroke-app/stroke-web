@@ -130,16 +130,24 @@ export const auth = betterAuth({
     // sign_ins gets the full row (see lib/geo.ts).
     session: {
       create: {
+        // Neither may fail a sign-in: at worst the country is missing.
         before: async (session, ctx) => {
-          const geo = requestGeo(ctx?.request);
-          return { data: { ...session, country: geo.country } };
+          try {
+            return { data: { ...session, country: requestGeo(ctx?.request).country } };
+          } catch {
+            return { data: session };
+          }
         },
         after: async (session, ctx) => {
-          await recordSignIn({
-            userId: session.userId,
-            source: "web",
-            geo: requestGeo(ctx?.request),
-          });
+          try {
+            await recordSignIn({
+              userId: session.userId,
+              source: "web",
+              geo: requestGeo(ctx?.request),
+            });
+          } catch (e) {
+            console.error("sign-in record failed", e);
+          }
         },
       },
     },
