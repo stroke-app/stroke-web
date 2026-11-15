@@ -172,7 +172,7 @@ function ThemeCard({ theme: t }: { theme: ThemeEntry }) {
     }
   }
   return (
-    <li className="flex flex-col overflow-hidden rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
+    <li className="flex flex-col overflow-hidden rounded-xl bg-ink/[0.03] ring-1 ring-ink/[0.06]">
       <ThemePreview p={t.preview} />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-baseline justify-between gap-3">
@@ -210,7 +210,7 @@ function ThemeCard({ theme: t }: { theme: ThemeEntry }) {
 
 function HowTo() {
   return (
-    <div className="mt-16 grid gap-8 rounded-xl bg-white/[0.02] p-6 ring-1 ring-white/[0.05] md:grid-cols-[auto_1fr]">
+    <div className="mt-16 grid gap-8 rounded-xl bg-ink/[0.02] p-6 ring-1 ring-ink/[0.05] md:grid-cols-[auto_1fr]">
       <PaletteIcon className="size-5 text-muted-foreground" />
       <div className="flex flex-col gap-4 text-[14px] leading-relaxed text-muted-foreground">
         <p>
@@ -222,7 +222,7 @@ function HowTo() {
           <span className="text-foreground">Make your own:</span> a theme is a small JSON file.
           Three colours are required, the rest are worked out from them unless you set them.
         </p>
-        <pre className="overflow-x-auto rounded-lg bg-black/40 p-4 font-mono text-[12px] leading-relaxed text-foreground/85">{`{
+        <pre className="overflow-x-auto rounded-lg bg-ink/[0.04] p-4 font-mono text-[12px] leading-relaxed text-foreground/85">{`{
   "version": 1,
   "name": "Aurora",
   "appearance": "dark",

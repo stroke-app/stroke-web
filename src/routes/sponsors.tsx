@@ -67,7 +67,7 @@ function OpenSlot({ tier, slot, first }: { tier: SponsorTier; slot: string; firs
       className={cn(
         SLOT,
         slot,
-        "flex-col gap-1 border-dashed border-white/[0.14] text-center text-muted-foreground hover:border-white/30 hover:text-foreground",
+        "flex-col gap-1 border-dashed border-ink/[0.14] text-center text-muted-foreground hover:border-ink/30 hover:text-foreground",
         // An empty tier is a single wide slot, not one lonely cell.
         first && "col-span-full",
       )}

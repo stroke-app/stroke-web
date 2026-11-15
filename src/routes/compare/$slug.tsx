@@ -56,7 +56,7 @@ function VsPage() {
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full border-collapse text-left text-[14px]">
             <thead>
-              <tr className="border-b border-border bg-white/[0.02]">
+              <tr className="border-b border-border bg-ink/[0.02]">
                 <th scope="col" className="w-36 px-4 py-3"></th>
                 <th scope="col" className="px-4 py-3 font-semibold">
                   Stroke
@@ -72,7 +72,7 @@ function VsPage() {
                   <th scope="row" className="px-4 py-3 font-medium text-muted-foreground">
                     {r.label}
                   </th>
-                  <td className="bg-white/[0.03] px-4 py-3">{STROKE_FACTS[r.key]}</td>
+                  <td className="bg-ink/[0.03] px-4 py-3">{STROKE_FACTS[r.key]}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c[r.key]}</td>
                 </tr>
               ))}

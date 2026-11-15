@@ -8,7 +8,7 @@ import { cn } from "#/lib/utils";
  */
 export function AppWindow({ className }: { className?: string }) {
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("keep-dark dark relative", className)}>
       {/* A soft light centered on the window's top edge; it fades out before
           reaching its own bounds, so it never shows a hard edge. */}
       <div

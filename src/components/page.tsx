@@ -8,10 +8,10 @@ import { cn } from "#/lib/utils";
 export const WRAP = "mx-auto w-full max-w-[1200px] px-6 md:px-8";
 
 /**
- * The marketing site's root: dark only, with its own palette (see `.site` in
+ * The marketing site's root, with its own palette (see `.site` in
  * styles.css), whatever theme the signed-in app is set to.
  */
-export const SITE = "site dark min-h-screen bg-background text-foreground";
+export const SITE = "site min-h-screen bg-background text-foreground";
 
 /**
  * Marketing buttons, from Linear's button spec: pill corners, weight 510,
@@ -30,10 +30,10 @@ export function siteButton({
     size === "sm" && "h-8 gap-2 px-3 text-[13px]",
     size === "md" && "h-10 gap-2 px-3.5 text-[13px]",
     size === "lg" && "h-11 gap-1.5 px-5 text-[15px]",
-    variant === "primary" && "bg-[#e5e5e6] text-[#08090a] hover:bg-white",
+    variant === "primary" && "bg-primary/90 text-primary-foreground hover:bg-primary",
     variant === "secondary" &&
-      "bg-white/[0.05] text-foreground shadow-[inset_0_0_0_1px_rgb(255_255_255/0.03),inset_0_1px_0_rgb(255_255_255/0.04),0_0_0_1px_rgb(0_0_0/0.6),0_4px_4px_rgb(0_0_0/0.1)] backdrop-blur-sm hover:bg-[#191a1b]",
-    variant === "ghost" && "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
+      "bg-ink/[0.05] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_3%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--ink)_4%,transparent),0_0_0_1px_var(--edge),0_4px_4px_rgb(0_0_0/0.1)] backdrop-blur-sm hover:bg-ink/[0.08]",
+    variant === "ghost" && "text-muted-foreground hover:bg-ink/[0.05] hover:text-foreground",
   );
 }
 
@@ -171,7 +171,7 @@ export function Panel({ className, children, ...props }: React.ComponentProps<"d
     <div
       {...props}
       className={cn(
-        "overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b0c0d] shadow-[0_1px_0_0_rgb(255_255_255/0.06)_inset,0_24px_60px_-12px_rgb(0_0_0/0.6)]",
+        "keep-dark dark overflow-hidden rounded-xl border border-ink/[0.08] bg-[#0b0c0d] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_6%,transparent)_inset,0_24px_60px_-12px_rgb(0_0_0/0.6)]",
         className,
       )}
     >

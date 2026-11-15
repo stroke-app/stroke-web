@@ -50,7 +50,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       onClick={() => {
         void navigator.clipboard.writeText(text).then(() => setCopied(true));
       }}
-      className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-white/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+      className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-ink/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
     >
       {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
     </button>
@@ -109,7 +109,7 @@ function highlightJson(code: string) {
 /** A code surface in the app's style: a file-name bar with a copy button over mono text. */
 function CodeBlock({ title, code }: { title: string; code: string }) {
   return (
-    <figure className="mt-6 overflow-hidden rounded-xl border border-border bg-[#0b0c0d] shadow-[0_1px_0_0_rgb(255_255_255/0.04)_inset]">
+    <figure className="keep-dark dark mt-6 overflow-hidden rounded-xl border border-border bg-[#0b0c0d] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_4%,transparent)_inset]">
       <figcaption className="flex h-10 items-center justify-between gap-3 border-b border-border pr-1.5 pl-4">
         <span className="truncate font-mono text-[12px] text-muted-foreground">{title}</span>
         <CopyButton text={code} label={`Copy ${title}`} />
@@ -152,7 +152,7 @@ function Section({
     >
       <p className="font-mono text-[12px] text-faint tabular-nums">{number}</p>
       <h2 className="mt-2 text-[1.75rem]">{title}</h2>
-      <div className="mt-4 space-y-4 text-base leading-[1.7] text-pretty text-soft [&_:not(pre)>code]:rounded-[5px] [&_:not(pre)>code]:border [&_:not(pre)>code]:border-white/[0.07] [&_:not(pre)>code]:bg-white/[0.045] [&_:not(pre)>code]:px-[0.35em] [&_:not(pre)>code]:py-px [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-[0.84em] [&_:not(pre)>code]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-white/25 [&_a]:underline-offset-[3px] [&_a]:transition-colors [&_a:hover]:decoration-white/70 [&_strong]:font-[560] [&_strong]:text-foreground">
+      <div className="mt-4 space-y-4 text-base leading-[1.7] text-pretty text-soft [&_:not(pre)>code]:rounded-[5px] [&_:not(pre)>code]:border [&_:not(pre)>code]:border-ink/[0.07] [&_:not(pre)>code]:bg-ink/[0.045] [&_:not(pre)>code]:px-[0.35em] [&_:not(pre)>code]:py-px [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-[0.84em] [&_:not(pre)>code]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-ink/25 [&_a]:underline-offset-[3px] [&_a]:transition-colors [&_a:hover]:decoration-ink/70 [&_strong]:font-[560] [&_strong]:text-foreground">
         {children}
       </div>
     </section>
@@ -195,7 +195,7 @@ function McpPage() {
             </p>
             <CodeBlock title="claude_desktop_config.json" code={CLAUDE_CONFIG} />
             <p className="pt-2">The config file lives at:</p>
-            <dl className="overflow-hidden rounded-xl border border-border bg-[#0b0c0d]">
+            <dl className="overflow-hidden rounded-xl border border-border bg-raised">
               {CLAUDE_CONFIG_PATHS.map((row) => (
                 <div
                   key={row.os}

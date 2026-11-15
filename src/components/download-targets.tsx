@@ -112,7 +112,7 @@ export function ReleaseMeta({
       ) : (
         <span
           aria-hidden="true"
-          className="h-3.5 w-48 rounded bg-white/[0.06] motion-safe:animate-pulse"
+          className="h-3.5 w-48 rounded bg-ink/[0.06] motion-safe:animate-pulse"
         />
       )}
     </p>
@@ -227,7 +227,7 @@ function BuildRows({
             ) : (
               <span
                 aria-hidden="true"
-                className="h-8 w-[6.75rem] rounded-lg bg-white/[0.05] motion-safe:animate-pulse"
+                className="h-8 w-[6.75rem] rounded-lg bg-ink/[0.05] motion-safe:animate-pulse"
               />
             )}
           </li>
@@ -255,7 +255,7 @@ export function CommandCard({ label, command }: { label: string; command: string
           type="button"
           onClick={copy}
           aria-label={copied ? "Copied" : `Copy the ${label} command`}
-          className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 outline-none hover:bg-white/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 outline-none hover:bg-ink/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
           {copied ? (
             <CheckIcon className="size-3.5 text-muted-foreground" />

@@ -84,9 +84,9 @@ function DatabasesPage() {
                       <Link
                         to="/databases/$engine"
                         params={{ engine: e.slug }}
-                        className="group flex h-full items-start gap-3.5 rounded-xl border border-border bg-white/[0.02] p-4 transition-[background-color,border-color,scale] duration-150 hover:border-foreground/20 hover:bg-white/[0.04] active:scale-[0.99]"
+                        className="group flex h-full items-start gap-3.5 rounded-xl border border-border bg-ink/[0.02] p-4 transition-[background-color,border-color,scale] duration-150 hover:border-foreground/20 hover:bg-ink/[0.04] active:scale-[0.99]"
                       >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/[0.04]">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-ink/[0.04]">
                           <e.Icon className="size-5" color={e.color} aria-hidden="true" />
                         </span>
                         <span className="min-w-0">

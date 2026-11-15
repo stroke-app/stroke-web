@@ -80,7 +80,7 @@ export function DefaultNotFound() {
                 <li key={item.to} className="border-b border-border">
                   <Link
                     to={item.to}
-                    className="group flex items-center gap-4 py-4 transition-colors outline-none focus-visible:bg-white/[0.03]"
+                    className="group flex items-center gap-4 py-4 transition-colors outline-none focus-visible:bg-ink/[0.03]"
                   >
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
                       <span className="text-[15px] font-medium sm:w-36 sm:shrink-0">

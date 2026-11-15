@@ -50,9 +50,9 @@ const OS_NAME: Record<OS, string> = { macos: "macOS", windows: "Windows", linux:
 const SITE_LOOK = {
   base: "[.site_&]:rounded-full [.site_&]:font-[510] [.site_&]:active:scale-[0.97]",
   default:
-    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-[#e5e5e6] [.site_&]:text-[#08090a] [.site_&]:shadow-none [.site_&]:hover:bg-white",
+    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-primary/90 [.site_&]:text-primary-foreground [.site_&]:shadow-none [.site_&]:hover:bg-primary",
   outline:
-    "[.site_&]:border-transparent [.site_&]:bg-white/[0.05] [.site_&]:text-foreground [.site_&]:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.03),inset_0_1px_0_rgb(255_255_255/0.04),0_0_0_1px_rgb(0_0_0/0.6),0_4px_4px_rgb(0_0_0/0.1)] [.site_&]:hover:bg-[#191a1b]",
+    "[.site_&]:border-transparent [.site_&]:bg-ink/[0.05] [.site_&]:text-foreground [.site_&]:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_3%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--ink)_4%,transparent),0_0_0_1px_var(--edge),0_4px_4px_rgb(0_0_0/0.1)] [.site_&]:hover:bg-ink/[0.08]",
   lg: "[.site_&]:h-11 [.site_&]:px-5 [.site_&]:text-[15px]",
   sm: "[.site_&]:h-8 [.site_&]:text-[13px]",
 };
@@ -255,7 +255,7 @@ export function InstallCommand({
   return (
     <div
       className={cn(
-        "animate-fade-up flex h-10 max-w-full items-center gap-3 rounded-lg border border-border bg-muted/50 pr-1 pl-3.5 font-mono text-[13px] [.site_&]:bg-white/[0.03]",
+        "animate-fade-up flex h-10 max-w-full items-center gap-3 rounded-lg border border-border bg-muted/50 pr-1 pl-3.5 font-mono text-[13px] [.site_&]:bg-ink/[0.03]",
         className,
       )}
       title={cmd.label}

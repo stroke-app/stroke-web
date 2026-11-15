@@ -87,7 +87,7 @@ function EnterButton() {
 
   if (!data) {
     return (
-      <span className="block h-11 w-full animate-pulse rounded-lg bg-white/[0.05] motion-reduce:animate-none" />
+      <span className="block h-11 w-full animate-pulse rounded-lg bg-ink/[0.05] motion-reduce:animate-none" />
     );
   }
   if (!data.signedIn) {
@@ -159,7 +159,7 @@ export function GiveawayCard({
             <li>
               <Link
                 to="/giveaway"
-                className="underline decoration-white/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/50"
+                className="underline decoration-ink/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-ink/50"
               >
                 How it works
               </Link>
@@ -168,7 +168,7 @@ export function GiveawayCard({
         </ul>
       </div>
 
-      <div className="border-t border-border bg-white/[0.012] p-7 sm:p-10 lg:border-t-0 lg:border-l">
+      <div className="border-t border-border bg-ink/[0.012] p-7 sm:p-10 lg:border-t-0 lg:border-l">
         <p className="mb-3 text-[13px] text-muted-foreground">Next draw in</p>
         <Countdown iso={data?.drawAt} />
         <div className="mt-4">

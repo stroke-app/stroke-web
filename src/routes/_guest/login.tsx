@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_guest/login")({
 });
 
 const LEGAL_LINK =
-  "whitespace-nowrap text-soft underline decoration-white/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/50";
+  "whitespace-nowrap text-soft underline decoration-ink/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-ink/50";
 
 function AuthPage() {
   const { redirectUrl } = Route.useRouteContext();

@@ -1,11 +1,12 @@
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { MenuIcon, XIcon } from "lucide-react";
+import { MenuIcon, MonitorIcon, MoonIcon, SunIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { siteButton } from "#/components/page";
 import { StrokeIcon } from "#/components/stroke-icon";
+import { useTheme } from "#/components/theme-provider";
 import { useAuth } from "#/lib/auth/hooks";
 import { changelogQueryOptions } from "#/lib/changelog";
 import { REPO_URL } from "#/lib/seo";
@@ -32,6 +33,27 @@ const NAV_LINKS = [
   { label: "Blog", to: "/blog" },
 ] as const;
 
+const THEME_ORDER = ["system", "light", "dark"] as const;
+const THEME_LABEL = { system: "System theme", light: "Light theme", dark: "Dark theme" };
+
+/** One button that steps through system, light and dark. */
+function ThemeSwitch() {
+  const { theme, setTheme } = useTheme();
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
+  const Icon = theme === "light" ? SunIcon : theme === "dark" ? MoonIcon : MonitorIcon;
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(next)}
+      aria-label={`${THEME_LABEL[theme]}. Switch to ${THEME_LABEL[next].toLowerCase()}`}
+      title={THEME_LABEL[theme]}
+      className={cn(siteButton({ variant: "ghost", size: "sm" }), "w-8 px-0")}
+    >
+      <Icon className="size-4" />
+    </button>
+  );
+}
+
 export function SiteHeader() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -43,7 +65,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[rgb(11_11_11/0.8)] backdrop-blur-[20px]">
+    <header className="sticky top-0 z-40 border-b border-ink/[0.08] bg-background/80 backdrop-blur-[20px]">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-6 md:px-8">
         <div className="flex items-center gap-10">
           <Link to="/" aria-label="Stroke home" className="flex items-center gap-2.5">
@@ -72,6 +94,7 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeSwitch />
           <a
             href={REPO_URL}
             target="_blank"
@@ -133,8 +156,8 @@ export function SiteHeader() {
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className="flex h-11 items-center rounded-lg px-3 text-[15px] transition-colors"
-                  activeProps={{ className: "bg-white/[0.05] text-foreground" }}
-                  inactiveProps={{ className: "text-muted-foreground hover:bg-white/[0.04]" }}
+                  activeProps={{ className: "bg-ink/[0.05] text-foreground" }}
+                  inactiveProps={{ className: "text-muted-foreground hover:bg-ink/[0.04]" }}
                 >
                   {link.label}
                 </Link>
@@ -144,7 +167,7 @@ export function SiteHeader() {
               <Link
                 to={user ? "/app" : "/login"}
                 onClick={() => setOpen(false)}
-                className="flex h-11 items-center rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-white/[0.04]"
+                className="flex h-11 items-center rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-ink/[0.04]"
               >
                 {user ? "Dashboard" : "Sign in"}
               </Link>
@@ -154,7 +177,7 @@ export function SiteHeader() {
                 href={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-white/[0.04]"
+                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] text-muted-foreground hover:bg-ink/[0.04]"
               >
                 <SiGithub className="size-4" />
                 GitHub

@@ -27,7 +27,8 @@ export function BlogWidget({ name }: { name: string }) {
   }
 }
 
-const FRAME = "my-8 rounded-xl bg-white/[0.02] p-5 shadow-[0_0_0_1px_rgb(255_255_255/0.08)] md:p-6";
+const FRAME =
+  "my-8 rounded-xl bg-ink/[0.02] p-5 shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_8%,transparent)] md:p-6";
 
 // ── Client picker ────────────────────────────────────────────────────────────
 
@@ -98,8 +99,8 @@ function Choice<T extends string>({
             className={cn(
               "h-8 rounded-full px-3 text-[13px] transition-[background-color,color,scale] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97]",
               value === o.id
-                ? "bg-white/[0.12] text-foreground"
-                : "bg-white/[0.03] text-muted-foreground hover:text-foreground",
+                ? "bg-ink/[0.12] text-foreground"
+                : "bg-ink/[0.03] text-muted-foreground hover:text-foreground",
             )}
           >
             {o.label}
@@ -167,7 +168,7 @@ export function ClientPicker() {
           ]}
         />
       </div>
-      <ul className="mt-6 flex flex-col border-t border-white/[0.06]" aria-live="polite">
+      <ul className="mt-6 flex flex-col border-t border-ink/[0.06]" aria-live="polite">
         {fits.length === 0 && (
           <li className="py-3 text-[14px] text-muted-foreground">
             Nothing matches all four. Loosen one.
@@ -176,7 +177,7 @@ export function ClientPicker() {
         {fits.map((r) => (
           <li
             key={r.name}
-            className="flex flex-col gap-0.5 border-b border-white/[0.06] py-3 sm:flex-row sm:items-baseline sm:gap-4"
+            className="flex flex-col gap-0.5 border-b border-ink/[0.06] py-3 sm:flex-row sm:items-baseline sm:gap-4"
           >
             <span className="w-40 shrink-0 text-[14px] font-medium text-foreground">
               {r.href?.to === "/compare/$slug" ? (
@@ -209,16 +210,12 @@ export function ClientPicker() {
 export function CompareTable() {
   const rows = [{ name: "Stroke", ...STROKE_FACTS }, ...COMPETITORS];
   return (
-    <div className="my-8 overflow-x-auto rounded-xl shadow-[0_0_0_1px_rgb(255_255_255/0.08)]">
+    <div className="my-8 overflow-x-auto rounded-xl shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_8%,transparent)]">
       <table className="w-full min-w-[640px] border-collapse text-left text-[13px]">
         <thead>
           <tr className="text-faint">
             {["Client", "Built on", "Runs on", "Pricing", "Needs"].map((h) => (
-              <th
-                key={h}
-                scope="col"
-                className="border-b border-white/[0.06] px-4 py-3 font-medium"
-              >
+              <th key={h} scope="col" className="border-b border-ink/[0.06] px-4 py-3 font-medium">
                 {h}
               </th>
             ))}
@@ -226,23 +223,23 @@ export function CompareTable() {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.name} className={cn(r.name === "Stroke" && "bg-white/[0.03]")}>
+            <tr key={r.name} className={cn(r.name === "Stroke" && "bg-ink/[0.03]")}>
               <th
                 scope="row"
-                className="border-b border-white/[0.06] px-4 py-3 font-medium text-foreground"
+                className="border-b border-ink/[0.06] px-4 py-3 font-medium text-foreground"
               >
                 {r.name}
               </th>
-              <td className="border-b border-white/[0.06] px-4 py-3 text-muted-foreground">
+              <td className="border-b border-ink/[0.06] px-4 py-3 text-muted-foreground">
                 {r.runtime}
               </td>
-              <td className="border-b border-white/[0.06] px-4 py-3 text-muted-foreground">
+              <td className="border-b border-ink/[0.06] px-4 py-3 text-muted-foreground">
                 {r.platforms}
               </td>
-              <td className="border-b border-white/[0.06] px-4 py-3 text-muted-foreground">
+              <td className="border-b border-ink/[0.06] px-4 py-3 text-muted-foreground">
                 {r.pricing}
               </td>
-              <td className="border-b border-white/[0.06] px-4 py-3 text-muted-foreground">
+              <td className="border-b border-ink/[0.06] px-4 py-3 text-muted-foreground">
                 {r.needs}
               </td>
             </tr>
@@ -263,7 +260,7 @@ export function EngineGrid() {
           <Link
             to="/databases/$engine"
             params={{ engine: e.slug }}
-            className="flex h-10 items-center gap-2.5 rounded-lg bg-white/[0.02] px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_rgb(255_255_255/0.06)] transition-[background-color,color,scale] duration-150 ease-out hover:bg-white/[0.05] hover:text-foreground active:scale-[0.97]"
+            className="flex h-10 items-center gap-2.5 rounded-lg bg-ink/[0.02] px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_6%,transparent)] transition-[background-color,color,scale] duration-150 ease-out hover:bg-ink/[0.05] hover:text-foreground active:scale-[0.97]"
           >
             <e.Icon className="size-4 shrink-0" color={e.color} />
             {e.name}
@@ -321,9 +318,9 @@ export function McpConfig() {
   }, [copied]);
   const c = MCP_CLIENTS[active];
   return (
-    <div className="my-8 overflow-hidden rounded-xl shadow-[0_0_0_1px_rgb(255_255_255/0.08)]">
+    <div className="my-8 overflow-hidden rounded-xl shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_8%,transparent)]">
       <div
-        className="flex items-center gap-1 border-b border-white/[0.06] px-2 py-1.5"
+        className="flex items-center gap-1 border-b border-ink/[0.06] px-2 py-1.5"
         role="tablist"
         aria-label="MCP client"
       >
@@ -337,7 +334,7 @@ export function McpConfig() {
             className={cn(
               "h-7 rounded-md px-2.5 text-[13px] transition-[background-color,color,scale] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97]",
               i === active
-                ? "bg-white/[0.08] text-foreground"
+                ? "bg-ink/[0.08] text-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -349,15 +346,15 @@ export function McpConfig() {
           type="button"
           aria-label={copied ? "Copied" : "Copy"}
           onClick={() => void navigator.clipboard.writeText(c.text).then(() => setCopied(true))}
-          className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,scale] duration-150 ease-out hover:bg-white/[0.06] hover:text-foreground active:scale-[0.97]"
+          className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,scale] duration-150 ease-out hover:bg-ink/[0.06] hover:text-foreground active:scale-[0.97]"
         >
           {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
         </button>
       </div>
-      <pre className="overflow-x-auto bg-black/30 p-4 font-mono text-[12.5px] leading-5 text-soft">
+      <pre className="overflow-x-auto bg-ink/[0.03] p-4 font-mono text-[12.5px] leading-5 text-soft">
         <code>{c.text}</code>
       </pre>
-      <p className="border-t border-white/[0.06] px-4 py-2.5 text-[12px] text-faint">
+      <p className="border-t border-ink/[0.06] px-4 py-2.5 text-[12px] text-faint">
         Stroke's MCP panel shows these with your token filled in, and has one-click install for
         Cursor and VS Code.
       </p>

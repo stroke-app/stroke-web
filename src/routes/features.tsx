@@ -150,7 +150,7 @@ const MCP_CONFIG: { code: string; value?: string }[] = [
 function McpConfigMock() {
   return (
     <div className="mono-shot font-mono text-[11px] leading-[1.8] sm:text-[12px] md:text-[14px]">
-      <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3 text-[11px] text-muted-foreground md:px-5 md:text-[12px]">
+      <div className="flex items-center gap-2 border-b border-ink/[0.06] px-4 py-3 text-[11px] text-muted-foreground md:px-5 md:text-[12px]">
         <FileJsonIcon className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
         claude_desktop_config.json
       </div>
@@ -650,7 +650,7 @@ function Visual({ feature, scale = 0.45 }: { feature: Feature; scale?: number })
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="ml-2 rounded-full bg-white/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
+    <span className="ml-2 rounded-full bg-ink/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
       {children}
     </span>
   );
@@ -815,7 +815,7 @@ function Overlap({ s }: { s: Extract<Showcase, { kind: "overlap" }> }) {
         </Panel>
         <Panel
           className={cn(
-            "relative -mt-[18%] ml-auto w-[72%] shadow-[0_1px_0_0_rgb(255_255_255/0.06)_inset,0_32px_80px_-8px_rgb(0_0_0/0.85)] max-md:max-h-[300px] md:absolute md:mt-0 md:ml-0",
+            "relative -mt-[18%] ml-auto w-[72%] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_6%,transparent)_inset,0_32px_80px_-8px_rgb(0_0_0/0.85)] max-md:max-h-[300px] md:absolute md:mt-0 md:ml-0",
             // A coded mockup is text; give it the room to stay legible on a phone.
             !s.front.shot && "max-md:w-[94%]",
             s.frontClass,
