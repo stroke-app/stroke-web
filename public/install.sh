@@ -3,8 +3,11 @@
 #   Nightly:   curl -fsSL https://stroke.click/install.sh | sh -s -- --nightly
 #
 # macOS: Homebrew if present, otherwise the .dmg. Linux: the AUR on Arch
-# (yay or paru), the .deb on Debian and Ubuntu, the .rpm on Fedora and
-# openSUSE, and the AppImage everywhere else, into ~/.local.
+# (yay or paru: stroke-bin, or stroke-nightly-bin), the .deb on Debian and
+# Ubuntu, the .rpm on Fedora and openSUSE, and the AppImage everywhere else,
+# into ~/.local. Windows (Git Bash, MSYS2, Cygwin): Scoop if present,
+# otherwise the installer. In PowerShell use:
+#   irm https://stroke.click/install.ps1 | iex
 set -eu
 
 REPO="stroke-app/stroke"
@@ -12,7 +15,7 @@ CHANNEL="stable"
 for arg in "$@"; do
   case "$arg" in
     --nightly) CHANNEL="nightly" ;;
-    -h|--help) sed -n '2,8p' "$0" 2>/dev/null || true; exit 0 ;;
+    -h|--help) sed -n '2,12p' "$0" 2>/dev/null || true; exit 0 ;;
   esac
 done
 
@@ -33,6 +36,7 @@ if [ "$CHANNEL" = "nightly" ]; then
   BASE="https://github.com/$REPO/releases/download/nightly"
   DEB="stroke-nightly_amd64.deb"; RPM=""; APPIMAGE="stroke-nightly_amd64.AppImage"
   DMG_ARM="stroke-nightly_aarch64.dmg"; DMG_X64="stroke-nightly_x64.dmg"
+  EXE="stroke-nightly_x64-setup.exe"
 else
   TAG="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
   [ -n "$TAG" ] || fail "couldn't find the latest release; check your connection"
@@ -40,6 +44,7 @@ else
   BASE="https://github.com/$REPO/releases/download/$TAG"
   DEB="stroke_${V}_amd64.deb"; RPM="stroke-${V}-1.x86_64.rpm"; APPIMAGE="stroke_${V}_amd64.AppImage"
   DMG_ARM="stroke_${V}_aarch64.dmg"; DMG_X64="stroke_${V}_x64.dmg"
+  EXE="stroke_${V}_x64-setup.exe"
 fi
 
 OS="$(uname -s)"; ARCH="$(uname -m)"
@@ -64,6 +69,26 @@ if [ "$OS" = "Darwin" ]; then
   say "Installed /Applications/$(basename "$APP")"
   exit 0
 fi
+
+# ── Windows (Git Bash, MSYS2, Cygwin) ───────────────────────────────────────
+case "$OS" in
+  MINGW*|MSYS*|CYGWIN*)
+    if [ "$CHANNEL" = "stable" ] && need scoop; then
+      say "Installing Stroke with Scoop"
+      scoop bucket list 2>/dev/null | grep -q '^ *stroke\b' || scoop bucket add stroke "https://github.com/$REPO"
+      scoop install stroke/stroke
+      say "Installed. Update it with: scoop update stroke"
+      exit 0
+    fi
+    say "Downloading Stroke ($TAG)"
+    fetch "$TMP/$EXE" "$BASE/$EXE"
+    say "Installing"
+    # Per-user installer; /S skips the wizard. Run from the shell, it waits.
+    chmod +x "$TMP/$EXE" 2>/dev/null || true
+    "$TMP/$EXE" /S
+    say "Installed. Open Stroke from the Start menu."
+    exit 0 ;;
+esac
 
 [ "$OS" = "Linux" ] || fail "unsupported system: $OS (download from https://stroke.click/download)"
 [ "$ARCH" = "x86_64" ] || fail "Linux builds are x86_64 only for now (this is $ARCH)"
@@ -96,11 +121,20 @@ DESKTOP
 
 case "$FAMILY" in
   *arch*|*manjaro*|*endeavouros*)
-    if [ "$CHANNEL" = "stable" ] && { need yay || need paru; }; then
+    if need yay || need paru; then
       AUR="yay"; need yay || AUR="paru"
-      if curl -fsS -o /dev/null "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=stroke-bin"; then
-        say "Installing stroke-bin from the AUR with $AUR"
-        "$AUR" -S --needed stroke-bin
+      PKG="stroke-bin"; [ "$CHANNEL" = "nightly" ] && PKG="stroke-nightly-bin"
+      if curl -fsS -o /dev/null "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$PKG"; then
+        say "Installing $PKG from the AUR with $AUR"
+        # Under `curl | sh` stdin is this script, so prompts go to the
+        # terminal; with no terminal at all, install without them.
+        if (exec </dev/tty) 2>/dev/null; then
+          "$AUR" -S --needed "$PKG" </dev/tty
+        elif [ "$AUR" = "yay" ]; then
+          yay -S --needed --noconfirm --answerdiff None --answerclean None "$PKG"
+        else
+          paru -S --needed --noconfirm --skipreview "$PKG"
+        fi
         exit 0
       fi
     fi
