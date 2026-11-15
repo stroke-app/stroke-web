@@ -4,6 +4,7 @@
 interface __BaseEnv_Env {
 	DB: D1Database;
 	AI: Ai;
+	SHARES: R2Bucket;
 	BETTER_AUTH_SECRET: string;
 	VITE_BASE_URL: string;
 	GITHUB_CLIENT_ID: string;
