@@ -106,9 +106,9 @@ function ReleasePill() {
   return (
     <Link
       to="/changelog"
-      className="group inline-flex h-7 items-center gap-2 rounded-full border border-border bg-white/[0.03] pr-3 pl-1 text-[13px] text-muted-foreground transition-colors hover:border-white/15 hover:text-foreground"
+      className="group inline-flex h-7 items-center gap-2 rounded-full border border-border bg-ink/[0.03] pr-3 pl-1 text-[13px] text-muted-foreground transition-colors hover:border-ink/15 hover:text-foreground"
     >
-      <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[11px] font-[510] text-foreground">
+      <span className="rounded-full bg-ink/[0.08] px-2 py-0.5 text-[11px] font-[510] text-foreground">
         New
       </span>
       {release ? `${release.tag_name} is out` : "See what's new"}
@@ -171,7 +171,7 @@ function Hero() {
         {/* The product itself, not a mockup: a real screenshot in a window
             frame, the largest thing on the page. */}
         <div className="animate-fade-up mt-14 w-full md:mt-20" style={{ animationDelay: "260ms" }}>
-          <div className="overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_32px_80px_-20px_rgb(0_0_0/0.8)]">
+          <div className="keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_10%,transparent),0_32px_80px_-20px_rgb(0_0_0/0.8)]">
             <img
               src="/features/view-table.webp"
               width={1472}
@@ -250,7 +250,7 @@ function LogoGrid({
         <li className="h-20 border-r border-b border-border md:h-24">
           <Link
             to={tail.to}
-            className="group flex h-full items-center justify-center gap-1.5 px-3 text-[14px] text-muted-foreground transition-colors duration-150 hover:bg-white/[0.02] hover:text-foreground"
+            className="group flex h-full items-center justify-center gap-1.5 px-3 text-[14px] text-muted-foreground transition-colors duration-150 hover:bg-ink/[0.02] hover:text-foreground"
           >
             {tail.label}
             <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -383,7 +383,7 @@ function EngineCell({
         <span className="sr-only">{name}</span>
       </span>
       {tag && (
-        <span className="relative rounded-full bg-white/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
+        <span className="relative rounded-full bg-ink/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
           {tag}
         </span>
       )}
@@ -580,7 +580,7 @@ function Reviews() {
               “{r.body}”
             </blockquote>
             <figcaption className="flex items-center gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[11px] font-semibold text-muted-foreground uppercase ring-1 ring-border">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-ink/[0.06] text-[11px] font-semibold text-muted-foreground uppercase ring-1 ring-border">
                 {initialsFrom(r.authorName)}
               </span>
               <span className="min-w-0">
@@ -626,13 +626,13 @@ function Plan({
     <div
       className={cn(
         "relative flex h-full flex-col rounded-[calc(1rem-1px)] p-7 sm:p-8",
-        featured ? "bg-[#141516]" : "bg-card",
+        featured ? "bg-raised" : "bg-card",
       )}
     >
       <div className="flex h-6 items-center justify-between gap-3">
         <h3 className="text-[15px] font-medium">{name}</h3>
         {tag && (
-          <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[11px] font-[510] text-soft">
+          <span className="rounded-full bg-ink/[0.08] px-2 py-0.5 text-[11px] font-[510] text-soft">
             {tag}
           </span>
         )}
@@ -670,7 +670,7 @@ function Plan({
       className={cn(
         "rounded-2xl border",
         featured
-          ? "border-white/[0.16] shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]"
+          ? "border-ink/[0.16] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--ink)_6%,transparent)]"
           : "border-border",
       )}
     >
@@ -773,7 +773,7 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
               Coming soon. To license your team now, email{" "}
               <a
                 href="mailto:support@stroke.click?subject=Stroke%20Team%20license"
-                className="text-soft underline decoration-white/25 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/60"
+                className="text-soft underline decoration-ink/25 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-ink/60"
               >
                 support@stroke.click
               </a>

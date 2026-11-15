@@ -109,7 +109,7 @@ function DownloadPage() {
             href={RELEASES_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-soft underline decoration-white/20 underline-offset-4 transition-colors hover:text-foreground hover:decoration-white/50"
+            className="text-soft underline decoration-ink/20 underline-offset-4 transition-colors hover:text-foreground hover:decoration-ink/50"
           >
             GitHub Releases
           </a>
@@ -198,7 +198,7 @@ function NightlyDownloads() {
     <section
       id="nightly"
       aria-labelledby="nightly-title"
-      className="mt-20 scroll-mt-24 rounded-2xl border border-border bg-white/[0.02] p-6 md:p-8"
+      className="mt-20 scroll-mt-24 rounded-2xl border border-border bg-ink/[0.02] p-6 md:p-8"
     >
       <p className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
         <span aria-hidden="true" className="size-1.5 rounded-full bg-amber-400" />
@@ -230,7 +230,7 @@ function NightlyDownloads() {
           <li key={a.file}>
             <a
               href={nightlyUrl(a.file)}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-[14px] transition-[background-color,scale] duration-150 hover:bg-white/[0.04] active:scale-[0.99]"
+              className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-[14px] transition-[background-color,scale] duration-150 hover:bg-ink/[0.04] active:scale-[0.99]"
             >
               <span>
                 <span className="font-medium text-foreground">{a.os}</span>

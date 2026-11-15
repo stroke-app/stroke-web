@@ -102,7 +102,7 @@ function EnginePage() {
                 key={c}
                 className="flex gap-3 text-[15px] leading-relaxed text-pretty text-foreground/90"
               >
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-xs text-muted-foreground tabular-nums">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-ink/[0.06] text-xs text-muted-foreground tabular-nums">
                   {i + 1}
                 </span>
                 {c}
@@ -122,7 +122,7 @@ function EnginePage() {
                   <Link
                     to="/databases/$engine"
                     params={{ engine: o.slug }}
-                    className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+                    className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-ink/[0.04] hover:text-foreground"
                   >
                     <o.Icon className="size-4" color={o.color} aria-hidden="true" />
                     {o.name}

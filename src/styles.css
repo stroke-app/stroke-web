@@ -23,6 +23,10 @@
 }
 
 @theme inline {
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-faint: var(--faint);
+  --color-raised: var(--raised);
   --font-heading: var(--font-sans);
   --font-sans: "Geist Variable", system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -200,10 +204,83 @@
   letter-spacing: -0.022em;
   line-height: 1.06;
 }
+/* `ink` is the colour every hairline and tint is mixed from: white on the
+   dark site, near-black on the light one, so `bg-ink/[0.04]` reads the same
+   way in both. */
+.site {
+  --ink: #ffffff;
+  /* Outer edge of the translucent secondary button. */
+  --edge: rgb(0 0 0 / 0.6);
+}
 html:has(.site),
 body:has(.site) {
   background-color: #08090a;
   color-scheme: dark;
+}
+
+/* Light. The site follows the theme switch in the header (system, light or
+   dark); html carries `light` or `dark`. Product mockups and screenshots
+   (`.keep-dark`) stay dark: they show the app as it ships. */
+html.light .site {
+  --ink: #08090a;
+  --background: #fbfbfa;
+  --foreground: #121314;
+  --soft: #3b3f45;
+  --muted-foreground: #62666d;
+  --faint: #8a8f98;
+  --card: #ffffff;
+  --card-foreground: #121314;
+  --raised: #f3f3f2;
+  --popover: #ffffff;
+  --popover-foreground: #121314;
+  --primary: #121314;
+  --primary-foreground: #fbfbfa;
+  --secondary: #efefee;
+  --secondary-foreground: #121314;
+  --muted: #f3f3f2;
+  --accent: #ececeb;
+  --accent-foreground: #121314;
+  --border: rgb(8 9 10 / 0.09);
+  --input: rgb(8 9 10 / 0.12);
+  --ring: rgb(8 9 10 / 0.35);
+  --edge: rgb(8 9 10 / 0.12);
+  color-scheme: light;
+}
+html.light:has(.site),
+html.light body:has(.site) {
+  background-color: #fbfbfa;
+  color-scheme: light;
+}
+html.light .site .keep-dark,
+html.light .site.keep-dark {
+  --ink: #ffffff;
+  --edge: rgb(0 0 0 / 0.6);
+  --background: #08090a;
+  --foreground: #f7f8f8;
+  --soft: #d0d6e0;
+  --muted-foreground: #8a8f98;
+  --faint: #62666d;
+  --card: #0f1011;
+  --card-foreground: #f7f8f8;
+  --raised: #141516;
+  --popover: #141516;
+  --popover-foreground: #f7f8f8;
+  --primary: #f7f8f8;
+  --primary-foreground: #08090a;
+  --secondary: #1c1d1f;
+  --secondary-foreground: #f7f8f8;
+  --muted: #141516;
+  --accent: #1c1d1f;
+  --accent-foreground: #f7f8f8;
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.1);
+  --ring: rgb(255 255 255 / 0.35);
+  color-scheme: dark;
+  color: var(--foreground);
+}
+/* Screenshots are dimmed to sit in the dark page; on the light one, not. */
+html.light .site img:not(.keep-dark img) {
+  filter: grayscale(1) contrast(1.05);
 }
 
 /* Sections rise into place as they scroll into view: each direct child of a

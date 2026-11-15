@@ -64,7 +64,7 @@ const SHIPPED: RoadmapItem[] = [
         {SHIPPED_ENGINES.map((e) => (
           <li
             key={e.slug}
-            className="flex h-6 items-center gap-1.5 rounded-md bg-white/[0.04] px-2 text-[12px] text-muted-foreground"
+            className="flex h-6 items-center gap-1.5 rounded-md bg-ink/[0.04] px-2 text-[12px] text-muted-foreground"
           >
             <e.Icon className="size-3" color={e.color} />
             {e.name}
@@ -81,7 +81,7 @@ const SHIPPED: RoadmapItem[] = [
         {PROVIDERS.map((p) => (
           <li
             key={p.name}
-            className="flex h-6 items-center gap-1.5 rounded-md bg-white/[0.04] px-2 text-[12px] text-muted-foreground"
+            className="flex h-6 items-center gap-1.5 rounded-md bg-ink/[0.04] px-2 text-[12px] text-muted-foreground"
           >
             {p.Icon && <p.Icon className="size-3" />}
             {p.name}
@@ -285,7 +285,7 @@ function RoadmapPage() {
               href={`${REPO_URL}/issues`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground underline decoration-white/30 underline-offset-[3px] transition-colors hover:decoration-white/70"
+              className="text-foreground underline decoration-ink/30 underline-offset-[3px] transition-colors hover:decoration-ink/70"
             >
               open an issue
             </a>
@@ -314,7 +314,7 @@ function RoadmapPage() {
             <a
               key={group.label}
               href={`#${slug(group.label)}`}
-              className="group flex items-center gap-3 border-border px-5 py-4 transition-colors not-first:border-t hover:bg-white/[0.025] sm:not-first:border-t-0 sm:not-first:border-l"
+              className="group flex items-center gap-3 border-border px-5 py-4 transition-colors not-first:border-t hover:bg-ink/[0.025] sm:not-first:border-t-0 sm:not-first:border-l"
             >
               <StatusGlyph state={group.state} />
               <span className="min-w-0 flex-1">

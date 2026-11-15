@@ -39,7 +39,7 @@ function formatEntryDate(date: string | null): string | null {
 }
 
 const QUIET_LINK =
-  "underline decoration-white/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/50";
+  "underline decoration-ink/20 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-ink/50";
 
 function ChangelogPage() {
   const { channel = "stable" } = Route.useSearch();
@@ -107,7 +107,7 @@ function ChannelSwitch({ channel }: { channel: ReleaseChannel }) {
     <div
       role="tablist"
       aria-label="Release channel"
-      className="mt-8 inline-flex rounded-lg border border-border bg-white/[0.02] p-1"
+      className="mt-8 inline-flex rounded-lg border border-border bg-ink/[0.02] p-1"
     >
       {(["stable", "nightly"] as const).map((c) => (
         <Link
@@ -119,7 +119,7 @@ function ChannelSwitch({ channel }: { channel: ReleaseChannel }) {
           className={cn(
             "rounded-md px-3.5 py-1.5 text-[13px] font-medium capitalize transition-colors",
             channel === c
-              ? "bg-white/[0.08] text-foreground"
+              ? "bg-ink/[0.08] text-foreground"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
@@ -133,7 +133,7 @@ function ChannelSwitch({ channel }: { channel: ReleaseChannel }) {
 function NightlyBanner() {
   const { data: n } = useQuery(nightlyReleaseQueryOptions());
   return (
-    <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-border bg-white/[0.02] px-5 py-4">
+    <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-border bg-ink/[0.02] px-5 py-4">
       <span className="flex items-center gap-2 text-[13px] font-medium text-foreground">
         <span aria-hidden="true" className="size-1.5 rounded-full bg-amber-400" />
         Stroke Nightly
@@ -164,7 +164,7 @@ const KIND = [
   { re: /fix|bug/i, label: "Fixed", dot: "bg-[#4cb782]" },
 ];
 const kindOf = (title: string) =>
-  KIND.find((k) => k.re.test(title)) ?? { label: title, dot: "bg-white/40" };
+  KIND.find((k) => k.re.test(title)) ?? { label: title, dot: "bg-ink/40" };
 
 function MinorSection({
   release,
@@ -274,7 +274,7 @@ const ENTRY_GRID =
   "grid grid-cols-1 gap-x-16 gap-y-6 lg:grid-cols-[12rem_minmax(0,1fr)] xl:gap-x-24";
 
 function ChangelogSkeleton() {
-  const bar = "animate-pulse rounded bg-white/[0.05] motion-reduce:animate-none";
+  const bar = "animate-pulse rounded bg-ink/[0.05] motion-reduce:animate-none";
   return (
     <div className={cn(ENTRY_GRID, "py-14 md:py-20")} aria-hidden="true">
       <div className={cn(bar, "h-4 w-24")} />

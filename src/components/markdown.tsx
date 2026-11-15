@@ -36,10 +36,10 @@ const INLINE_RE =
 const BLOCK_IMAGE_RE = /^!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^\s)]+)\)\s*$/;
 
 const LINK =
-  "text-foreground underline decoration-white/25 underline-offset-[3px] transition-colors hover:decoration-white/70";
+  "text-foreground underline decoration-ink/25 underline-offset-[3px] transition-colors hover:decoration-ink/70";
 
 const REF_LINK =
-  "font-mono text-[0.84em] text-muted-foreground underline decoration-white/15 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-white/50";
+  "font-mono text-[0.84em] text-muted-foreground underline decoration-ink/15 underline-offset-[3px] transition-colors hover:text-foreground hover:decoration-ink/50";
 
 function renderInline(text: string, repoUrl?: string): ReactNode[] {
   const nodes: ReactNode[] = [];
@@ -52,7 +52,7 @@ function renderInline(text: string, repoUrl?: string): ReactNode[] {
       nodes.push(
         <code
           key={key++}
-          className="rounded-[5px] border border-white/[0.07] bg-white/[0.045] px-[0.35em] py-px font-mono text-[0.84em] text-foreground"
+          className="rounded-[5px] border border-ink/[0.07] bg-ink/[0.045] px-[0.35em] py-px font-mono text-[0.84em] text-foreground"
         >
           {m[1].slice(1, -1)}
         </code>,
@@ -164,7 +164,7 @@ function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
         <pre
           key={key++}
           className={cn(
-            "overflow-x-auto rounded-lg border border-border bg-[#0b0c0d] px-4 py-3.5 font-mono text-[13px] leading-[1.7] text-soft shadow-[0_1px_0_0_rgb(255_255_255/0.04)_inset]",
+            "overflow-x-auto rounded-lg border border-border bg-raised px-4 py-3.5 font-mono text-[13px] leading-[1.7] text-soft shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_4%,transparent)_inset]",
             gap,
           )}
         >
@@ -311,7 +311,7 @@ function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
                 </span>
               ) : (
                 <span
-                  className="absolute top-[0.72em] left-1 size-[5px] rounded-full bg-white/25"
+                  className="absolute top-[0.72em] left-1 size-[5px] rounded-full bg-ink/25"
                   aria-hidden="true"
                 />
               )}
@@ -333,7 +333,7 @@ function parseBlocks(text: string, repoUrl?: string): ReactNode[] {
       push("text", (gap) => (
         <blockquote
           key={key++}
-          className={cn("border-l-2 border-white/10 pl-4 text-muted-foreground", gap)}
+          className={cn("border-l-2 border-ink/10 pl-4 text-muted-foreground", gap)}
         >
           {renderInline(quoted.join(" "), repoUrl)}
         </blockquote>

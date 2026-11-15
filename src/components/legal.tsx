@@ -118,14 +118,14 @@ export function LegalPage({ title, updated, intro, highlights, children }: Legal
           {/* Privacy and Terms are a pair; switch between them in place. */}
           <nav
             aria-label="Legal documents"
-            className="inline-flex rounded-lg border border-border bg-white/[0.02] p-1"
+            className="inline-flex rounded-lg border border-border bg-ink/[0.02] p-1"
           >
             {LEGAL_DOCS.map((doc) => (
               <Link
                 key={doc.to}
                 to={doc.to}
                 className="rounded-md px-3 py-1.5 text-[13px] transition-colors"
-                activeProps={{ className: "bg-white/[0.08] text-foreground" }}
+                activeProps={{ className: "bg-ink/[0.08] text-foreground" }}
                 inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               >
                 {doc.label}
@@ -263,11 +263,11 @@ export function LegalSection({
       <p className="font-mono text-[12px] text-faint tabular-nums">{number}</p>
       <h2 className="mt-2 text-[1.5rem] leading-tight">{title}</h2>
       {summary && (
-        <p className="mt-4 border-l-2 border-white/20 pl-4 text-[15px] leading-relaxed text-pretty text-foreground">
+        <p className="mt-4 border-l-2 border-ink/20 pl-4 text-[15px] leading-relaxed text-pretty text-foreground">
           <span className="font-[510]">In short:</span> {summary}
         </p>
       )}
-      <div className="mt-5 space-y-4 text-[15.5px] leading-[1.75] text-pretty text-soft [&_a]:text-foreground [&_a]:underline [&_a]:decoration-white/25 [&_a]:underline-offset-[3px] [&_a]:transition-colors [&_a:hover]:decoration-white/70 [&_strong]:font-medium [&_strong]:text-foreground">
+      <div className="mt-5 space-y-4 text-[15.5px] leading-[1.75] text-pretty text-soft [&_a]:text-foreground [&_a]:underline [&_a]:decoration-ink/25 [&_a]:underline-offset-[3px] [&_a]:transition-colors [&_a:hover]:decoration-ink/70 [&_strong]:font-medium [&_strong]:text-foreground">
         {children}
       </div>
     </section>
@@ -280,7 +280,7 @@ export function LegalList({ items }: { items: React.ReactNode[] }) {
       {items.map((item, i) => (
         <li key={i} className="relative pl-5">
           <span
-            className="absolute top-[0.78em] left-1 size-[5px] rounded-full bg-white/25"
+            className="absolute top-[0.78em] left-1 size-[5px] rounded-full bg-ink/25"
             aria-hidden="true"
           />
           {item}

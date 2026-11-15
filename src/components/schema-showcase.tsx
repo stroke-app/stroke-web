@@ -1325,7 +1325,7 @@ export function SchemaShowcase({
               <DropdownMenuContent
                 align="end"
                 sideOffset={6}
-                className="site dark w-44 rounded-xl border border-white/[0.08] bg-[#141516]! p-1 shadow-[0_16px_40px_-8px_rgb(0_0_0/0.7)] ring-0"
+                className="site dark keep-dark w-44 rounded-xl border border-white/[0.08] bg-[#141516]! p-1 shadow-[0_16px_40px_-8px_rgb(0_0_0/0.7)] ring-0"
               >
                 <DropdownMenuRadioGroup
                   value={view}

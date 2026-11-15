@@ -122,7 +122,7 @@ export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
             href={`${REPO_URL}/issues`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground underline decoration-white/30 underline-offset-[3px] transition-colors hover:decoration-white/70"
+            className="text-foreground underline decoration-ink/30 underline-offset-[3px] transition-colors hover:decoration-ink/70"
           >
             report it on GitHub
           </a>

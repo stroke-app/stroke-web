@@ -76,7 +76,7 @@ function ComparePage() {
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full min-w-[56rem] border-collapse text-left text-[13px]">
             <thead>
-              <tr className="border-b border-border bg-white/[0.02]">
+              <tr className="border-b border-border bg-ink/[0.02]">
                 <th scope="col" className="w-32 px-4 py-3 font-medium text-muted-foreground"></th>
                 <th scope="col" className="px-4 py-3 font-semibold text-foreground">
                   Stroke
@@ -100,9 +100,7 @@ function ComparePage() {
                   <th scope="row" className="px-4 py-3 font-medium text-muted-foreground">
                     {r.label}
                   </th>
-                  <td className="bg-white/[0.03] px-4 py-3 text-foreground">
-                    {STROKE_FACTS[r.key]}
-                  </td>
+                  <td className="bg-ink/[0.03] px-4 py-3 text-foreground">{STROKE_FACTS[r.key]}</td>
                   {COMPETITORS.map((c) => (
                     <td key={c.slug} className="px-4 py-3 text-muted-foreground">
                       {c[r.key]}

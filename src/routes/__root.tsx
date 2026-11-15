@@ -37,8 +37,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        // The marketing site is dark only; the signed-in app can override per route.
-        { name: "theme-color", content: "#08090a" },
+        // Browser chrome matches the site in either theme.
+        { name: "theme-color", content: "#08090a", media: "(prefers-color-scheme: dark)" },
+        { name: "theme-color", content: "#fbfbfa", media: "(prefers-color-scheme: light)" },
         ...base.meta,
       ],
       links: [

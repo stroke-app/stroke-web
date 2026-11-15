@@ -71,7 +71,7 @@ export function ProductTour({ className }: { className?: string }) {
       <div
         role="tablist"
         aria-label="Stroke views"
-        className="mx-auto flex w-fit max-w-full [scrollbar-width:none] gap-0.5 overflow-x-auto rounded-full bg-white/[0.04] p-1"
+        className="mx-auto flex w-fit max-w-full [scrollbar-width:none] gap-0.5 overflow-x-auto rounded-full bg-ink/[0.04] p-1"
         onKeyDown={(e) => {
           if (e.key === "ArrowRight") {
             e.preventDefault();
@@ -104,7 +104,7 @@ export function ProductTour({ className }: { className?: string }) {
             className={cn(
               "h-8 shrink-0 rounded-full px-3.5 text-[13px] font-[510] transition-[background-color,color,scale] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97]",
               i === active
-                ? "bg-white/[0.1] text-foreground"
+                ? "bg-ink/[0.1] text-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -116,7 +116,7 @@ export function ProductTour({ className }: { className?: string }) {
       {/* One frame for every view: the window's own size, so nothing below
           moves when the tab changes. Inactive shots stay mounted (loaded once,
           crossfaded) rather than swapping the src. */}
-      <div className="relative mt-8 overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_24px_64px_-16px_rgb(0_0_0/0.7)] md:mt-10">
+      <div className="keep-dark dark relative mt-8 overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_8%,transparent),0_24px_64px_-16px_rgb(0_0_0/0.7)] md:mt-10">
         <div className="relative aspect-[1472/1000] w-full">
           {SHOTS.map((s, i) => (
             <div

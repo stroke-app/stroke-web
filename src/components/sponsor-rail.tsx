@@ -19,7 +19,7 @@ export function SponsorRail() {
           href={s.url}
           target="_blank"
           rel="noopener sponsored"
-          className="flex h-16 items-center justify-center rounded-lg border border-border bg-white/[0.02] px-4 transition-colors hover:bg-white/[0.05]"
+          className="flex h-16 items-center justify-center rounded-lg border border-border bg-ink/[0.02] px-4 transition-colors hover:bg-ink/[0.05]"
           title={s.name}
         >
           {s.logo ? (
@@ -31,7 +31,7 @@ export function SponsorRail() {
       ))}
       <Link
         to="/sponsors"
-        className="group flex flex-col gap-1.5 rounded-lg border border-dashed border-border p-4 transition-colors hover:border-foreground/25 hover:bg-white/[0.02]"
+        className="group flex flex-col gap-1.5 rounded-lg border border-dashed border-border p-4 transition-colors hover:border-foreground/25 hover:bg-ink/[0.02]"
       >
         <span className="flex items-center gap-2 text-[13px] font-medium text-foreground">
           <HeartIcon className="size-3.5 text-pink-400" aria-hidden="true" />

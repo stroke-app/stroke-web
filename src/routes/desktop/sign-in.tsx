@@ -107,7 +107,7 @@ function selfUrl(params: DesktopSignInParams) {
 
 function DeviceChip({ name }: { name: string }) {
   return (
-    <span className="mt-6 inline-flex max-w-full items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1.5 text-[13px] text-soft shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+    <span className="mt-6 inline-flex max-w-full items-center gap-2 rounded-full bg-ink/[0.05] px-3 py-1.5 text-[13px] text-soft shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_6%,transparent)]">
       <MonitorIcon className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
       <span className="truncate">{name}</span>
     </span>
@@ -298,7 +298,7 @@ function Confirm({
         from Stroke.
       </p>
 
-      <div className="mt-7 flex w-full items-center gap-3 rounded-xl bg-white/[0.03] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+      <div className="mt-7 flex w-full items-center gap-3 rounded-xl bg-ink/[0.03] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_6%,transparent)]">
         {user.image ? (
           <img src={user.image} alt="" className="size-8 shrink-0 rounded-full" />
         ) : (
@@ -381,7 +381,7 @@ function PasteCode({ issued }: { issued: IssuedCode }) {
 
   return (
     <div className="mt-7 w-full text-left">
-      <div className="flex items-start gap-1 rounded-xl bg-white/[0.03] p-1 pl-3.5 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+      <div className="flex items-start gap-1 rounded-xl bg-ink/[0.03] p-1 pl-3.5 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_6%,transparent)]">
         <code
           className={cn(
             "min-w-0 flex-1 py-2 font-mono text-[12.5px] break-all select-all",
