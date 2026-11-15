@@ -13,12 +13,18 @@ export interface BridgeInfo {
   host: string;
   version: string;
   name: string;
+  /** strokedb's version; absent before 0.2.0. */
+  bridge?: string;
+  /** What this bridge can do: "structure", "where", "edit", "rowCounts". */
+  features?: string[];
 }
 
 export interface TableRef {
   schema: string;
   name: string;
   kind: "table" | "view";
+  /** Estimated row count, when the bridge reports one. */
+  rows?: number | null;
 }
 
 export interface Column {
@@ -26,7 +32,31 @@ export interface Column {
   type: string;
   nullable: boolean;
   primaryKey: boolean;
+  default?: string | null;
 }
+
+export interface Index {
+  name: string;
+  columns: string[];
+  unique: boolean;
+  primary: boolean;
+}
+
+export interface ForeignKey {
+  name: string;
+  columns: string[];
+  refSchema: string;
+  refTable: string;
+  refColumns: string[];
+}
+
+export interface Structure {
+  columns: Column[];
+  indexes: Index[];
+  foreignKeys: ForeignKey[];
+}
+
+export type Values = Record<string, unknown>;
 
 export interface Result {
   columns: string[];
@@ -124,13 +154,21 @@ export function bridgeClient(s: Session) {
     info: () => call<BridgeInfo>("/info"),
     tables: () => call<TableRef[]>("/tables"),
     columns: (schema: string, table: string) => call<Column[]>("/columns", { schema, table }),
+    structure: (schema: string, table: string) => call<Structure>("/structure", { schema, table }),
     rows: (o: {
       schema: string;
       table: string;
       limit: number;
       offset: number;
       sort: Sort | null;
+      where?: string;
     }) => call<Result & { total: number | null; estimated: boolean }>("/rows", o),
+    update: (o: { schema: string; table: string; key: Values; set: Values }) =>
+      call<{ rowCount: number }>("/update", o),
+    insert: (o: { schema: string; table: string; values: Values }) =>
+      call<{ rowCount: number }>("/insert", o),
+    remove: (o: { schema: string; table: string; keys: Values[] }) =>
+      call<{ rowCount: number }>("/delete", o),
     query: (sql: string) => call<Result & { durationMs: number }>("/query", { sql }),
   };
 }

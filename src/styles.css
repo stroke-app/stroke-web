@@ -512,3 +512,22 @@ html:has(dialog.lightbox[open]) {
     background-color: --alpha(var(--color-copper) / 25%);
   }
 }
+
+/* Web studio (/studio): code colours for the SQL editor, per site theme. */
+.studio {
+  --cm-keyword: #c792ea;
+  --cm-string: #c3e88d;
+  --cm-number: #f78c6c;
+  --cm-comment: #6b7280;
+  --cm-name: #82aaff;
+  --cm-operator: #89ddff;
+  line-height: normal;
+}
+html.light .studio {
+  --cm-keyword: #8b3fd6;
+  --cm-string: #2f7d32;
+  --cm-number: #c2410c;
+  --cm-comment: #8a8f98;
+  --cm-name: #1d5fd1;
+  --cm-operator: #0e7490;
+}
