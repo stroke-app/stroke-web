@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SecurityRouteImport } from './routes/security'
@@ -89,6 +90,11 @@ const ThemesRoute = ThemesRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SponsorsRoute = SponsorsRouteImport.update({
@@ -449,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
   '/app': typeof AuthAppRouteRouteWithChildren
@@ -520,6 +527,7 @@ export interface FileRoutesByTo {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
   '/login': typeof GuestLoginRoute
@@ -593,6 +601,7 @@ export interface FileRoutesById {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
@@ -666,6 +675,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/studio'
     | '/terms'
     | '/themes'
     | '/app'
@@ -737,6 +747,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/studio'
     | '/terms'
     | '/themes'
     | '/login'
@@ -809,6 +820,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/studio'
     | '/terms'
     | '/themes'
     | '/_auth/app'
@@ -883,6 +895,7 @@ export interface RootRouteChildren {
   SecurityRoute: typeof SecurityRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
+  StudioRoute: typeof StudioRoute
   TermsRoute: typeof TermsRoute
   ThemesRoute: typeof ThemesRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
@@ -947,6 +960,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sponsors': {
@@ -1508,6 +1528,7 @@ const rootRouteChildren: RootRouteChildren = {
   SecurityRoute: SecurityRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
+  StudioRoute: StudioRoute,
   TermsRoute: TermsRoute,
   ThemesRoute: ThemesRoute,
   AdminReviewsRoute: AdminReviewsRoute,
