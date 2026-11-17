@@ -38,7 +38,11 @@ if [ "$CHANNEL" = "nightly" ]; then
   DMG_ARM="stroke-nightly_aarch64.dmg"; DMG_X64="stroke-nightly_x64.dmg"
   EXE="stroke-nightly_x64-setup.exe"
 else
-  TAG="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
+  # GitHub's releases/latest redirects to the tag's page; reading the redirect
+  # needs no API call, so it isn't caught by the API's 60-an-hour limit for
+  # anonymous requests (a 403 on shared or busy IPs). The API is the fallback.
+  TAG="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" 2>/dev/null | sed -n 's|.*/releases/tag/\([^/?#]*\).*|\1|p')"
+  [ -n "$TAG" ] || TAG="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" 2>/dev/null | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)"
   [ -n "$TAG" ] || fail "couldn't find the latest release; check your connection"
   V="${TAG#v}"
   BASE="https://github.com/$REPO/releases/download/$TAG"
