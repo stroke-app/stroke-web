@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { COMPETITORS, STROKE_FACTS } from "#/lib/competitors";
 import { SHIPPED_ENGINES } from "#/lib/engines";
@@ -12,7 +12,17 @@ import { cn } from "#/lib/utils";
  * Everything they say about other clients comes from lib/competitors.ts,
  * which holds only what each vendor publishes.
  */
+// The shared-studio post's figures (Safis), loaded only on that page.
+const ShareFigure = lazy(() => import("#/components/blog/shared-studio-figures"));
+
 export function BlogWidget({ name }: { name: string }) {
+  if (name.startsWith("share-")) {
+    return (
+      <Suspense fallback={<div className="my-8 aspect-[2/1] w-full rounded-lg bg-ink/[0.03]" />}>
+        <ShareFigure name={name} />
+      </Suspense>
+    );
+  }
   switch (name) {
     case "client-picker":
       return <ClientPicker />;
