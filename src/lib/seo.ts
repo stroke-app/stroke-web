@@ -61,7 +61,7 @@ export function softwareApplication({
   downloadUrl?: string | string[];
   /** Only from real release data; left out rather than guessed. */
   softwareVersion?: string;
-  /** Site paths of extra product screenshots, e.g. "/features/view-table.webp". */
+  /** Site paths of extra product screenshots, e.g. "/shots/table.webp". */
   screenshots?: string[];
 }) {
   // One app across the site; each OS page describes its own build.
@@ -82,7 +82,7 @@ export function softwareApplication({
     ...(softwareVersion ? { softwareVersion } : {}),
     releaseNotes: `${SITE_URL}/changelog`,
     image: `${SITE_URL}/icon.png`,
-    screenshot: [`${SITE_URL}/app-screenshot.png`, ...screenshots.map((s) => `${SITE_URL}${s}`)],
+    screenshot: [`${SITE_URL}/shots/ai-chat.webp`, ...screenshots.map((s) => `${SITE_URL}${s}`)],
     publisher: { "@id": `${SITE_URL}/#organization` },
     offers: {
       "@type": "Offer",

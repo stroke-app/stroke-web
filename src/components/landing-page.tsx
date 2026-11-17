@@ -13,30 +13,29 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
-  BotIcon,
   CheckIcon,
   CodeIcon,
-  DownloadIcon,
   GitPullRequestIcon,
-  KeyboardIcon,
-  LayoutDashboardIcon,
-  ListChecksIcon,
-  MousePointerClickIcon,
-  PencilLineIcon,
-  PlugIcon,
   PlusIcon,
-  ReplaceIcon,
   StarIcon,
-  TerminalIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { LaunchVideo } from "#/components/app-window";
 import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
 import { GiveawayCard } from "#/components/giveaway";
-import { AgentsMockup, NeonGlyph } from "#/components/landing-mockups";
+import { NeonGlyph } from "#/components/landing-mockups";
+import {
+  AdminShowcase,
+  AgentsShowcase,
+  BackupShowcase,
+  BrowseShowcase,
+  NoSqlShowcase,
+  QueryShowcase,
+  ShareShowcase,
+  ToolsShowcase,
+} from "#/components/landing-showcases";
 import { Section, SectionIntro, SITE, siteButton, WRAP } from "#/components/page";
-import { ProductTour } from "#/components/product-tour";
 import { REPO_URL, SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
@@ -50,9 +49,14 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <Tour />
-        <Features />
-        <Agents />
+        <BrowseShowcase />
+        <QueryShowcase />
+        <AgentsShowcase />
+        <NoSqlShowcase />
+        <AdminShowcase />
+        <BackupShowcase />
+        <ToolsShowcase />
+        <ShareShowcase />
         <Demo />
         <Reviews />
         <Pricing />
@@ -172,15 +176,7 @@ function Hero() {
             frame, the largest thing on the page. */}
         <div className="animate-fade-up mt-14 w-full md:mt-20" style={{ animationDelay: "260ms" }}>
           <div className="keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_10%,transparent),0_32px_80px_-20px_rgb(0_0_0/0.8)]">
-            <img
-              src="/features/view-table.webp"
-              width={1472}
-              height={1040}
-              alt="Stroke showing a table in the grid, the sidebar of tables and the status bar"
-              fetchPriority="high"
-              decoding="async"
-              className="block h-auto w-full"
-            />
+            <HeroDemo />
           </div>
         </div>
       </div>
@@ -391,139 +387,28 @@ function EngineCell({
   );
 }
 
-// ── Principles ───────────────────────────────────────────────────────────────
-
-// ── 1.0 Connect ──────────────────────────────────────────────────────────────
-
-const QUERY_FEATURES = [
-  {
-    icon: TerminalIcon,
-    title: "SQL console",
-    body: "Schema-aware autocomplete, formatting, and the execution time of every run.",
-  },
-  {
-    icon: DownloadIcon,
-    title: "Export",
-    body: "Any result to CSV or JSON in one click.",
-  },
-  {
-    icon: LayoutDashboardIcon,
-    title: "Charts & dashboards",
-    body: "Turn a result into a chart, then pin it to a dashboard you can revisit any time.",
-  },
-  {
-    icon: KeyboardIcon,
-    title: "Command palette",
-    body: "Hit Cmd/Ctrl+K to jump anywhere. Every core view has a shortcut.",
-  },
-];
-
-const EDITING_FEATURES = [
-  {
-    icon: ListChecksIcon,
-    title: "Every change waits for you",
-    body: "Edits, new rows, and deletes are staged and marked in the grid. Apply them together, or reset and they never happened.",
-  },
-  {
-    icon: MousePointerClickIcon,
-    title: "A right-click away",
-    body: "Filter by a value or exclude it, copy in another format, transform, duplicate, or preview the row as JSON, straight from the cell.",
-  },
-  {
-    icon: PencilLineIcon,
-    title: "Type-aware editors",
-    body: "For text, numbers, booleans, enums, dates, UUIDs, and JSON.",
-  },
-  {
-    icon: ReplaceIcon,
-    title: "Find and replace, previewed",
-    body: "Match case, whole word, or a regex, and see every cell that will change, old value beside new, before you replace.",
-  },
-];
-
-// ── Tour and features ────────────────────────────────────────────────────────
-
-function Tour() {
+/** The hero: the AI building a database, looping. Still poster with reduced motion. */
+function HeroDemo() {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    video.play().catch(() => {});
+  }, []);
   return (
-    <Section id="tour">
-      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <h2 className="text-[2rem] leading-[1.1] font-semibold tracking-[-0.03em] text-balance md:text-[2.75rem]">
-          Every view you need, one window.
-        </h2>
-        <p className="mt-4 max-w-[52ch] text-[17px] leading-[1.6] text-pretty text-muted-foreground">
-          A SQL console, an AI agent, charts, diagrams and a command palette, beside the grid you
-          just saw.
-        </p>
-      </div>
-      <ProductTour className="mt-12 md:mt-16" />
-    </Section>
-  );
-}
-
-const FEATURES = [...QUERY_FEATURES, ...EDITING_FEATURES];
-
-function Features() {
-  return (
-    <Section id="features">
-      <SectionIntro
-        title="Small things, done properly."
-        link={{ to: "/features", label: "Every feature" }}
-      >
-        <p>The details you notice after a week of using it every day.</p>
-      </SectionIntro>
-      <ul className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-4">
-        {FEATURES.map((f) => (
-          <li key={f.title} className="flex flex-col gap-2">
-            <f.icon className="size-4 text-muted-foreground" strokeWidth={1.5} aria-hidden="true" />
-            <h3 className="mt-2 text-[15px] font-[560] tracking-[-0.01em] text-foreground">
-              {f.title}
-            </h3>
-            <p className="text-[14px] leading-relaxed text-pretty text-muted-foreground">
-              {f.body}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
-
-const AGENT_FEATURES = [
-  {
-    icon: PlugIcon,
-    title: "Built-in MCP server",
-    body: "Expose your database to Claude, Cursor, and other MCP clients with one-click config.",
-  },
-  {
-    icon: BotIcon,
-    title: "AI chat",
-    body: "An assistant with direct database access that runs queries, explains schemas, and generates SQL.",
-  },
-  {
-    icon: CodeIcon,
-    title: "Same schema, both ways",
-    body: "Agents and the in-app chat read the same schema you browse, so answers line up with what you see.",
-  },
-];
-
-function Agents() {
-  return (
-    <Section id="agents">
-      <SectionIntro
-        index="6.0"
-        eyebrow="AI and agents"
-        title="Hand your database to an agent."
-        link={{ to: "/docs/mcp", label: "Set up MCP" }}
-      >
-        <p>
-          Stroke ships an MCP server, so{" "}
-          <strong>Claude, Cursor, or any agent can read your schema and run queries</strong> in one
-          click. The same schema-aware AI chat lives right inside the app for you.
-        </p>
-      </SectionIntro>
-      <AgentsMockup className="mt-16 md:mt-24" />
-      <FeatureRow items={AGENT_FEATURES} />
-    </Section>
+    <video
+      ref={ref}
+      src="/shots/ai-demo.mp4"
+      poster="/shots/ai-demo-poster.webp"
+      width={1600}
+      height={1004}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-label="Stroke's AI chat creating a movie database on Turso, then drawing its ER diagram"
+      className="block h-auto w-full"
+    />
   );
 }
 
