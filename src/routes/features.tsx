@@ -228,9 +228,9 @@ const GROUPS: Group[] = [
           desc: "Pick a column, match case, whole word, or a regex, and see every cell that will change before you replace it.",
           shot: shot(
             "find-replace",
-            960,
-            1000,
-            "Find and replace previewing 8 cells that will change, old value beside new",
+            1600,
+            408,
+            "Find and replace on the line1 column: 12 Market St becomes testing Market St, previewed before Replace 1",
           ),
         },
       },

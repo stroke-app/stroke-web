@@ -124,8 +124,8 @@ const PAGES: Record<OS, OsPage> = {
       },
       {
         src: "/shots/find-replace.webp",
-        width: 960,
-        height: 1000,
+        width: 1600,
+        height: 408,
         alt: "Stroke's find and replace, previewing every cell it will change",
       },
     ],
