@@ -20,11 +20,11 @@ export function AppWindow({ className }: { className?: string }) {
       <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
         <div className="overflow-hidden rounded-[calc(1rem-1px)]">
           <img
-            src="/app-screenshot.png"
-            width={2208}
-            height={1371}
+            src="/shots/ai-chat.webp"
+            width={1600}
+            height={1004}
             loading="eager"
-            alt="The Stroke app connected to a Postgres database, showing a table sidebar with row counts, bulk table actions, and quick access to SQL, dashboards, AI, schema, diagrams, and the MCP server"
+            alt="The Stroke app: the AI chat after building a movie database, with the ER diagram of its schema"
             className="block w-full"
           />
         </div>

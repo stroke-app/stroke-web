@@ -5,7 +5,7 @@ import { cn } from "#/lib/utils";
 
 /**
  * A real screenshot from the app inside a feature tile. Files live in
- * public/features/; pass the image's true pixel size so the tile reserves
+ * public/shots/; pass the image's true pixel size so the tile reserves
  * the right space before it loads. Clicking it opens the full-resolution
  * image in a modal dialog (Esc, the close button, or any click closes it).
  */

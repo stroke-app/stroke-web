@@ -172,15 +172,7 @@ function Hero() {
             frame, the largest thing on the page. */}
         <div className="animate-fade-up mt-14 w-full md:mt-20" style={{ animationDelay: "260ms" }}>
           <div className="keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_10%,transparent),0_32px_80px_-20px_rgb(0_0_0/0.8)]">
-            <img
-              src="/features/view-table.webp"
-              width={1472}
-              height={1040}
-              alt="Stroke showing a table in the grid, the sidebar of tables and the status bar"
-              fetchPriority="high"
-              decoding="async"
-              className="block h-auto w-full"
-            />
+            <HeroDemo />
           </div>
         </div>
       </div>
@@ -524,6 +516,31 @@ function Agents() {
       <AgentsMockup className="mt-16 md:mt-24" />
       <FeatureRow items={AGENT_FEATURES} />
     </Section>
+  );
+}
+
+/** The hero: the AI building a database, looping. Still poster with reduced motion. */
+function HeroDemo() {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    video.play().catch(() => {});
+  }, []);
+  return (
+    <video
+      ref={ref}
+      src="/shots/ai-demo.mp4"
+      poster="/shots/ai-demo-poster.webp"
+      width={1600}
+      height={1004}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-label="Stroke's AI chat creating a movie database on Turso, then drawing its ER diagram"
+      className="block h-auto w-full"
+    />
   );
 }
 

@@ -25,16 +25,16 @@ import { DOWNLOAD_TARGETS, findAsset, RELEASES_URL, usePlatform } from "#/lib/re
 import { ORGANIZATION, seo, softwareApplication } from "#/lib/seo";
 
 const MAIN_SHOT = {
-  src: "/features/view-table.webp",
-  width: 1472,
-  height: 1040,
-  alt: "Stroke's data grid browsing a million-row events table in PostgreSQL",
+  src: "/shots/table.webp",
+  width: 1600,
+  height: 1005,
+  alt: "Stroke's data grid showing a movies table on a Turso database",
 };
 const SIDE_SHOT = {
-  src: "/features/ai-chat.webp",
-  width: 1120,
-  height: 836,
-  alt: "Stroke's AI chat, ready to answer questions about the connected database",
+  src: "/shots/ai-chat.webp",
+  width: 1600,
+  height: 1004,
+  alt: "Stroke's AI chat after building a movie database, with the ER diagram of the new schema",
 };
 
 export const Route = createFileRoute("/download")({
