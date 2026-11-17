@@ -177,7 +177,15 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
     });
   }
 
-  if (error && !info) return <Unreachable error={error} onRetry={load} onLeave={onLeave} />;
+  if (error && !info)
+    return (
+      <Unreachable
+        error={error}
+        onRetry={load}
+        onLeave={onLeave}
+        shared={session.kind === "relay"}
+      />
+    );
   if (!info || !tables) {
     return (
       <div className="studio flex h-dvh items-center justify-center gap-2 bg-background text-[13px] text-muted-foreground">
@@ -240,6 +248,18 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
         <span className="hidden truncate text-[12px] text-muted-foreground sm:inline">
           {ENGINE_LABEL[info.engine] ?? info.engine} · {info.host}
         </span>
+        {info.shared && (
+          <span
+            className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11.5px] font-medium text-muted-foreground"
+            title={
+              info.readonly
+                ? "Opened from a share link. You can browse and run SELECT queries; changes are off."
+                : "Opened from a share link. Changes reach the shared database."
+            }
+          >
+            {info.readonly ? "Shared · read-only" : "Shared"}
+          </span>
+        )}
         <div className="ms-auto flex items-center gap-1">
           <Link
             to="/download"
@@ -462,6 +482,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
 }
 
 function Unreachable({
+  shared,
   error,
   onRetry,
   onLeave,
@@ -469,6 +490,7 @@ function Unreachable({
   error: BridgeError;
   onRetry: () => void;
   onLeave: () => void;
+  shared?: boolean;
 }) {
   const safari =
     typeof navigator !== "undefined" &&
@@ -479,14 +501,22 @@ function Unreachable({
       <div className="w-full max-w-md">
         <StrokeIcon className="size-8" />
         <h1 className="mt-5 text-[22px] font-semibold">
-          {error.unreachable ? "Can't reach your database" : "The bridge said no"}
+          {error.unreachable
+            ? shared
+              ? "This shared studio is offline"
+              : "Can't reach your database"
+            : shared
+              ? "The shared studio said no"
+              : "The bridge said no"}
         </h1>
         <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-          {error.unreachable
-            ? safari
-              ? "Safari blocks secure pages from talking to programs on your own computer. Open this link in Chrome, Edge or Firefox, or use the desktop app."
-              : "The studio talks to your database through npx strokedb running in your terminal. If you stopped it, start it again: it opens a fresh link."
-            : error.message}
+          {error.unreachable && shared
+            ? "Whoever shared it stopped sharing, or their computer is offline. It comes back on this same link when they share again."
+            : error.unreachable
+              ? safari
+                ? "Safari blocks secure pages from talking to programs on your own computer. Open this link in Chrome, Edge or Firefox, or use the desktop app."
+                : "The studio talks to your database through npx strokedb running in your terminal. If you stopped it, start it again: it opens a fresh link."
+              : error.message}
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           <button
