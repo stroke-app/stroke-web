@@ -1,0 +1,4 @@
+/* Each figure mounts on its own; one counter for the post numbers them 1-9. */
+article:has(figure.safis) {
+  counter-reset: figure;
+}
