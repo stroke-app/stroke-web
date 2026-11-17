@@ -5,6 +5,8 @@
  * fragment is cleared, so it isn't left in the address bar or in history.
  */
 
+import { importKey, openSealed, seal, type Sealed } from "#/lib/relay/relay-crypto";
+
 export type Engine = "postgres" | "mysql" | "sqlite";
 
 export interface BridgeInfo {
@@ -17,6 +19,10 @@ export interface BridgeInfo {
   bridge?: string;
   /** What this bridge can do: "structure", "where", "edit", "rowCounts". */
   features?: string[];
+  /** Opened through a share link (Labs relay), not on this machine. */
+  shared?: boolean;
+  /** Edits and writing SQL are off for this session (a shared link's default). */
+  readonly?: boolean;
 }
 
 export interface TableRef {
@@ -70,10 +76,14 @@ export interface Sort {
   dir: "asc" | "desc";
 }
 
-export interface Session {
-  bridge: string;
-  token: string;
-}
+/** This machine's bridge (`npx strokedb`), or a shared one through the relay. */
+export type LocalSession = { kind?: "local"; bridge: string; token: string };
+export type RelaySession = { kind: "relay"; relay: string; key: string };
+export type Session = LocalSession | RelaySession;
+
+/** Room ids, as the relay accepts them. */
+const ROOM_RE = /^[A-Za-z0-9_-]{22,64}$/;
+const KEY_RE = /^[A-Za-z0-9_-]{43}$/;
 
 const KEY = "stroke-studio-session";
 
@@ -98,8 +108,16 @@ export function takeSession(): Session | null {
   const hash = new URLSearchParams(window.location.hash.slice(1));
   const bridge = hash.get("bridge");
   const token = hash.get("token");
-  if (bridge && token && isLoopbackBridge(bridge)) {
-    const s = { bridge: new URL(bridge).origin, token };
+  const relay = hash.get("relay");
+  const key = hash.get("key");
+  const fromHash: Session | null =
+    relay && key && ROOM_RE.test(relay) && KEY_RE.test(key)
+      ? { kind: "relay", relay, key }
+      : bridge && token && isLoopbackBridge(bridge)
+        ? { kind: "local", bridge: new URL(bridge).origin, token }
+        : null;
+  if (fromHash) {
+    const s = fromHash;
     try {
       sessionStorage.setItem(KEY, JSON.stringify(s));
     } catch {
@@ -111,7 +129,9 @@ export function takeSession(): Session | null {
   try {
     const raw = sessionStorage.getItem(KEY);
     const s = raw ? (JSON.parse(raw) as Session) : null;
-    return s && isLoopbackBridge(s.bridge) && typeof s.token === "string" ? s : null;
+    if (!s) return null;
+    if (s.kind === "relay") return ROOM_RE.test(s.relay) && KEY_RE.test(s.key) ? s : null;
+    return isLoopbackBridge(s.bridge) && typeof s.token === "string" ? s : null;
   } catch {
     return null;
   }
@@ -134,8 +154,49 @@ export class BridgeError extends Error {
   }
 }
 
+/** Calls through the relay: sealed with the link's key, opened on the sharing machine. */
+function relayCaller(s: RelaySession) {
+  const keyP = importKey(s.key);
+  return async function call<T>(path: string, body: unknown = {}): Promise<T> {
+    const key = await keyP;
+    let res: Response;
+    try {
+      res = await fetch(`/api/relay/${s.relay}/call`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(await seal(key, { path, body })),
+      });
+    } catch {
+      throw new BridgeError("Can't reach stroke.click.", true);
+    }
+    const data = (await res.json().catch(() => ({}))) as Partial<Sealed> & {
+      error?: string;
+      offline?: boolean;
+    };
+    if (!res.ok || !data.iv || !data.ct) {
+      throw new BridgeError(
+        data.error || `Relay error ${res.status}`,
+        res.status === 503 || !!data.offline,
+      );
+    }
+    let reply: { status: number; data?: unknown; error?: string };
+    try {
+      reply = await openSealed(key, data as Sealed);
+    } catch {
+      throw new BridgeError("This link's key doesn't match the shared studio.");
+    }
+    if (reply.status !== 200) throw new BridgeError(reply.error || `Error ${reply.status}`);
+    return reply.data as T;
+  };
+}
+
 export function bridgeClient(s: Session) {
-  async function call<T>(path: string, body: unknown = {}): Promise<T> {
+  const call = s.kind === "relay" ? relayCaller(s) : localCaller(s);
+  return clientFor(call);
+}
+
+function localCaller(s: LocalSession) {
+  return async function call<T>(path: string, body: unknown = {}): Promise<T> {
     let res: Response;
     try {
       res = await fetch(s.bridge + path, {
@@ -149,7 +210,12 @@ export function bridgeClient(s: Session) {
     const data = (await res.json().catch(() => ({}))) as { error?: string };
     if (!res.ok) throw new BridgeError(data.error || `Bridge error ${res.status}`);
     return data as T;
-  }
+  };
+}
+
+type Call = <T>(path: string, body?: unknown) => Promise<T>;
+
+function clientFor(call: Call) {
   return {
     info: () => call<BridgeInfo>("/info"),
     tables: () => call<TableRef[]>("/tables"),

@@ -87,13 +87,15 @@ export function TableTab({
   const canStructure = features.includes("structure");
   const pk = useMemo(() => meta.filter((c) => c.primaryKey).map((c) => c.name), [meta]);
   const canEdit = features.includes("edit") && table.kind === "table" && pk.length > 0;
-  const editHint = !features.includes("edit")
-    ? "Update with npx strokedb@latest to edit rows here."
-    : table.kind !== "table"
-      ? "Views are read-only."
-      : pk.length === 0
-        ? "No primary key: edit this table with SQL."
-        : "";
+  const editHint = features.includes("readonly")
+    ? "This shared link is read-only."
+    : !features.includes("edit")
+      ? "Update with npx strokedb@latest to edit rows here."
+      : table.kind !== "table"
+        ? "Views are read-only."
+        : pk.length === 0
+          ? "No primary key: edit this table with SQL."
+          : "";
 
   useEffect(() => {
     client
