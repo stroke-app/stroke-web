@@ -566,9 +566,9 @@ const GROUPS: Group[] = [
           desc: "Press Cmd/Ctrl+K and type a table, a feature, or a shortcut to jump there.",
           shot: shot(
             "command-palette",
-            1920,
-            1080,
-            "The command palette listing views with their keyboard shortcuts",
+            1600,
+            1005,
+            "The command palette listing views with their keyboard shortcuts: Table data, Find in database, SQL editor, Terminal and more",
             0.5,
           ),
         },

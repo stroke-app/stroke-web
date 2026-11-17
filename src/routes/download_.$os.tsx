@@ -118,9 +118,9 @@ const PAGES: Record<OS, OsPage> = {
     shots: [
       {
         src: "/shots/command-palette.webp",
-        width: 1920,
-        height: 1080,
-        alt: "Stroke on Windows with the command palette open over a chart",
+        width: 1600,
+        height: 1005,
+        alt: "Stroke's command palette listing views with their shortcuts",
       },
       {
         src: "/shots/find-replace.webp",
