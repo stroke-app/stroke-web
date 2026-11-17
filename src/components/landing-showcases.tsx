@@ -45,10 +45,11 @@ export function BrowseShowcase() {
           title: "Changes wait for you",
           body: "New rows, edits and deletes stay marked until you press Apply.",
           media: shot(
-            "staged-insert",
-            1600,
-            1005,
-            "A new row staged at the top of a movies table, with Apply 1 in the status bar",
+            "staged-insert-crop",
+            1230,
+            460,
+            "A new row staged at the top of a movies table, marked until it is applied",
+            true,
           ),
         },
         {
@@ -196,7 +197,13 @@ export function NoSqlShowcase() {
           span: 2,
           title: "Aggregation pipelines",
           body: "Build a pipeline stage by stage and see what each stage returns.",
-          media: shot("mongo-aggregate", 1600, 1005, "A MongoDB aggregation pipeline with stages"),
+          media: shot(
+            "mongo-aggregate-crop",
+            1238,
+            664,
+            "A MongoDB aggregation pipeline with stages",
+            true,
+          ),
         },
         {
           span: 4,
@@ -323,7 +330,13 @@ export function ToolsShowcase() {
           span: 2,
           title: "Diagrams in Mermaid",
           body: "Write a sequence or flow diagram and watch it render as you type.",
-          media: shot("diagrams-mermaid", 1600, 1005, "A Mermaid sequence diagram and its preview"),
+          media: shot(
+            "diagrams-mermaid-crop",
+            1430,
+            620,
+            "A Mermaid sequence diagram and its preview",
+            true,
+          ),
         },
         {
           title: "Command palette",

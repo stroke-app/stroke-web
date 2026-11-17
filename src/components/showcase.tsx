@@ -12,12 +12,16 @@ import { cn } from "#/lib/utils";
 
 export type Media =
   | { kind: "image"; src: string; width: number; height: number; alt: string; inset?: boolean }
-  | { kind: "video"; src: string; poster: string; width: number; height: number; label: string };
+  | { kind: "video"; src: string; poster: string; width: number; height: number; label: string }
+  /** A coded product mockup, for a feature with no screenshot. */
+  | { kind: "node"; node: React.ReactNode };
 
 export type Tile = {
   title: string;
   body: string;
   media: Media;
+  /** Short points under the body. */
+  points?: string[];
   /** Columns out of 6 on wide screens. */
   span?: 2 | 3 | 4 | 6;
 };
@@ -65,6 +69,8 @@ function LoopVideo({ media }: { media: Extract<Media, { kind: "video" }> }) {
 function TileMedia({ media }: { media: Media }) {
   const dialog = useRef<HTMLDialogElement>(null);
   if (media.kind === "video") return <LoopVideo media={media} />;
+  if (media.kind === "node")
+    return <div className="h-full w-full overflow-hidden">{media.node}</div>;
   return (
     <>
       <button
@@ -144,6 +150,16 @@ export function TileGrid({ tiles, className }: { tiles: Tile[]; className?: stri
           <p className="mt-1.5 max-w-[60ch] text-[15px] leading-relaxed text-pretty text-muted-foreground">
             {tile.body}
           </p>
+          {tile.points && (
+            <ul className="mt-4 space-y-2 text-[14px] leading-[1.55] text-muted-foreground">
+              {tile.points.map((point) => (
+                <li key={point} className="flex gap-3">
+                  <span aria-hidden="true" className="mt-[0.7em] h-px w-2.5 shrink-0 bg-faint" />
+                  <span className="text-pretty">{point}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </li>
       ))}
     </ul>

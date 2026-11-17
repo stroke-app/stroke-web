@@ -40,17 +40,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { SmartDownloadButton } from "#/components/download-button";
-import { FeatureShot } from "#/components/feature-shot";
-import {
-  ArrowLink,
-  PageHeader,
-  PageShell,
-  Panel,
-  Section,
-  SectionIntro,
-  siteButton,
-  WRAP,
-} from "#/components/page";
+import { PageHeader, PageShell, Section, SectionIntro, siteButton, WRAP } from "#/components/page";
+import { clip, shot as tileShot, TileGrid, type Media, type Tile } from "#/components/showcase";
 import { seo } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
@@ -89,6 +80,8 @@ interface Feature {
   /** "Beta" and similar, shown beside the title. */
   tag?: string;
   link?: { label: string; to: "/"; hash: string };
+  /** A screen recording or screenshot that moves this feature out of the grid into a tile. */
+  media?: Media;
 }
 
 /** How a group's screenshot features are laid out, in order, above its grid. */
@@ -216,9 +209,9 @@ const GROUPS: Group[] = [
             "Preview the generated SQL for any change before it runs",
           ],
           shot: shot(
-            "staged-insert",
-            1600,
-            1005,
+            "staged-insert-crop",
+            1230,
+            460,
             "A new row staged at the top of the movies table, with Apply 1 waiting in the status bar",
           ),
         },
@@ -457,6 +450,12 @@ const GROUPS: Group[] = [
       {
         icon: ShieldCheckIcon,
         title: "Security and RLS",
+        media: tileShot(
+          "row-level-security",
+          1600,
+          1005,
+          "Row level security status for each table in the public schema",
+        ),
         desc: "See who can read or write what. Roles, grants, and privileges in one place.",
         points: [
           "A role tree grouped into superusers, login roles, and group roles",
@@ -478,6 +477,12 @@ const GROUPS: Group[] = [
       {
         icon: ActivityIcon,
         title: "Instance insights and config",
+        media: tileShot(
+          "insights",
+          1600,
+          1005,
+          "Instance insights for a Postgres 16 server: connections, transactions and cache hit ratio",
+        ),
         desc: "What the server is doing right now: version, uptime, connections, replication, cache hit rates, sessions, and locks.",
         points: [
           "Activity, State, Config, and Replication tabs with live timelines",
@@ -488,6 +493,12 @@ const GROUPS: Group[] = [
       {
         icon: DatabaseBackupIcon,
         title: "Backup and restore",
+        media: clip(
+          "backup",
+          "Exporting 31 tables from a Cloudflare D1 database to a .sql file",
+          1600,
+          1008,
+        ),
         desc: "Export a full SQL dump, schema and data, with toggles for what to include and per-table selection. Restore from a .sql file with results per statement.",
         points: [
           "A live log while it runs, and any export can be stopped mid-run",
@@ -622,32 +633,6 @@ const TOTAL = GROUPS.reduce(
   0,
 );
 
-/** Visuals that run past the content column toward the window edge. */
-const BLEED = "-mr-6 md:-mr-8 xl:-mr-24";
-
-/**
- * A feature's visual: its screenshot (click to zoom) or its coded mockup.
- * A screenshot never shows smaller than `scale` times its pixel size, so on a
- * narrow frame it crops (around its `focus`) rather than shrinking to
- * unreadable; on a wide frame it simply fills the width.
- */
-function Visual({ feature, scale = 0.45 }: { feature: Feature; scale?: number }) {
-  if (!feature.shot) return feature.mock;
-  const min = `max(100%, ${Math.round(feature.shot.width * scale)}px)`;
-  return (
-    <div
-      style={{
-        width: min,
-        marginLeft: feature.shot.focus
-          ? `calc((100% - ${min}) * ${feature.shot.focus})`
-          : undefined,
-      }}
-    >
-      <FeatureShot flush {...feature.shot} />
-    </div>
-  );
-}
-
 function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="ml-2 rounded-full bg-ink/[0.08] px-1.5 py-px text-[11px] font-[510] text-soft">
@@ -741,139 +726,6 @@ function FeatureGrid({ features, className }: { features: Feature[]; className?:
   );
 }
 
-/**
- * One screenshot shown large, with its copy in two columns underneath: the
- * title and description, then the points as a ruled list. Without points, the
- * description moves to the right column instead.
- */
-function Lead({ feature }: { feature: Feature }) {
-  const Icon = feature.icon;
-  const desc = (
-    <>
-      <p
-        className={cn(
-          "text-[16px] leading-[1.6] text-pretty text-soft md:text-[17px]",
-          feature.points ? "mt-3" : "md:pt-11",
-        )}
-      >
-        {feature.desc}
-      </p>
-      {feature.link && (
-        <ArrowLink to={feature.link.to} hash={feature.link.hash} className="mt-6">
-          {feature.link.label}
-        </ArrowLink>
-      )}
-    </>
-  );
-
-  return (
-    <div>
-      <Panel
-        className={cn(
-          BLEED,
-          "max-h-[340px] mask-r-from-80% mask-b-from-60% sm:max-h-[480px] lg:max-h-[620px]",
-        )}
-      >
-        <Visual feature={feature} scale={0.5} />
-      </Panel>
-      <div className="mt-10 grid grid-cols-1 gap-x-16 gap-y-4 md:mt-14 md:grid-cols-2 lg:gap-x-24">
-        <div>
-          <Icon className="size-5 text-muted-foreground" strokeWidth={1.5} aria-hidden="true" />
-          <h3 className="mt-5 text-2xl leading-[1.15] font-[560] tracking-[-0.025em] md:text-[1.75rem]">
-            {feature.title}
-            {feature.tag && <Tag>{feature.tag}</Tag>}
-          </h3>
-          {feature.points && desc}
-        </div>
-        {feature.points ? (
-          <ul className="mt-4 border-b border-border text-[15px] leading-[1.55] text-muted-foreground md:mt-1">
-            {feature.points.map((point) => (
-              <li key={point} className="border-t border-border py-3.5 text-pretty">
-                {point}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div>{desc}</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Two visuals overlapping like windows on a desk, fading out at the bottom,
- * then their copy (and any caption-only extras) in one ruled row. Phones
- * stack them with a smaller overlap.
- */
-function Overlap({ s }: { s: Extract<Showcase, { kind: "overlap" }> }) {
-  return (
-    <div>
-      <div className={cn(BLEED, "relative mask-b-from-70% pb-6", s.boxClass ?? "md:pb-[3%]")}>
-        <Panel className={cn("w-[92%] max-md:max-h-[300px]", s.backClass)}>
-          <Visual feature={s.back} />
-        </Panel>
-        <Panel
-          className={cn(
-            "relative -mt-[18%] ml-auto w-[72%] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_6%,transparent)_inset,0_32px_80px_-8px_rgb(0_0_0/0.85)] max-md:max-h-[300px] md:absolute md:mt-0 md:ml-0",
-            // A coded mockup is text; give it the room to stay legible on a phone.
-            !s.front.shot && "max-md:w-[94%]",
-            s.frontClass,
-          )}
-        >
-          <Visual feature={s.front} />
-        </Panel>
-      </div>
-      <FeatureGrid features={[s.back, s.front, ...(s.extra ?? [])]} className="mt-10 md:mt-14" />
-    </div>
-  );
-}
-
-/** Two screenshots side by side, cropped to the same frame, each over its copy. */
-function Pair({ features }: { features: [Feature, Feature] }) {
-  return (
-    <div className="grid grid-cols-1 gap-x-16 gap-y-16 sm:grid-cols-2">
-      {features.map((feature) => (
-        <article key={feature.title}>
-          <Panel className="aspect-[10/7] mask-b-from-70%">
-            <Visual feature={feature} scale={0.6} />
-          </Panel>
-          <div className="mt-8 md:mt-10">
-            <FeatureText feature={feature} />
-          </div>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-/** Copy on the left, and a wide screenshot running off the right edge. */
-function Split({ feature }: { feature: Feature }) {
-  return (
-    <article className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-      <div>
-        <FeatureText feature={feature} />
-      </div>
-      <Panel className={cn(BLEED, "mask-r-from-70% mask-b-from-80% max-lg:order-first")}>
-        <Visual feature={feature} scale={0.7} />
-      </Panel>
-    </article>
-  );
-}
-
-function ShowcaseBlock({ s }: { s: Showcase }) {
-  switch (s.kind) {
-    case "lead":
-      return <Lead feature={s.feature} />;
-    case "overlap":
-      return <Overlap s={s} />;
-    case "pair":
-      return <Pair features={s.features} />;
-    case "split":
-      return <Split feature={s.feature} />;
-  }
-}
-
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
@@ -956,6 +808,37 @@ function GroupNav() {
   );
 }
 
+/** A feature with a visual, as a tile: its recording, screenshot or mockup. */
+function toTile(feature: Feature): Tile | null {
+  let media: Media | null = feature.media ?? null;
+  if (!media && feature.shot) {
+    const { src, width, height, alt } = feature.shot;
+    // Crops of one menu or dialog sit inset on the app surface; full windows fill the tile.
+    const inset = Math.abs(width / height - 1.6) > 0.12;
+    media = { kind: "image", src, width, height, alt, inset };
+  }
+  if (!media && feature.mock) media = { kind: "node", node: feature.mock };
+  if (!media) return null;
+  return {
+    title: feature.tag ? `${feature.title} (${feature.tag})` : feature.title,
+    body: feature.desc,
+    points: feature.points,
+    media,
+  };
+}
+
+/** Spans that fill rows of a six-column grid: 1 → full, 3 → thirds, otherwise halves. */
+function groupTiles(group: Group): Tile[] {
+  const tiles = [...group.showcase.flatMap(showcaseFeatures), ...group.grid.filter((f) => f.media)]
+    .map(toTile)
+    .filter((t): t is Tile => t !== null);
+  const n = tiles.length;
+  return tiles.map((t, i) => ({
+    ...t,
+    span: n === 1 ? 6 : n % 2 === 1 && i === n - 1 ? 6 : 3,
+  }));
+}
+
 function FeaturesPage() {
   return (
     <PageShell>
@@ -999,18 +882,9 @@ function FeaturesPage() {
             <p>{group.intro}</p>
           </SectionIntro>
 
-          {group.showcase.length > 0 && (
-            <div className="mt-16 space-y-24 md:mt-24 md:space-y-32">
-              {group.showcase.map((s, j) => (
-                <ShowcaseBlock key={j} s={s} />
-              ))}
-            </div>
-          )}
+          <TileGrid tiles={groupTiles(group)} className="mt-14 md:mt-20" />
 
-          <FeatureGrid
-            features={group.grid}
-            className={group.showcase.length ? "mt-24 md:mt-32" : "mt-16 md:mt-24"}
-          />
+          <FeatureGrid features={group.grid.filter((f) => !f.media)} className="mt-20 md:mt-28" />
         </Section>
       ))}
 
