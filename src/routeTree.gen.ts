@@ -65,7 +65,9 @@ import { Route as ApiLicenseCheckRouteImport } from './routes/api/license/check'
 import { Route as ApiLicenseActivateRouteImport } from './routes/api/license/activate'
 import { Route as ApiDesktopTokenRouteImport } from './routes/api/desktop/token'
 import { Route as ApiDesktopSignOutRouteImport } from './routes/api/desktop/sign-out'
+import { Route as ApiBackupsSyncKeyRouteImport } from './routes/api/backups/sync-key'
 import { Route as ApiBackupsRunsRouteImport } from './routes/api/backups/runs'
+import { Route as ApiBackupsKeysRouteImport } from './routes/api/backups/keys'
 import { Route as ApiBackupsJobsRouteImport } from './routes/api/backups/jobs'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiQuotaRouteImport } from './routes/api/ai/quota'
@@ -368,9 +370,19 @@ const ApiDesktopSignOutRoute = ApiDesktopSignOutRouteImport.update({
   path: '/api/desktop/sign-out',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBackupsSyncKeyRoute = ApiBackupsSyncKeyRouteImport.update({
+  id: '/api/backups/sync-key',
+  path: '/api/backups/sync-key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBackupsRunsRoute = ApiBackupsRunsRouteImport.update({
   id: '/api/backups/runs',
   path: '/api/backups/runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBackupsKeysRoute = ApiBackupsKeysRouteImport.update({
+  id: '/api/backups/keys',
+  path: '/api/backups/keys',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBackupsJobsRoute = ApiBackupsJobsRouteImport.update({
@@ -539,7 +551,9 @@ export interface FileRoutesByFullPath {
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/keys': typeof ApiBackupsKeysRoute
   '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
+  '/api/backups/sync-key': typeof ApiBackupsSyncKeyRoute
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -618,7 +632,9 @@ export interface FileRoutesByTo {
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/keys': typeof ApiBackupsKeysRoute
   '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
+  '/api/backups/sync-key': typeof ApiBackupsSyncKeyRoute
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -701,7 +717,9 @@ export interface FileRoutesById {
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/keys': typeof ApiBackupsKeysRoute
   '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
+  '/api/backups/sync-key': typeof ApiBackupsSyncKeyRoute
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -783,7 +801,9 @@ export interface FileRouteTypes {
     | '/api/ai/quota'
     | '/api/auth/$'
     | '/api/backups/jobs'
+    | '/api/backups/keys'
     | '/api/backups/runs'
+    | '/api/backups/sync-key'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -862,7 +882,9 @@ export interface FileRouteTypes {
     | '/api/ai/quota'
     | '/api/auth/$'
     | '/api/backups/jobs'
+    | '/api/backups/keys'
     | '/api/backups/runs'
+    | '/api/backups/sync-key'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -944,7 +966,9 @@ export interface FileRouteTypes {
     | '/api/ai/quota'
     | '/api/auth/$'
     | '/api/backups/jobs'
+    | '/api/backups/keys'
     | '/api/backups/runs'
+    | '/api/backups/sync-key'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -1019,7 +1043,9 @@ export interface RootRouteChildren {
   ApiAiQuotaRoute: typeof ApiAiQuotaRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiBackupsJobsRoute: typeof ApiBackupsJobsRouteWithChildren
+  ApiBackupsKeysRoute: typeof ApiBackupsKeysRoute
   ApiBackupsRunsRoute: typeof ApiBackupsRunsRouteWithChildren
+  ApiBackupsSyncKeyRoute: typeof ApiBackupsSyncKeyRoute
   ApiDesktopSignOutRoute: typeof ApiDesktopSignOutRoute
   ApiDesktopTokenRoute: typeof ApiDesktopTokenRoute
   ApiLicenseActivateRoute: typeof ApiLicenseActivateRoute
@@ -1440,11 +1466,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDesktopSignOutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/backups/sync-key': {
+      id: '/api/backups/sync-key'
+      path: '/api/backups/sync-key'
+      fullPath: '/api/backups/sync-key'
+      preLoaderRoute: typeof ApiBackupsSyncKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/backups/runs': {
       id: '/api/backups/runs'
       path: '/api/backups/runs'
       fullPath: '/api/backups/runs'
       preLoaderRoute: typeof ApiBackupsRunsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/backups/keys': {
+      id: '/api/backups/keys'
+      path: '/api/backups/keys'
+      fullPath: '/api/backups/keys'
+      preLoaderRoute: typeof ApiBackupsKeysRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/backups/jobs': {
@@ -1750,7 +1790,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiQuotaRoute: ApiAiQuotaRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiBackupsJobsRoute: ApiBackupsJobsRouteWithChildren,
+  ApiBackupsKeysRoute: ApiBackupsKeysRoute,
   ApiBackupsRunsRoute: ApiBackupsRunsRouteWithChildren,
+  ApiBackupsSyncKeyRoute: ApiBackupsSyncKeyRoute,
   ApiDesktopSignOutRoute: ApiDesktopSignOutRoute,
   ApiDesktopTokenRoute: ApiDesktopTokenRoute,
   ApiLicenseActivateRoute: ApiLicenseActivateRoute,

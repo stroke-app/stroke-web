@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   CloudIcon,
   DatabaseIcon,
-  DownloadIcon,
+  LockKeyholeIcon,
   Loader2Icon,
   PauseIcon,
   PlayIcon,
@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { appButton, Badge, Card, CardHeader, PageHeader, ROW_LIST } from "#/components/app-ui";
+import { BackupDownload } from "#/components/backup-download";
 import { timeAgo, useNow } from "#/components/license-panel";
 import { cn } from "#/lib/utils";
 
@@ -33,6 +34,9 @@ type Run = {
   device_name: string | null;
   started_at: number;
   finished_at: number | null;
+  encrypted?: boolean;
+  key_id?: string | null;
+  wrapped_key?: string | null;
 };
 
 type Job = {
@@ -133,7 +137,7 @@ function BackupsPage() {
     <div className="space-y-10">
       <PageHeader
         title="Backups"
-        description="Scheduled backups of your databases. The Stroke app runs them on the computer that has the connection, so your database passwords never leave it."
+        description="The Stroke app runs your backups and encrypts them on your computer before upload. Stroke never has your database passwords and can't read your backups."
       />
 
       {isPending ? (
@@ -324,7 +328,7 @@ function JobSection({ job, pro }: { job: Job; pro: boolean }) {
       ) : (
         <ul className={cn("mt-4", ROW_LIST)}>
           {job.runs.map((run) => (
-            <RunRow key={run.id} run={run} now={now} onChange={update} />
+            <RunRow key={run.id} run={run} now={now} onChange={update} label={job.label} />
           ))}
         </ul>
       )}
@@ -336,10 +340,12 @@ function RunRow({
   run,
   now,
   onChange,
+  label,
 }: {
   run: Run;
   now: number | null;
   onChange: (data: Overview) => void;
+  label: string;
 }) {
   const remove = useMutation({
     mutationFn: () => api<Overview>(`/api/backups/runs/${run.id}`, { method: "DELETE" }),
@@ -374,6 +380,15 @@ function RunRow({
         <p className="flex items-center gap-2 text-[14px]">
           <span title={new Date(run.started_at).toLocaleString()}>{when}</span>
           {run.status === "failed" && <Badge tone="danger">Failed</Badge>}
+          {run.encrypted && (
+            <span
+              title="Encrypted on your computer. Stroke can't read it."
+              className="inline-flex items-center gap-1 text-[12px] text-muted-foreground"
+            >
+              <LockKeyholeIcon className="size-3" aria-hidden="true" />
+              Encrypted
+            </span>
+          )}
         </p>
         <p
           className={cn(
@@ -388,14 +403,11 @@ function RunRow({
         </p>
       </div>
       {run.status === "success" && run.destination === "stroke" && (
-        <a
-          href={`/api/backups/runs/${run.id}/download`}
-          className={appButton({ variant: "secondary", size: "sm" })}
-          aria-label={`Download the backup from ${formatWhen(run.started_at)}`}
-        >
-          <DownloadIcon className="size-3.5" aria-hidden="true" />
-          <span className="max-sm:sr-only">Download</span>
-        </a>
+        <BackupDownload
+          run={run}
+          label={label}
+          ariaLabel={`Download the backup from ${formatWhen(run.started_at)}`}
+        />
       )}
       {run.status !== "running" && (
         <button
