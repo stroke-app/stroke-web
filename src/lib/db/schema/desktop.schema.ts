@@ -74,6 +74,18 @@ export const userTrials = sqliteTable("user_trials", {
 });
 
 /**
+ * The v3 account trial. Stroke 3 drops license keys and device trials and
+ * gives every account one fresh trial, separate from the 2.x one in
+ * `user_trials`. The app asks for it with `X-Stroke-Trial: account-v3`.
+ */
+export const accountTrials = sqliteTable("account_trials", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+  startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+/**
  * Fixed-window request counters for the desktop auth endpoints. `key` names
  * the bucket and the caller (e.g. "token:ip:1.2.3.4"); `window` is the
  * window's start in unix seconds, so a new window is simply a new row.

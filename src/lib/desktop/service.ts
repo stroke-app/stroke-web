@@ -5,6 +5,7 @@ import { and, desc, eq, isNull, lt } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import {
+  accountTrials,
   desktopCodes,
   desktopTokens,
   deviceTrials,
@@ -193,12 +194,28 @@ function publicUser(u: UserRow) {
   return { id: u.id, email: u.email, name: u.name, image: u.image ?? null };
 }
 
+/** The header the v3 app sends to get its own account trial. */
+export const TRIAL_SCHEME_HEADER = "x-stroke-trial";
+
 /**
  * Start the account trial on first sight, then return it. A device trial the
  * signing-in device already ran carries over (earliest start wins), so signing
  * in can't hand out a second trial.
+ *
+ * The v3 app (`fresh`) uses its own table: every account gets one new trial
+ * there, with no device trial carried over.
  */
-async function ensureUserTrial(userId: string, deviceId: string) {
+async function ensureUserTrial(userId: string, deviceId: string, fresh: boolean) {
+  if (fresh) {
+    await db.insert(accountTrials).values({ userId, startedAt: new Date() }).onConflictDoNothing();
+    const [row] = await db
+      .select()
+      .from(accountTrials)
+      .where(eq(accountTrials.userId, userId))
+      .limit(1);
+    return row!;
+  }
+
   const [existing] = await db
     .select()
     .from(userTrials)
@@ -223,7 +240,12 @@ async function ensureUserTrial(userId: string, deviceId: string) {
  * The `/api/me` body. `entitlement` is serialized once and embedded verbatim,
  * so the bytes the app sees are exactly the bytes that were signed.
  */
-export async function meResponse(account: UserRow, token: DesktopTokenRow): Promise<Response> {
+export async function meResponse(
+  account: UserRow,
+  token: DesktopTokenRow,
+  request?: Request,
+): Promise<Response> {
+  const freshTrial = request?.headers.get(TRIAL_SCHEME_HEADER) === "account-v3";
   const now = new Date();
   const nowSec = toSec(now);
 
@@ -231,7 +253,7 @@ export async function meResponse(account: UserRow, token: DesktopTokenRow): Prom
 
   const [license, trial, sessions] = await Promise.all([
     resolveLicense(account.id, account.email),
-    ensureUserTrial(account.id, token.deviceId),
+    ensureUserTrial(account.id, token.deviceId, freshTrial),
     db
       .select()
       .from(desktopTokens)
