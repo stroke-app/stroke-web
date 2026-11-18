@@ -71,6 +71,12 @@ export const backupRuns = sqliteTable(
     tables: integer("tables").notNull().default(0),
     rows: integer("rows").notNull().default(0),
     error: text("error"),
+    /** Encrypted on the user's computer (see src/lib/backups/crypto.ts). */
+    encrypted: integer("encrypted", { mode: "boolean" }).notNull().default(false),
+    /** Which sync key wrapped the data key: 16 hex characters. */
+    keyId: text("key_id"),
+    /** base64url of the 72-byte wrapped data key. Useless without the sync key. */
+    wrappedKey: text("wrapped_key"),
     deviceName: text("device_name"),
     startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
     finishedAt: integer("finished_at", { mode: "timestamp_ms" }),

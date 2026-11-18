@@ -141,6 +141,13 @@
       "when": 1794981983343,
       "tag": "0019_sponsor_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1794985382335,
+      "tag": "0020_backup_encryption",
+      "breakpoints": true
     }
   ]
 }

@@ -98,6 +98,9 @@ function publicRun(r: RunRow) {
     tables: r.tables,
     rows: r.rows,
     error: stale ? "The app stopped before the backup finished." : r.error,
+    encrypted: r.encrypted,
+    key_id: r.keyId,
+    wrapped_key: r.wrappedKey,
     device_name: r.deviceName,
     started_at: r.startedAt.getTime(),
     finished_at: r.finishedAt?.getTime() ?? null,
@@ -313,6 +316,16 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
   if (!job) return notFound();
   const slot = str(body.slot, 64);
   if (!slot) return apiError(400, "invalid_request", "slot is required.");
+  const encrypted = body.encrypted === true;
+  // Stroke Cloud only takes ciphertext: an app that can't encrypt is refused,
+  // so a plain backup never reaches our storage.
+  if (job.destination === "stroke" && !encrypted) {
+    return apiError(
+      426,
+      "encryption_required",
+      "Backups to Stroke Cloud are end-to-end encrypted. Update Stroke and set up sync on this computer.",
+    );
+  }
 
   if (job.destination === "stroke" && (await storedBytes(c.userId)) >= QUOTA_BYTES) {
     return apiError(
@@ -325,7 +338,8 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
   const id = crypto.randomUUID();
   const now = new Date();
   const stamp = now.toISOString().replace(/[:.]/g, "-");
-  const objectKey = job.destination === "stroke" ? `${c.userId}/${job.id}/${stamp}.sql.gz` : null;
+  const objectKey =
+    job.destination === "stroke" ? `${c.userId}/${job.id}/${stamp}.sql.gz.stroke` : null;
   const inserted = await db
     .insert(backupRuns)
     .values({
@@ -336,6 +350,7 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
       status: "running",
       destination: job.destination,
       objectKey,
+      encrypted,
       deviceName: c.deviceName,
       startedAt: now,
     })
@@ -349,7 +364,7 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
   }
   if (objectKey) {
     const upload = await env.BACKUPS.createMultipartUpload(objectKey, {
-      httpMetadata: { contentType: "application/gzip" },
+      httpMetadata: { contentType: "application/octet-stream" },
     });
     await db
       .update(backupRuns)
@@ -429,6 +444,15 @@ export async function finishRun(
     uploadId: null,
     parts: null,
   };
+  if (ok && run.encrypted) {
+    const keyId = str(body.key_id, 32);
+    const wrappedKey = str(body.wrapped_key, 200);
+    if (!keyId || !/^[0-9a-f]{16}$/.test(keyId) || !wrappedKey) {
+      return apiError(400, "invalid_request", "An encrypted backup needs key_id and wrapped_key.");
+    }
+    set.keyId = keyId;
+    set.wrappedKey = wrappedKey;
+  }
   if (run.destination === "s3") {
     set.objectKey = str(body.object_key, 1024);
     set.bytes = Math.max(0, Math.floor(Number(body.bytes) || 0));
@@ -519,10 +543,10 @@ export async function downloadRun(c: Caller, id: string): Promise<Response> {
   const name = `${(job?.label ?? "backup").replace(/[^\w.-]+/g, "-")}-${run.startedAt
     .toISOString()
     .slice(0, 16)
-    .replace(/[:T]/g, "-")}.sql.gz`;
+    .replace(/[:T]/g, "-")}.sql.gz${run.encrypted ? ".stroke" : ""}`;
   return new Response(obj.body, {
     headers: {
-      "content-type": "application/gzip",
+      "content-type": run.encrypted ? "application/octet-stream" : "application/gzip",
       "content-length": String(obj.size),
       "content-disposition": `attachment; filename="${name}"`,
       "cache-control": "no-store",
@@ -540,3 +564,39 @@ export async function readJson(request: Request): Promise<Record<string, unknown
 }
 
 export const badJson = () => apiError(400, "invalid_json", "The request body isn't valid JSON.");
+
+/** GET /api/backups/keys: every encrypted backup's wrapped key (for a re-wrap after a sync reset). */
+export async function listKeys(c: Caller): Promise<Response> {
+  const rows = await db
+    .select({ id: backupRuns.id, keyId: backupRuns.keyId, wrappedKey: backupRuns.wrappedKey })
+    .from(backupRuns)
+    .where(and(eq(backupRuns.userId, c.userId), eq(backupRuns.encrypted, true)));
+  return Response.json({
+    keys: rows
+      .filter((r) => r.keyId && r.wrappedKey)
+      .map((r) => ({ id: r.id, key_id: r.keyId, wrapped_key: r.wrappedKey })),
+  });
+}
+
+/** POST /api/backups/keys (app only): store keys re-wrapped under a new sync key. */
+export async function rewrapKeys(c: Caller, body: Record<string, unknown>): Promise<Response> {
+  if (!c.desktop) return apiError(403, "app_only", "Keys are re-wrapped by the Stroke app.");
+  const keys = Array.isArray(body.keys) ? body.keys.slice(0, 1000) : null;
+  if (!keys) return apiError(400, "invalid_request", "keys is required.");
+  let updated = 0;
+  for (const k of keys as Record<string, unknown>[]) {
+    const id = str(k?.id, 64);
+    const keyId = str(k?.key_id, 32);
+    const wrappedKey = str(k?.wrapped_key, 200);
+    if (!id || !keyId || !/^[0-9a-f]{16}$/.test(keyId) || !wrappedKey) continue;
+    const res = await db
+      .update(backupRuns)
+      .set({ keyId, wrappedKey })
+      .where(
+        and(eq(backupRuns.id, id), eq(backupRuns.userId, c.userId), eq(backupRuns.encrypted, true)),
+      )
+      .returning({ id: backupRuns.id });
+    updated += res.length;
+  }
+  return Response.json({ updated });
+}
