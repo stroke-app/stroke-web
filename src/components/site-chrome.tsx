@@ -48,26 +48,26 @@ type MenuLink = {
 const PRODUCT: MenuLink[] = [
   {
     label: "Features",
-    body: "Everything Stroke does, screen by screen",
+    body: "Every screen, with screenshots",
     icon: LayersIcon,
     to: "/features",
   },
   {
     label: "AI and MCP",
-    body: "Let Claude, Cursor or Codex query your data",
+    body: "Claude, Cursor and Codex on your data",
     icon: BotIcon,
     to: "/docs/mcp",
   },
   {
     label: "Web studio",
-    body: "Open a database in the browser",
+    body: "Open a database in your browser",
     icon: TerminalSquareIcon,
     to: "/studio",
   },
-  { label: "Themes", body: "Every theme the app ships with", icon: PaletteIcon, to: "/themes" },
+  { label: "Themes", body: "Every theme the app ships", icon: PaletteIcon, to: "/themes" },
   {
     label: "Changelog",
-    body: "What changed in every release",
+    body: "What changed in each release",
     icon: ScrollTextIcon,
     to: "/changelog",
   },
@@ -77,32 +77,32 @@ const PRODUCT: MenuLink[] = [
 const RESOURCES: MenuLink[] = [
   {
     label: "Documentation",
-    body: "Install, connect, and get going",
+    body: "Install, connect, get going",
     icon: BookOpenIcon,
     to: "/docs",
   },
-  { label: "Blog", body: "Releases, guides and how it's built", icon: NewspaperIcon, to: "/blog" },
+  { label: "Blog", body: "Releases and guides", icon: NewspaperIcon, to: "/blog" },
   {
     label: "Compare",
-    body: "Stroke next to TablePlus, DBeaver and more",
+    body: "Next to TablePlus and DBeaver",
     icon: GitCompareArrowsIcon,
     to: "/compare",
   },
   {
     label: "Security",
-    body: "Where your credentials and data go",
+    body: "Where your data goes",
     icon: ShieldCheckIcon,
     to: "/security",
   },
   {
     label: "Sponsor",
-    body: "Help pay for signed macOS and Windows builds",
+    body: "Fund signed app builds",
     icon: HeartIcon,
     to: "/sponsors",
   },
   {
     label: "GitHub",
-    body: "The source, issues and discussions",
+    body: "Source code and issues",
     icon: SiGithub as IconType,
     href: REPO_URL,
   },
@@ -172,13 +172,13 @@ function formatStars(n: number) {
 function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
   const inner = (
     <>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-ink/[0.04] shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 group-hover:bg-ink/[0.08]">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-ink/[0.04] shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 group-hover:bg-ink/[0.08]">
         <item.icon
           className="size-4 text-soft transition-colors group-hover:text-foreground"
           strokeWidth={1.6}
         />
       </span>
-      <span className="min-w-0 pt-0.5">
+      <span className="min-w-0">
         <span className="flex items-center gap-1 text-[14px] font-medium text-foreground">
           {item.label}
           <ArrowRightIcon className="size-3 -translate-x-1 opacity-0 transition-[opacity,translate] duration-150 group-hover:translate-x-0 group-hover:opacity-60" />
@@ -190,7 +190,7 @@ function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
     </>
   );
   const cls =
-    "group -mx-2.5 flex gap-3 rounded-xl px-2.5 py-2 transition-colors duration-150 hover:bg-ink/[0.04] focus-visible:bg-ink/[0.05] focus-visible:outline-none";
+    "group -mx-2 flex items-center gap-3 rounded-lg px-2 py-2 transition-colors duration-150 hover:bg-ink/[0.04] focus-visible:bg-ink/[0.05] focus-visible:outline-none";
   return item.href ? (
     <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls} onClick={onPick}>
       {inner}
@@ -220,7 +220,7 @@ function Feature({
     <Link
       to={to}
       onClick={onPick}
-      className="group relative flex h-full min-h-[15rem] flex-col justify-end overflow-hidden rounded-xl bg-[#0a0a0a] p-5 shadow-[0_0_0_1px_var(--border)_inset]"
+      className="group relative flex h-full min-h-[14rem] flex-col justify-end overflow-hidden rounded-lg bg-[#0a0a0a] p-4 shadow-[0_0_0_1px_var(--border)_inset]"
     >
       <img
         src={img}
@@ -250,11 +250,13 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
   if (id === "databases") {
     return (
       <div>
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-x-6 p-3">
           {MENU_GROUPS.map((g) => (
             <div key={g.label}>
-              <p className="mb-2 text-[12px] font-medium text-faint">{g.label}</p>
-              <ul className="grid grid-cols-1 gap-0.5">
+              <p className="px-2 pt-1 pb-2 text-[11px] font-medium tracking-[0.06em] text-faint uppercase">
+                {g.label}
+              </p>
+              <ul className="grid grid-cols-1">
                 {ENGINES.filter((e) => g.cats.includes(e.category) && e.status !== "soon").map(
                   (e) => (
                     <li key={e.slug}>
@@ -262,12 +264,17 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
                         to="/databases/$engine"
                         params={{ engine: e.slug }}
                         onClick={onPick}
-                        className="group -mx-2 flex h-9 items-center gap-2.5 rounded-lg px-2 text-[14px] text-soft transition-colors duration-150 hover:bg-ink/[0.04] hover:text-foreground"
+                        className="group flex h-9 items-center gap-2.5 rounded-md px-2 text-[13.5px] text-soft transition-colors duration-150 hover:bg-ink/[0.05] hover:text-foreground focus-visible:bg-ink/[0.05] focus-visible:outline-none"
                       >
-                        <e.Icon className="size-4 shrink-0" color={e.color} />
-                        {e.name}
+                        <span
+                          className="flex size-6 shrink-0 items-center justify-center rounded-md"
+                          style={{ background: `color-mix(in oklch, ${e.color} 14%, transparent)` }}
+                        >
+                          <e.Icon className="size-3.5" color={e.color} />
+                        </span>
+                        <span className="truncate">{e.name}</span>
                         {e.status === "beta" && (
-                          <span className="text-[11px] text-faint">Beta</span>
+                          <span className="ml-auto text-[11px] text-faint">Beta</span>
                         )}
                       </Link>
                     </li>
@@ -277,14 +284,16 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
             </div>
           ))}
         </div>
-        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-          <p className="text-[13px] text-muted-foreground">One download opens all of them.</p>
+        <div className="flex items-center justify-between gap-6 rounded-b-xl border-t border-border bg-ink/[0.02] px-5 py-3">
+          <p className="text-[13px] text-muted-foreground">
+            Connect in one click from Neon, Supabase, PlanetScale, Turso and more.
+          </p>
           <Link
             to="/databases"
             onClick={onPick}
-            className="group flex items-center gap-1 text-[13px] font-medium text-foreground"
+            className="group flex shrink-0 items-center gap-1 text-[13px] font-medium text-foreground"
           >
-            All databases
+            All {ENGINES.filter((e) => e.status !== "soon").length} databases
             <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
@@ -293,7 +302,7 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
   }
   const product = id === "product";
   return (
-    <div className="grid grid-cols-[15rem_minmax(0,1fr)] gap-8">
+    <div className="grid grid-cols-[14rem_minmax(0,1fr)] gap-6 p-3">
       {product ? (
         <Feature
           to="/features"
@@ -458,7 +467,12 @@ export function SiteHeader() {
         className="absolute inset-x-0 top-full hidden pt-2 md:block"
       >
         <div className={cn(FRAME, "px-4 lg:px-10")}>
-          <div className="animate-in rounded-2xl bg-popover p-5 shadow-[0_0_0_1px_var(--border),0_30px_80px_-24px_rgb(0_0_0/0.6)] backdrop-blur-xl duration-200 fade-in-0 slide-in-from-top-2">
+          <div
+            className={cn(
+              "animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] backdrop-blur-xl duration-150 fade-in-0 slide-in-from-top-1",
+              menu === "databases" ? "max-w-[52rem]" : "max-w-[48rem]",
+            )}
+          >
             {menu && <MenuPanel id={menu} onPick={() => setMenu(null)} />}
           </div>
         </div>
