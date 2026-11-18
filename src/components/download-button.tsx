@@ -43,16 +43,16 @@ const DEFAULT_PLATFORM: Record<OS, Platform> = {
 const OS_NAME: Record<OS, string> = { macos: "macOS", windows: "Windows", linux: "Linux" };
 
 /**
- * Inside the marketing site (`.site`) the button takes the site's look: Linear's
- * pill buttons, the same fills and heights as `siteButton`. The signed-in app keeps
- * the shadcn button it sits beside.
+ * Inside the marketing site (`.site`) the button takes the site's look, the
+ * same fills and heights as `siteButton`. The signed-in app keeps the shadcn
+ * button it sits beside.
  */
 const SITE_LOOK = {
-  base: "[.site_&]:rounded-full [.site_&]:font-[510] [.site_&]:active:scale-[0.97]",
+  base: "[.site_&]:rounded-lg [.site_&]:font-medium [.site_&]:active:scale-[0.97]",
   default:
-    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-primary/90 [.site_&]:text-primary-foreground [.site_&]:shadow-none [.site_&]:hover:bg-primary",
+    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-primary [.site_&]:text-primary-foreground [.site_&]:shadow-[0_1px_0_0_rgb(255_255_255/0.2)_inset] [.site_&]:hover:bg-primary/88",
   outline:
-    "[.site_&]:border-transparent [.site_&]:bg-ink/[0.05] [.site_&]:text-foreground [.site_&]:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_3%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--ink)_4%,transparent),0_0_0_1px_var(--edge),0_4px_4px_rgb(0_0_0/0.1)] [.site_&]:hover:bg-ink/[0.08]",
+    "[.site_&]:border-transparent [.site_&]:bg-secondary [.site_&]:text-foreground [.site_&]:shadow-[0_0_0_1px_var(--border)_inset] [.site_&]:hover:bg-accent",
   lg: "[.site_&]:h-11 [.site_&]:px-5 [.site_&]:text-[15px]",
   sm: "[.site_&]:h-8 [.site_&]:text-[13px]",
 };

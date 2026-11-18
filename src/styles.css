@@ -162,125 +162,124 @@
   --raised: oklch(0.12 0 0);
 }
 
-/* The marketing site: dark only, in the Linear manner. A near-black page with
-   the faintest cool tint, four steps of text (primary, soft, muted, faint),
-   surfaces that rise in small steps, and hairlines of white at low alpha. The
-   amber accent stays, used sparingly. Applied by the `site` class on the
-   marketing shell, so the signed-in app keeps its own themes. */
+/* The marketing site (v3). Dark first: a true-black page, one surface step,
+   white-alpha hairlines that draw the page's frame, and text in four steps
+   (foreground, soft, muted, faint). Monochrome, with white as the action
+   color; the amber accent is kept for small live-state marks only. Applied
+   by the `site` class on the marketing shell, so the signed-in app keeps its
+   own themes. Contrast on #000: foreground 21:1, soft 13:1, muted 6.6:1,
+   faint 3.4:1 (faint is for non-essential meta only). */
 .site {
-  --background: #08090a;
-  --foreground: #f7f8f8;
-  --soft: #d0d6e0;
-  --muted-foreground: #8a8f98;
-  --faint: #62666d;
-  --card: #0f1011;
-  --card-foreground: #f7f8f8;
-  --raised: #141516;
-  --popover: #141516;
-  --popover-foreground: #f7f8f8;
-  --primary: #f7f8f8;
-  --primary-foreground: #08090a;
-  --secondary: #1c1d1f;
-  --secondary-foreground: #f7f8f8;
-  --muted: #141516;
-  --accent: #1c1d1f;
-  --accent-foreground: #f7f8f8;
-  --border: rgb(255 255 255 / 0.08);
-  --input: rgb(255 255 255 / 0.1);
-  --ring: rgb(255 255 255 / 0.35);
+  --ink: #ffffff;
+  --edge: rgb(255 255 255 / 0.06);
+  --background: #000000;
+  --foreground: #fafafa;
+  --soft: #c8c8c8;
+  --muted-foreground: #8f8f8f;
+  --faint: #5c5c5c;
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --raised: #111111;
+  --popover: #0a0a0a;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #000000;
+  --secondary: #141414;
+  --secondary-foreground: #fafafa;
+  --muted: #111111;
+  --accent: #161616;
+  --accent-foreground: #fafafa;
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: rgb(255 255 255 / 0.4);
   --copper: oklch(0.844 0.172 84.9);
   color-scheme: dark;
   background-color: var(--background);
   color: var(--foreground);
-  font-family: "Inter Variable", "Geist Variable", system-ui, sans-serif;
+  font-family:
+    "Inter Variable",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-feature-settings: "cv11", "ss01", "ss03";
 }
-/* Marketing headlines follow Linear's title scale: Inter at weight 510,
-   -0.022em tracking, tight leading. Unlayered on purpose, so it sets every
-   page's headings the same way whatever weight and tracking utilities they
-   carry. */
+.site h1,
+.site h2,
+.site h3 {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
 .site h1,
 .site h2 {
-  font-weight: 510;
-  letter-spacing: -0.022em;
-  line-height: 1.06;
-}
-/* `ink` is the colour every hairline and tint is mixed from: white on the
-   dark site, near-black on the light one, so `bg-ink/[0.04]` reads the same
-   way in both. */
-.site {
-  --ink: #ffffff;
-  /* Outer edge of the translucent secondary button. */
-  --edge: rgb(0 0 0 / 0.6);
+  line-height: 1.08;
 }
 html:has(.site),
 body:has(.site) {
-  background-color: #08090a;
+  background-color: #000;
   color-scheme: dark;
 }
 
-/* Light. The site follows the theme switch in the header (system, light or
-   dark); html carries `light` or `dark`. Product mockups and screenshots
-   (`.keep-dark`) stay dark: they show the app as it ships. */
 html.light .site {
-  --ink: #08090a;
-  --background: #fbfbfa;
-  --foreground: #121314;
-  --soft: #3b3f45;
-  --muted-foreground: #62666d;
-  --faint: #8a8f98;
-  --card: #ffffff;
-  --card-foreground: #121314;
-  --raised: #f3f3f2;
+  --ink: #000000;
+  --edge: rgb(0 0 0 / 0.06);
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --soft: #333333;
+  --muted-foreground: #6b6b6b;
+  --faint: #9a9a9a;
+  --card: #fafafa;
+  --card-foreground: #0a0a0a;
+  --raised: #f4f4f4;
   --popover: #ffffff;
-  --popover-foreground: #121314;
-  --primary: #121314;
-  --primary-foreground: #fbfbfa;
-  --secondary: #efefee;
-  --secondary-foreground: #121314;
-  --muted: #f3f3f2;
-  --accent: #ececeb;
-  --accent-foreground: #121314;
-  --border: rgb(8 9 10 / 0.09);
-  --input: rgb(8 9 10 / 0.12);
-  --ring: rgb(8 9 10 / 0.35);
-  --edge: rgb(8 9 10 / 0.12);
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f4f4f4;
+  --accent: #efefef;
+  --accent-foreground: #0a0a0a;
+  --border: rgb(0 0 0 / 0.08);
+  --input: rgb(0 0 0 / 0.12);
+  --ring: rgb(0 0 0 / 0.35);
   color-scheme: light;
 }
 html.light:has(.site),
 html.light body:has(.site) {
-  background-color: #fbfbfa;
+  background-color: #fff;
   color-scheme: light;
 }
+/* Product screens stay dark in both themes: they show the app as it ships. */
 html.light .site .keep-dark,
 html.light .site.keep-dark {
   --ink: #ffffff;
-  --edge: rgb(0 0 0 / 0.6);
-  --background: #08090a;
-  --foreground: #f7f8f8;
-  --soft: #d0d6e0;
-  --muted-foreground: #8a8f98;
-  --faint: #62666d;
-  --card: #0f1011;
-  --card-foreground: #f7f8f8;
-  --raised: #141516;
-  --popover: #141516;
-  --popover-foreground: #f7f8f8;
-  --primary: #f7f8f8;
-  --primary-foreground: #08090a;
-  --secondary: #1c1d1f;
-  --secondary-foreground: #f7f8f8;
-  --muted: #141516;
-  --accent: #1c1d1f;
-  --accent-foreground: #f7f8f8;
-  --border: rgb(255 255 255 / 0.08);
-  --input: rgb(255 255 255 / 0.1);
-  --ring: rgb(255 255 255 / 0.35);
+  --background: #000000;
+  --foreground: #fafafa;
+  --soft: #c8c8c8;
+  --muted-foreground: #8f8f8f;
+  --faint: #5c5c5c;
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --raised: #111111;
+  --popover: #0a0a0a;
+  --primary: #fafafa;
+  --primary-foreground: #000000;
+  --secondary: #141414;
+  --muted: #111111;
+  --accent: #161616;
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.12);
   color-scheme: dark;
   color: var(--foreground);
 }
-/* Screenshots are dimmed to sit in the dark page; on the light one, not. */
-html.light .site img:not(.keep-dark img) {
-  filter: grayscale(1) contrast(1.05);
+
+/* Dotted grid behind the hero and the closing call to action. */
+.site .dot-grid {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--ink) 14%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
 }
 
 /* Sections rise into place as they scroll into view: each direct child of a
@@ -304,18 +303,6 @@ html.light .site img:not(.keep-dark img) {
       animation-range: entry 0% entry 60%;
     }
   }
-}
-
-/* Every image and coded mockup (`.mono-shot`) on the marketing site is shown
-   in black and white: grayscale, a touch more contrast, slightly dimmed so it
-   sits in the dark page. It stays that way on hover; only the zoom lightbox
-   shows the original colors, for someone inspecting a screenshot. */
-.site img,
-.site .mono-shot {
-  filter: grayscale(1) contrast(1.12) brightness(0.9);
-}
-.site dialog[open] img {
-  filter: none;
 }
 
 /* Edge fades for product mockups: the UI dissolves into the page instead of

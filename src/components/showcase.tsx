@@ -34,7 +34,7 @@ const SPAN = {
 } as const;
 
 /** Plays muted on a loop once it scrolls into view; a still frame with reduced motion. */
-function LoopVideo({ media }: { media: Extract<Media, { kind: "video" }> }) {
+export function LoopVideo({ media }: { media: Extract<Media, { kind: "video" }> }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const video = ref.current;

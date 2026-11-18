@@ -4,8 +4,19 @@ import { ArrowRightIcon } from "lucide-react";
 import { SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { cn } from "#/lib/utils";
 
-/** Page width shared by the header, footer, and every marketing page. */
-export const WRAP = "mx-auto w-full max-w-[1200px] px-6 md:px-8";
+/**
+ * The marketing site's layout. Every page sits in one framed column: hairline
+ * rails on the left and right (from lg up), and a hairline between sections
+ * that runs rail to rail. Content inside gets the same side padding, so text,
+ * grids and screens line up down the whole page.
+ */
+
+/** Width of the frame. The header, footer and every section share it. */
+export const FRAME = "mx-auto w-full max-w-[1240px]";
+/** Inside padding of a frame row. */
+export const GUTTER = "px-6 md:px-10 lg:px-14";
+/** A content row: frame width plus gutter. */
+export const WRAP = cn(FRAME, GUTTER);
 
 /**
  * The marketing site's root, with its own palette (see `.site` in
@@ -14,9 +25,9 @@ export const WRAP = "mx-auto w-full max-w-[1200px] px-6 md:px-8";
 export const SITE = "site min-h-screen bg-background text-foreground";
 
 /**
- * Marketing buttons, from Linear's button spec: pill corners, weight 510,
- * 32 / 40 / 44px tall. Primary is the light "invert" fill; secondary is a
- * translucent fill with an inset hairline ring.
+ * Buttons: 8px corners, weight 500. Primary is the solid light fill (the one
+ * action per view); secondary is a raised surface with a hairline; ghost is
+ * text that fills on hover.
  */
 export function siteButton({
   variant = "primary",
@@ -26,37 +37,62 @@ export function siteButton({
   size?: "sm" | "md" | "lg";
 } = {}) {
   return cn(
-    "inline-flex shrink-0 items-center justify-center rounded-full font-[510] whitespace-nowrap transition-[background-color,color,box-shadow,scale] duration-150 ease-out outline-none select-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
-    size === "sm" && "h-8 gap-2 px-3 text-[13px]",
-    size === "md" && "h-10 gap-2 px-3.5 text-[13px]",
-    size === "lg" && "h-11 gap-1.5 px-5 text-[15px]",
-    variant === "primary" && "bg-primary/90 text-primary-foreground hover:bg-primary",
+    "inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-[background-color,color,box-shadow,scale] duration-150 ease-out outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
+    size === "sm" && "h-8 px-3 text-[13px]",
+    size === "md" && "h-9 px-3.5 text-[14px]",
+    size === "lg" && "h-11 px-5 text-[15px]",
+    variant === "primary" &&
+      "bg-primary text-primary-foreground shadow-[0_1px_0_0_rgb(255_255_255/0.2)_inset] hover:bg-primary/88",
     variant === "secondary" &&
-      "bg-ink/[0.05] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_3%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--ink)_4%,transparent),0_0_0_1px_var(--edge),0_4px_4px_rgb(0_0_0/0.1)] backdrop-blur-sm hover:bg-ink/[0.08]",
-    variant === "ghost" && "text-muted-foreground hover:bg-ink/[0.05] hover:text-foreground",
+      "bg-secondary text-foreground shadow-[0_0_0_1px_var(--border)_inset] hover:bg-accent",
+    variant === "ghost" && "text-muted-foreground hover:bg-ink/[0.06] hover:text-foreground",
   );
 }
 
-/** Small label above a heading: an optional section number, then the name. */
+/** Small label above a heading: an optional icon (or section number), then the name. */
 export function Eyebrow({
   children,
   index,
+  icon: Icon,
   className,
 }: {
   children: React.ReactNode;
-  /** Section number in Linear's style, e.g. "1.0". */
+  /** Section number, e.g. "01". */
   index?: string;
+  icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   className?: string;
 }) {
   return (
     <p
       className={cn(
-        "flex items-center gap-2 text-[13px] font-[510] text-muted-foreground",
+        "flex items-center gap-2 text-[13px] font-medium text-muted-foreground",
         className,
       )}
     >
-      {index && <span className="text-faint tabular-nums">{index}</span>}
+      {Icon && <Icon className="size-[15px] shrink-0" strokeWidth={1.75} />}
+      {index && <span className="font-mono text-[12px] text-faint tabular-nums">{index}</span>}
       {children}
+    </p>
+  );
+}
+
+/**
+ * The house sentence: a bright lead that says the point, then the rest in
+ * the muted color. "Run any SQL. Results stream in as they arrive."
+ */
+export function Lead({
+  lead,
+  children,
+  className,
+}: {
+  lead: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={cn("text-pretty text-muted-foreground", className)}>
+      <span className="font-medium text-foreground">{lead}</span>
+      {children && <> {children}</>}
     </p>
   );
 }
@@ -67,7 +103,7 @@ export function ArrowLink({ children, className, ...props }: React.ComponentProp
     <Link
       {...props}
       className={cn(
-        "group inline-flex items-center gap-1.5 text-[15px] text-muted-foreground transition-colors hover:text-foreground",
+        "group inline-flex items-center gap-1.5 text-[14px] font-medium text-foreground transition-colors hover:text-soft",
         className,
       )}
     >
@@ -79,7 +115,7 @@ export function ArrowLink({ children, className, ...props }: React.ComponentProp
   );
 }
 
-/** A full-width page band with the standard rhythm and a hairline on top. */
+/** A frame row with a hairline on top: the unit every page is stacked from. */
 export function Section({
   id,
   className,
@@ -89,7 +125,7 @@ export function Section({
 }: {
   id?: string;
   className?: string;
-  /** Classes for the inner, width-capped container. */
+  /** Classes for the inner, padded container. */
   inner?: string;
   children: React.ReactNode;
   border?: boolean;
@@ -97,81 +133,116 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn("relative scroll-mt-16", border && "border-t border-border", className)}
+      className={cn("relative scroll-mt-20", border && "border-t border-border", className)}
     >
-      <div className={cn(WRAP, "reveal py-24 md:py-36", inner)}>{children}</div>
+      <div className={cn(GUTTER, "py-20 md:py-28", inner)}>{children}</div>
     </section>
   );
 }
 
-/**
- * The Linear section opener: a large headline on the left, and on the right a
- * paragraph in the soft text color with an optional "Learn more" link.
- */
+/** A section opener: eyebrow, headline, and one lead sentence under it. */
 export function SectionIntro({
   eyebrow,
   index,
+  icon,
   title,
   children,
   link,
   as: Heading = "h2",
+  align = "start",
   className,
 }: {
   eyebrow?: React.ReactNode;
   index?: string;
+  icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   title: React.ReactNode;
   children?: React.ReactNode;
   link?: { to: React.ComponentProps<typeof Link>["to"]; hash?: string; label?: string };
   as?: "h1" | "h2";
+  align?: "start" | "center";
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start md:gap-16 lg:gap-24",
+        "flex max-w-2xl flex-col",
+        align === "center" && "mx-auto items-center text-center",
         className,
       )}
     >
-      <div>
-        {eyebrow && <Eyebrow index={index}>{eyebrow}</Eyebrow>}
-        <Heading
-          className={cn(
-            "text-[2.25rem] text-balance sm:text-[2.5rem] md:text-[3rem]",
-            eyebrow && "mt-5",
-          )}
-        >
-          {title}
-        </Heading>
-      </div>
-      {(children || link) && (
-        <div className={cn("md:pt-1", eyebrow && "md:pt-10")}>
-          {children && (
-            <div className="space-y-4 text-[17px] leading-[1.6] text-pretty text-soft md:text-[1.25rem] md:leading-[1.5] [&_strong]:font-[510] [&_strong]:text-foreground">
-              {children}
-            </div>
-          )}
-          {link && (
-            <ArrowLink to={link.to} hash={link.hash} className="mt-8">
-              {link.label ?? "Learn more"}
-            </ArrowLink>
-          )}
+      {eyebrow && (
+        <Eyebrow index={index} icon={icon}>
+          {eyebrow}
+        </Eyebrow>
+      )}
+      <Heading
+        className={cn(
+          "text-[2rem] text-balance sm:text-[2.5rem] md:text-[2.875rem]",
+          eyebrow && "mt-4",
+        )}
+      >
+        {title}
+      </Heading>
+      {children && (
+        <div className="mt-5 space-y-4 text-[16px] leading-[1.6] text-pretty text-muted-foreground md:text-[17px] [&_strong]:font-medium [&_strong]:text-foreground">
+          {children}
         </div>
+      )}
+      {link && (
+        <ArrowLink to={link.to} hash={link.hash} className="mt-6">
+          {link.label ?? "Learn more"}
+        </ArrowLink>
       )}
     </div>
   );
 }
 
 /**
- * A product-UI panel: the app's dark surface, a hairline border, and a faint
- * top highlight. Mockups are composed from these, often overlapped and faded
- * at the edges with the `fade-*` utilities.
+ * A grid whose cells are split by hairlines instead of gaps, the way the
+ * frame splits sections. Children should be `Cell`s.
+ */
+export function CellGrid({
+  cols = 3,
+  className,
+  children,
+}: {
+  cols?: 2 | 3 | 4;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 gap-px overflow-hidden border-y border-border bg-border",
+        cols === 2 && "md:grid-cols-2",
+        cols === 3 && "md:grid-cols-2 lg:grid-cols-3",
+        cols === 4 && "sm:grid-cols-2 lg:grid-cols-4",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function Cell({ className, children, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div {...props} className={cn("bg-background p-7 md:p-9", className)}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * A product screen: the app's dark surface in a hairline frame with a faint
+ * inner highlight. Screenshots and coded mockups sit inside one.
  */
 export function Panel({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       {...props}
       className={cn(
-        "keep-dark dark overflow-hidden rounded-xl border border-ink/[0.08] bg-[#0b0c0d] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_6%,transparent)_inset,0_24px_60px_-12px_rgb(0_0_0/0.6)]",
+        "keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0a] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset,0_30px_80px_-20px_rgb(0_0_0/0.7)]",
         className,
       )}
     >
@@ -184,7 +255,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <div className={cn(SITE, "flex flex-col")}>
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className={cn(FRAME, "flex-1 border-border lg:border-x")}>{children}</main>
       <SiteFooter />
     </div>
   );
@@ -205,28 +276,23 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden">
-      {/* A soft light from above, the only decoration on the page header. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-80 bg-[radial-gradient(60%_100%_at_50%_0%,rgb(255_255_255/0.06),transparent)]"
-      />
-      <div className={cn(WRAP, "relative pt-20 pb-14 md:pt-28 md:pb-20")}>
+    <section className="relative">
+      <div className={cn(GUTTER, "pt-16 pb-12 md:pt-24 md:pb-16")}>
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
         <h1
           className={cn(
-            "max-w-4xl text-[2.5rem] text-balance sm:text-[3.25rem] md:text-[4rem]",
-            eyebrow && "mt-5",
+            "max-w-3xl text-[2.375rem] text-balance sm:text-[3rem] md:text-[3.5rem]",
+            eyebrow && "mt-4",
           )}
         >
           {title}
         </h1>
         {description && (
-          <p className="mt-6 max-w-2xl text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-xl md:leading-[1.5]">
+          <p className="mt-5 max-w-2xl text-[16px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
             {description}
           </p>
         )}
-        {actions && <div className="mt-9 flex flex-wrap items-center gap-3">{actions}</div>}
+        {actions && <div className="mt-8 flex flex-wrap items-center gap-3">{actions}</div>}
         {children}
       </div>
     </section>
@@ -235,7 +301,7 @@ export function PageHeader({
 
 /**
  * Page content, optionally with a sticky index beside it on wide screens. The
- * reading column caps at 48rem so long text keeps a comfortable measure.
+ * reading column caps at 46rem so long text keeps a comfortable measure.
  */
 export function PageBody({
   aside,
@@ -244,21 +310,21 @@ export function PageBody({
   children,
 }: {
   aside?: React.ReactNode;
-  /** A right-hand column on wide screens: the sponsor card on docs-style pages. */
+  /** A right-hand column on wide screens. */
   rail?: React.ReactNode;
-  /** Let the content use the full page width (grids, cards). */
+  /** Let the content use the full width (grids, cards). */
   wide?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div
       className={cn(
-        WRAP,
-        "border-t border-border py-14 md:py-20",
-        aside && !rail && "grid grid-cols-1 gap-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-20",
+        GUTTER,
+        "border-t border-border py-12 md:py-16",
+        aside && !rail && "grid grid-cols-1 gap-10 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-16",
         aside &&
           rail &&
-          "grid grid-cols-1 gap-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[13rem_minmax(0,1fr)_15rem]",
+          "grid grid-cols-1 gap-10 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[12rem_minmax(0,1fr)_14rem]",
       )}
     >
       {aside && (
@@ -266,7 +332,7 @@ export function PageBody({
           <div className="sticky top-24">{aside}</div>
         </aside>
       )}
-      <div className={cn("min-w-0", !wide && "max-w-3xl")}>{children}</div>
+      <div className={cn("min-w-0", !wide && "max-w-[46rem]")}>{children}</div>
       {rail && (
         <aside className="hidden xl:block" aria-label="Sponsors">
           <div className="sticky top-24">{rail}</div>
