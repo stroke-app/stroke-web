@@ -180,6 +180,8 @@ export const auth = betterAuth({
                 userId: metadataUserId(payload.data.metadata),
                 plan: metadataPlan(payload.data.metadata),
                 email: payload.data.customer.email,
+                customerName: payload.data.customer.name ?? undefined,
+                productIds: (payload.data.product_cart ?? []).map((p) => p.product_id),
               },
             });
           },

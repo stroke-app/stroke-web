@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import * as z from "zod";
 
-import { NextLinks, PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
+import { PageHeader, PageShell, siteButton } from "#/components/page";
+import { SponsorButton, SponsorProgress } from "#/components/sponsor-goal";
 import { REPO_URL, seo } from "#/lib/seo";
 import {
+  SIGNING_GOAL_USD,
+  SIGNING_GOALS,
   SPONSOR_MAILTO,
   SPONSOR_TIERS,
   SPONSOR_URL,
@@ -11,14 +15,18 @@ import {
   type SponsorTier,
   type SponsorTierId,
 } from "#/lib/sponsors";
+import { sponsorStatusQueryOptions } from "#/lib/sponsors/functions";
 import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/sponsors")({
+  validateSearch: z.object({ thanks: z.string().optional() }),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(sponsorStatusQueryOptions()).catch(() => null),
   head: () =>
     seo({
-      title: "Sponsors · Stroke database client",
+      title: "Sponsor Stroke · Help sign it for macOS and Windows",
       description:
-        "Sponsor Stroke, the fast native database client built in the open. Sponsorship pays for development time, signed builds, and new database engines.",
+        "Help pay for the Apple and Windows signing certificates that let Stroke install without warnings. Give any amount; it goes to the certificates first.",
       path: "/sponsors",
       breadcrumbs: [{ name: "Sponsors", path: "/sponsors" }],
     }),
@@ -111,47 +119,119 @@ function TierSection({ tier }: { tier: SponsorTier }) {
 }
 
 function SponsorsPage() {
+  const { thanks } = Route.useSearch();
   return (
     <PageShell>
       <PageHeader
-        eyebrow="Sponsors"
-        title="Sponsor Stroke"
-        description="Stroke is a fast, native database client, with its source on GitHub. Sponsorship pays for the time to keep it fast, the signed builds on every platform, and the next database engines."
+        eyebrow="Sponsor"
+        title="Help sign Stroke for macOS and Windows."
+        description={`Right now macOS warns that Stroke is from an unidentified developer, and Windows SmartScreen calls the installer unrecognized. Signing certificates fix both, and they cost $${SIGNING_GOAL_USD} a year. Give any amount: every dollar goes to them first.`}
         actions={
           <>
+            <SponsorButton />
             <a
               href={SPONSOR_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={siteButton({ size: "lg" })}
+              className={siteButton({ variant: "secondary", size: "lg" })}
             >
-              Become a sponsor
-            </a>
-            <a href={SPONSOR_MAILTO} className={siteButton({ variant: "ghost", size: "lg" })}>
-              Email about sponsoring
+              GitHub Sponsors
             </a>
           </>
         }
-      />
-      <PageBody wide>
-        <div className="space-y-16 md:space-y-20">
+      >
+        {thanks && (
+          <p
+            role="status"
+            className="mt-8 max-w-xl rounded-xl bg-ink/[0.05] px-5 py-4 text-[15px] text-soft shadow-[0_0_0_1px_var(--border)_inset]"
+          >
+            <span className="font-medium text-foreground">Thank you.</span> Your sponsorship is on
+            its way to the goal below. It can take a minute to show.
+          </p>
+        )}
+      </PageHeader>
+
+      <section aria-label="Progress" className="border-t border-border">
+        <div className="grid grid-cols-1 gap-px bg-border lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="bg-background px-6 py-12 md:px-10 lg:px-14">
+            <SponsorProgress />
+            <p className="mt-6 text-[14px] leading-relaxed text-pretty text-muted-foreground">
+              Counted over the last 12 months, since both certificates renew yearly. Anything above
+              the goal pays for build machines and new database engines.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2">
+            {SIGNING_GOALS.map((g) => (
+              <li key={g.id} className="bg-background p-6 md:p-8">
+                <p className="text-[13px] text-muted-foreground tabular-nums">${g.usd} a year</p>
+                <p className="mt-3 text-[16px] font-medium">{g.title}</p>
+                <p className="mt-2 text-[14px] leading-relaxed text-pretty text-muted-foreground">
+                  {g.body}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section aria-label="How it works" className="border-t border-border">
+        <div className="grid grid-cols-1 gap-px bg-border md:grid-cols-3">
+          {[
+            {
+              t: "Pick the amount.",
+              b: "$5, $50, or whatever you like. Checkout is handled by Dodo Payments, card or wallet.",
+            },
+            {
+              t: "It goes to signing first.",
+              b: "Until the year's certificates are paid, nothing else comes out of it.",
+            },
+            {
+              t: "Companies get a logo.",
+              b: "Sponsoring as a team? Email me and your logo goes on this page.",
+            },
+          ].map((x) => (
+            <div key={x.t} className="bg-background p-6 md:p-8">
+              <p className="text-[15px] leading-[1.55] text-pretty text-muted-foreground">
+                <span className="font-medium text-foreground">{x.t}</span> {x.b}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="border-t border-border px-6 py-16 md:px-10 lg:px-14">
+        <div className="space-y-16">
           {SPONSOR_TIERS.map((tier) => (
             <TierSection key={tier.id} tier={tier} />
           ))}
         </div>
-
-        <p className="mt-16 max-w-2xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
-          Sponsorships run through GitHub Sponsors, monthly or one time. If your company needs an
-          invoice or a different arrangement, email us.
-        </p>
-
-        <NextLinks>
-          <Link to="/roadmap">See what's being built →</Link>
-          <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
-            Stroke on GitHub →
+        <p className="mt-14 max-w-2xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
+          Need an invoice or a different arrangement?{" "}
+          <a
+            href={SPONSOR_MAILTO}
+            className="text-foreground underline decoration-ink/25 underline-offset-4 hover:decoration-ink/60"
+          >
+            Email me about sponsoring
           </a>
-        </NextLinks>
-      </PageBody>
+          . Prefer code over money? The{" "}
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground underline decoration-ink/25 underline-offset-4 hover:decoration-ink/60"
+          >
+            source is on GitHub
+          </a>{" "}
+          and the{" "}
+          <Link
+            to="/roadmap"
+            className="text-foreground underline decoration-ink/25 underline-offset-4 hover:decoration-ink/60"
+          >
+            roadmap
+          </Link>{" "}
+          says what's next.
+        </p>
+      </div>
     </PageShell>
   );
 }

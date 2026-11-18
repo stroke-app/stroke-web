@@ -9,3 +9,4 @@ export * from "./sync.schema";
 export * from "./signins.schema";
 export * from "./shares.schema";
 export * from "./backups.schema";
+export * from "./sponsors.schema";

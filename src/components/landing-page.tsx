@@ -38,6 +38,7 @@ import {
   siteButton,
 } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
+import { SponsorBand } from "#/components/sponsor-goal";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
@@ -55,6 +56,7 @@ export function LandingPage() {
       <Reviews />
       <PricingTeaser />
       <Faq />
+      <SponsorBand />
       <ClosingCta />
     </PageShell>
   );
