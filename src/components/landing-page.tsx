@@ -21,9 +21,10 @@ import {
   TableIcon,
   TerminalIcon,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 
 import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
+import { HeroConsole, SCENES } from "#/components/hero-console";
 import {
   ArrowLink,
   Cell,
@@ -81,84 +82,89 @@ function ReleasePill() {
   );
 }
 
-/** The AI demo recording: plays once it's on screen, a still with reduced motion. */
-function HeroDemo() {
-  const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const v = ref.current;
-    if (!v || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    v.play().catch(() => {});
-  }, []);
-  return (
-    <video
-      ref={ref}
-      src="/shots/ai-demo.mp4"
-      poster="/shots/ai-demo-poster.webp"
-      width={1600}
-      height={1004}
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      aria-label="Asking Stroke's AI chat about a database: it reads the schema, runs queries and charts the answer"
-      className="block h-auto w-full"
-    />
-  );
-}
+/** Fact cells under the console: things that are true today, no fluff. */
+const HERO_FACTS = [
+  { k: `${SHIPPED_ENGINES.length}`, v: "databases, SQL and not" },
+  { k: "3", v: "platforms, native on each" },
+  { k: "MCP", v: "built in, for any agent" },
+  { k: PRO_PRICE, v: "once, no subscription" },
+];
 
 function Hero() {
+  const [scene, setScene] = useState(0);
+  const engine = SCENES[scene]!;
   return (
     <section className="relative isolate overflow-hidden">
       <div
         aria-hidden="true"
-        className="dot-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(70%_60%_at_50%_0%,black,transparent)]"
+        className="dot-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(80%_70%_at_30%_0%,black,transparent)]"
       />
-      <div className={cn(GUTTER, "flex flex-col items-center pt-16 text-center md:pt-24")}>
-        <div className="animate-fade-up">
-          <ReleasePill />
+      {/* The engine's own color, very faint, follows the console. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-40 left-1/4 -z-10 size-[42rem] rounded-full opacity-[0.13] blur-[120px] transition-[background-color] duration-700"
+        style={{ backgroundColor: engine.color }}
+      />
+      <div className={cn(GUTTER, "pt-14 md:pt-20")}>
+        <ReleasePill />
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-14">
+          <h1 className="text-[2.75rem] leading-[0.98] tracking-[-0.05em] sm:text-[4rem] md:text-[5rem]">
+            One window
+            <br />
+            for {/* Every name stacked in one cell, so the line never jumps width. */}
+            <span className="inline-grid align-bottom">
+              {SCENES.map((s) => (
+                <span
+                  key={s.id}
+                  aria-hidden={s.id !== engine.id}
+                  className={cn(
+                    "col-start-1 row-start-1 transition-[opacity,translate,filter] duration-300 ease-out",
+                    s.id === engine.id
+                      ? "blur-0 translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-3 opacity-0 blur-[6px]",
+                  )}
+                  style={{ color: s.id === engine.id ? s.color : undefined }}
+                >
+                  {s.engine}
+                </span>
+              ))}
+            </span>
+          </h1>
+          <div className="lg:pb-2">
+            <p className="max-w-md text-[17px] leading-[1.6] text-pretty text-muted-foreground">
+              <span className="text-foreground">
+                Stroke is a native client for {SHIPPED_ENGINES.length} databases.
+              </span>{" "}
+              Query, edit, chart and back up all of them with the same shortcuts, or hand them to
+              Claude and Cursor over MCP.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <SmartDownloadButton size="lg" variant="default" alternates={false} />
+              <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
+                See pricing
+              </Link>
+            </div>
+            <p className="mt-4 text-[13px] text-muted-foreground">
+              macOS, Windows, Linux · {TRIAL_DAYS} days free
+            </p>
+          </div>
         </div>
-        <h1
-          className="animate-fade-up mt-7 max-w-[15ch] text-[2.75rem] leading-[1.02] tracking-[-0.045em] text-balance sm:text-[3.75rem] md:text-[4.5rem]"
-          style={{ animationDelay: "60ms" }}
-        >
-          Every database you run, in one fast app.
-        </h1>
-        <p
-          className="animate-fade-up mt-6 max-w-[54ch] text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]"
-          style={{ animationDelay: "120ms" }}
-        >
-          <span className="text-foreground">
-            Stroke is a native client for Postgres, MySQL, SQLite, MongoDB, Redis and{" "}
-            {SHIPPED_ENGINES.length - 5} more.
-          </span>{" "}
-          Query, edit, chart and back up, or hand the database to Claude or Cursor over MCP.
-        </p>
-        <div
-          className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-3"
-          style={{ animationDelay: "180ms" }}
-        >
-          <SmartDownloadButton size="lg" variant="default" align="center" alternates={false} />
-          <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
-            See pricing
-          </Link>
-        </div>
-        <p
-          className="animate-fade-up mt-5 text-[13px] text-muted-foreground"
-          style={{ animationDelay: "200ms" }}
-        >
-          macOS, Windows and Linux · {TRIAL_DAYS}-day free trial · {PRO_PRICE} once, no subscription
-        </p>
       </div>
 
-      {/* The product, as large as the frame allows. */}
-      <div
-        className={cn(GUTTER, "animate-fade-up mt-14 md:mt-20")}
-        style={{ animationDelay: "260ms" }}
-      >
-        <Panel className="rounded-b-none">
-          <HeroDemo />
-        </Panel>
+      <div className={cn(GUTTER, "mt-12 md:mt-16")}>
+        <HeroConsole index={scene} onIndex={setScene} />
       </div>
+
+      <dl className="mt-12 grid grid-cols-2 gap-px border-t border-border bg-border md:mt-16 lg:grid-cols-4">
+        {HERO_FACTS.map((f) => (
+          <div key={f.v} className="flex flex-col bg-background px-6 py-6 md:px-10">
+            <dt className="text-[13px] text-muted-foreground">{f.v}</dt>
+            <dd className="order-first text-[28px] font-semibold tracking-[-0.03em] tabular-nums">
+              {f.k}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

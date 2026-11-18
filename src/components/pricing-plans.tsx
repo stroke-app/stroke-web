@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { CheckIcon, MinusIcon } from "lucide-react";
 
 import { SmartDownloadButton } from "#/components/download-button";
-import { GiveawayCard } from "#/components/giveaway";
 import { Cell, CellGrid, Eyebrow, GUTTER, SectionIntro, siteButton } from "#/components/page";
 import { useAuth } from "#/lib/auth/hooks";
 import { TEAM_PRICE_USD } from "#/lib/billing/plans";
@@ -220,12 +219,6 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
           </Cell>
         ))}
       </CellGrid>
-
-      {as === "h1" && (
-        <div className={cn(GUTTER, "border-t border-border py-16")}>
-          <GiveawayCard />
-        </div>
-      )}
     </section>
   );
 }
