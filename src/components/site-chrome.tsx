@@ -5,7 +5,6 @@ import {
   BookOpenIcon,
   BotIcon,
   ChevronDownIcon,
-  DatabaseBackupIcon,
   GitCompareArrowsIcon,
   HeartIcon,
   LayersIcon,

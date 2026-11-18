@@ -17,6 +17,7 @@ import posthog from "posthog-js";
 import { AccountDevices } from "#/components/account-devices";
 import { appButton } from "#/components/app-ui";
 import { SmartDownloadButton } from "#/components/download-button";
+import { useNow } from "#/components/license-panel";
 import { SyncStatus } from "#/components/sync-status";
 import { useAuth } from "#/lib/auth/hooks";
 import { backupsQueryOptions, formatBytes } from "#/lib/backups/client";
@@ -115,6 +116,7 @@ function StatLink({
 
 function PlanStat() {
   const { data: plan, isPending } = useQuery(accountPlanQueryOptions());
+  const now = useNow();
   if (isPending || !plan) {
     return (
       <Stat
@@ -135,9 +137,10 @@ function PlanStat() {
       />
     );
   }
-  const left = plan.trialEndsAt
-    ? Math.max(0, Math.ceil((plan.trialEndsAt - Date.now()) / DAY))
-    : plan.trialDays;
+  const left =
+    plan.trialEndsAt && now !== null
+      ? Math.max(0, Math.ceil((plan.trialEndsAt - now) / DAY))
+      : plan.trialDays;
   const used = Math.min(1, Math.max(0, 1 - left / plan.trialDays));
   return (
     <Stat
