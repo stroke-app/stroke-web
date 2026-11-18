@@ -106,11 +106,10 @@ export function LicensePanel({
           <Badge tone="success">Active</Badge>
         </div>
 
-        <p className="mt-5 text-[13px] font-medium">License key</p>
+        <p className="mt-5 text-[13px] font-medium">License key (Stroke 2.x)</p>
         <LicenseKeyField licenseKey={license.licenseKey} />
         <p className="mt-2 text-[13px] text-pretty text-muted-foreground">
-          Paste it into <span className="text-foreground">Stroke → Settings → License</span> to
-          activate a device.
+          Only for Stroke 2.x. From Stroke 3, sign in with this account and Pro comes with it.
         </p>
       </section>
 

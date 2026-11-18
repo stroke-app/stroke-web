@@ -53,7 +53,7 @@ const PAGES: Record<OS, OsPage> = {
     title: "Download Stroke for Mac · Database client for macOS",
     description:
       "Download Stroke for Mac on Apple Silicon or Intel, or install it with Homebrew. A native database client for PostgreSQL, MySQL, SQLite, ClickHouse, DuckDB, and more. Free to try.",
-    lede: "The native database client for macOS, built for Apple Silicon and Intel. Free to try, no account needed.",
+    lede: "The native database client for macOS, built for Apple Silicon and Intel. 17 days free, then $9.99 once.",
     buildsTitle: "One build for each Mac chip",
     intro:
       "Pick Apple Silicon for any M-series Mac, and Intel for older machines. Both are the same app, compiled for each chip.",
@@ -92,7 +92,7 @@ const PAGES: Record<OS, OsPage> = {
     title: "Download Stroke for Windows · Native database client",
     description:
       "Download Stroke for Windows as an EXE or MSI installer, or install it with Scoop. A native database client for PostgreSQL, MySQL, SQL Server, SQLite, and more. Free to try.",
-    lede: "The native database client for Windows, as a regular installer or an MSI package. Free to try, no account needed.",
+    lede: "The native database client for Windows, as a regular installer or an MSI package. 17 days free, then $9.99 once.",
     buildsTitle: "An installer for every setup",
     intro:
       "Use the EXE installer for a normal setup, or the MSI if you deploy software through Group Policy or Intune.",
@@ -136,7 +136,7 @@ const PAGES: Record<OS, OsPage> = {
     title: "Download Stroke for Linux · Database client (AppImage, .deb, .rpm)",
     description:
       "Download Stroke for Linux as an AppImage, a .deb for Debian and Ubuntu, or an .rpm for Fedora and RHEL. A native database client for PostgreSQL, MySQL, SQLite, and more. Free to try.",
-    lede: "The native database client for Linux, as an AppImage, a .deb, or an .rpm. Free to try, no account needed.",
+    lede: "The native database client for Linux, as an AppImage, a .deb, or an .rpm. 17 days free, then $9.99 once.",
     buildsTitle: "A package for every distribution",
     intro:
       "The AppImage runs on almost any distribution without installing. The .deb and .rpm packages integrate with your system package manager.",
