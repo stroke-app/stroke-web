@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { overLimit, tooManyRequests } from "#/lib/desktop/rate-limit";
-import { authenticateDesktop, unauthorized } from "#/lib/desktop/service";
+import {
+  authenticateDesktop,
+  unauthorized,
+  accountHasPaidPro,
+  paidProRequired,
+} from "#/lib/desktop/service";
 import { syncChanges } from "#/lib/sync/service";
 
 /**
@@ -16,6 +21,8 @@ export const Route = createFileRoute("/api/sync/changes")({
       GET: async ({ request }) => {
         const auth = await authenticateDesktop(request);
         if (!auth) return unauthorized();
+        if (!(await accountHasPaidPro(auth.user.id, auth.user.email)))
+          return paidProRequired("Sync");
         // Generous: a first pull pages through, and every device polls.
         const retry = await overLimit(`sync-changes:user:${auth.user.id}`, 300, 60);
         if (retry !== null) return tooManyRequests(retry);

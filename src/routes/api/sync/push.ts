@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { SYNC_QUOTA_BYTES } from "#/lib/db/schema";
 import { overLimit, tooManyRequests } from "#/lib/desktop/rate-limit";
-import { apiError, authenticateDesktop, unauthorized } from "#/lib/desktop/service";
+import {
+  apiError,
+  authenticateDesktop,
+  unauthorized,
+  accountHasPaidPro,
+  paidProRequired,
+} from "#/lib/desktop/service";
 import { syncPush } from "#/lib/sync/service";
 
 /**
@@ -25,6 +31,8 @@ export const Route = createFileRoute("/api/sync/push")({
       POST: async ({ request }) => {
         const auth = await authenticateDesktop(request);
         if (!auth) return unauthorized();
+        if (!(await accountHasPaidPro(auth.user.id, auth.user.email)))
+          return paidProRequired("Sync");
         // The app pushes 2 s after an edit (debounced), so this is well clear.
         const retry = await overLimit(`sync-push:user:${auth.user.id}`, 120, 60);
         if (retry !== null) return tooManyRequests(retry);

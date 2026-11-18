@@ -6,7 +6,7 @@ import { and, desc, eq, inArray, lt, sql } from "drizzle-orm";
 import { auth } from "#/lib/auth/auth";
 import { db } from "#/lib/db";
 import { backupJobs, backupRuns } from "#/lib/db/schema";
-import { accountHasPro, authenticateDesktop } from "#/lib/desktop/service";
+import { accountHasPaidPro, authenticateDesktop, paidProRequired } from "#/lib/desktop/service";
 
 /**
  * Scheduled backups. The desktop app runs every job (it holds the database
@@ -47,12 +47,8 @@ export async function caller(request: Request): Promise<Caller | null> {
 export const signInRequired = () => apiError(401, "unauthorized", "Sign in to Stroke.");
 
 async function requirePro(c: Caller): Promise<Response | null> {
-  if (await accountHasPro(c.userId, c.email)) return null;
-  return apiError(
-    403,
-    "pro_required",
-    "Scheduled backups are part of Stroke Pro. Your trial has ended or this account has no Pro.",
-  );
+  if (await accountHasPaidPro(c.userId, c.email)) return null;
+  return paidProRequired("Scheduled backups");
 }
 
 /** Rejects crons that can't be read or would run more than once an hour. */
@@ -172,7 +168,7 @@ export async function listJobs(c: Caller): Promise<Response> {
     max_jobs: MAX_JOBS,
     used_bytes: await storedBytes(c.userId),
     quota_bytes: QUOTA_BYTES,
-    pro: await accountHasPro(c.userId, c.email),
+    pro: await accountHasPaidPro(c.userId, c.email),
   });
 }
 

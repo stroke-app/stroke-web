@@ -484,6 +484,27 @@ export async function accountHasPro(userId: string, email: string): Promise<bool
 }
 
 /**
+ * Pro that was paid for: a license bought with this account's email. The
+ * trial doesn't count. Sync and scheduled backups need this.
+ */
+export async function accountHasPaidPro(userId: string, email: string): Promise<boolean> {
+  const license = await resolveLicense(userId, email);
+  return (
+    !!license &&
+    !license.revokedAt &&
+    (!license.expiresAt || license.expiresAt.getTime() > Date.now())
+  );
+}
+
+/** 403 for a paid-only feature on a trial or free account. */
+export const paidProRequired = (feature: string) =>
+  apiError(
+    403,
+    "pro_required",
+    `${feature} is part of Stroke Pro. The free trial doesn't include it.`,
+  );
+
+/**
  * The account's plan as the v3 app sees it, for the dashboard: Pro from a
  * license bought with this account, else its trial (running or over).
  */
