@@ -96,7 +96,7 @@ const RESOURCES: MenuLink[] = [
   },
   {
     label: "Sponsor",
-    body: "Fund signed Mac and Windows builds",
+    body: "Fund signed app builds",
     icon: HeartIcon,
     to: "/sponsors",
   },
