@@ -482,3 +482,28 @@ export async function accountHasPro(userId: string, email: string): Promise<bool
     .limit(1);
   return !!trial && trial.startedAt.getTime() + TRIAL_DAYS * DAY_SEC * 1000 > now;
 }
+
+/**
+ * The account's plan as the v3 app sees it, for the dashboard: Pro from a
+ * license bought with this account, else its trial (running or over).
+ */
+export async function accountPlan(userId: string, email: string) {
+  const now = Date.now();
+  const license = await resolveLicense(userId, email);
+  const licensed =
+    !!license && !license.revokedAt && (!license.expiresAt || license.expiresAt.getTime() > now);
+  const [trial] = await db
+    .select({ startedAt: accountTrials.startedAt })
+    .from(accountTrials)
+    .where(eq(accountTrials.userId, userId))
+    .limit(1);
+  const trialEndsAt = trial ? trial.startedAt.getTime() + TRIAL_DAYS * DAY_SEC * 1000 : null;
+  const status: "pro" | "trial" | "ended" | "not-started" = licensed
+    ? "pro"
+    : trialEndsAt === null
+      ? "not-started"
+      : trialEndsAt > now
+        ? "trial"
+        : "ended";
+  return { status, trialEndsAt, trialDays: TRIAL_DAYS, plan: licensed ? license.plan : null };
+}

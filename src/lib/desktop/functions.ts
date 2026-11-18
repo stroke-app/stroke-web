@@ -5,7 +5,12 @@ import * as z from "zod";
 import { authMiddleware, freshAuthMiddleware } from "#/lib/auth/middleware";
 import { desktopCallbackUrl, desktopSignInParams } from "#/lib/desktop/params";
 import { overLimit } from "#/lib/desktop/rate-limit";
-import { listAccountDevices, mintDesktopCode, removeAccountDevice } from "#/lib/desktop/service";
+import {
+  accountPlan,
+  listAccountDevices,
+  mintDesktopCode,
+  removeAccountDevice,
+} from "#/lib/desktop/service";
 
 /**
  * "Continue" on /desktop/sign-in: mint a one-time code for the signed-in user
@@ -42,4 +47,15 @@ export const accountDevicesQueryOptions = () =>
   queryOptions({
     queryKey: ["account", "devices"],
     queryFn: ({ signal }) => $getAccountDevices({ signal }),
+  });
+
+/** Pro, trial (with its end) or neither, the way the app decides it. */
+export const $getAccountPlan = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => accountPlan(context.user.id, context.user.email));
+
+export const accountPlanQueryOptions = () =>
+  queryOptions({
+    queryKey: ["account", "plan"],
+    queryFn: ({ signal }) => $getAccountPlan({ signal }),
   });
