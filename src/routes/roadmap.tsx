@@ -161,8 +161,9 @@ const IN_PROGRESS: RoadmapItem[] = [
     body: "Send results, rows, a query, a chart or a schema diagram as a link, from the app or by asking the AI. It's encrypted on your machine and the key stays in the link, so stroke.click can't read it. Expiry, one-time links, view limits, a password, masking of personal data, and revoke from My shares; no database access is shared.",
   },
   {
-    title: "Elasticsearch and OpenSearch",
-    body: "Indices with their mappings as columns, documents in the grid, and Query DSL and SQL in the editor.",
+    title: "Scheduled backups",
+    tag: "Nightly",
+    body: "Up to 10 schedules per Pro account, saved to Stroke Cloud or your own S3 bucket. The app runs them, so your database passwords never leave your computer; history, Run now and downloads are on stroke.click.",
   },
   {
     title: "Extension API",
@@ -172,6 +173,18 @@ const IN_PROGRESS: RoadmapItem[] = [
 ];
 
 const PLANNED: RoadmapItem[] = [
+  {
+    title: "Backups from the website",
+    body: "Create a schedule or back up now from stroke.click. You unlock your synced connections with your sync passphrase in the browser, they're decrypted only there, and the app runs the backup. stroke.click still never sees a password.",
+  },
+  {
+    title: "Cloud backup runner",
+    body: "An opt-in runner for databases reachable from the internet, so backups happen even when every computer is off. You choose per connection whether to hand over its credentials.",
+  },
+  {
+    title: "Local database servers",
+    body: "Run Postgres, MySQL and Redis side by side in any version, with Start, Stop and a port per server, on Docker or as native binaries.",
+  },
   {
     title: "Signed and notarized builds",
     body: "A Developer ID and notarization on macOS and a signed installer on Windows, so the first launch needs no workaround.",
