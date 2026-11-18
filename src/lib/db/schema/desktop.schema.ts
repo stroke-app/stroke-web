@@ -78,12 +78,22 @@ export const userTrials = sqliteTable("user_trials", {
  * gives every account one fresh trial, separate from the 2.x one in
  * `user_trials`. The app asks for it with `X-Stroke-Trial: account-v3`.
  */
-export const accountTrials = sqliteTable("account_trials", {
-  userId: text("user_id")
-    .primaryKey()
-    .references(() => user.id, { onDelete: "cascade" }),
-  startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
-});
+export const accountTrials = sqliteTable(
+  "account_trials",
+  {
+    userId: text("user_id")
+      .primaryKey()
+      .references(() => user.id, { onDelete: "cascade" }),
+    startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
+    /**
+     * The computer the trial started on. A new account signed in on a device
+     * that already ran a trial shares that trial (same start), so making
+     * accounts doesn't make trials. Null for trials from before this column.
+     */
+    deviceId: text("device_id"),
+  },
+  (t) => [index("account_trials_device_idx").on(t.deviceId)],
+);
 
 /**
  * Fixed-window request counters for the desktop auth endpoints. `key` names
