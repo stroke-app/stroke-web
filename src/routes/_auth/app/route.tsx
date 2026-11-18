@@ -11,6 +11,7 @@ import {
   ArrowUpRightIcon,
   BookOpenIcon,
   ChevronsUpDownIcon,
+  DatabaseBackupIcon,
   DownloadIcon,
   HelpCircleIcon,
   KeyRoundIcon,
@@ -55,6 +56,7 @@ export const Route = createFileRoute("/_auth/app")({
 const NAV_ITEMS = [
   { to: "/app" as const, label: "Dashboard", icon: LayoutDashboardIcon, exact: true },
   { to: "/app/billing" as const, label: "License & billing", icon: KeyRoundIcon, exact: false },
+  { to: "/app/backups" as const, label: "Backups", icon: DatabaseBackupIcon, exact: false },
   { to: "/app/downloads" as const, label: "Downloads", icon: DownloadIcon, exact: false },
   { to: "/app/reviews" as const, label: "Reviews", icon: StarIcon, exact: false },
   { to: "/app/support" as const, label: "Support", icon: HelpCircleIcon, exact: false },

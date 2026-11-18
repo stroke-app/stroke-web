@@ -8,3 +8,4 @@ export * from "./desktop.schema";
 export * from "./sync.schema";
 export * from "./signins.schema";
 export * from "./shares.schema";
+export * from "./backups.schema";

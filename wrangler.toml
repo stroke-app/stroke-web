@@ -30,6 +30,11 @@ migrations_dir = "drizzle"
 binding = "SHARES"
 bucket_name = "stroke-shares"
 
+# Scheduled backups sent to Stroke Cloud (src/lib/backups/service.ts).
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "stroke-backups"
+
 # Shared studio relay (Labs): one object per shared room. It forwards
 # end-to-end encrypted calls between a studio page and the sharing machine.
 [[durable_objects.bindings]]

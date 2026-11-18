@@ -127,6 +127,13 @@
       "when": 1794977159861,
       "tag": "0017_account_trials",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1794979525958,
+      "tag": "0018_scheduled_backups",
+      "breakpoints": true
     }
   ]
 }

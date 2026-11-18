@@ -65,6 +65,8 @@ import { Route as ApiLicenseCheckRouteImport } from './routes/api/license/check'
 import { Route as ApiLicenseActivateRouteImport } from './routes/api/license/activate'
 import { Route as ApiDesktopTokenRouteImport } from './routes/api/desktop/token'
 import { Route as ApiDesktopSignOutRouteImport } from './routes/api/desktop/sign-out'
+import { Route as ApiBackupsRunsRouteImport } from './routes/api/backups/runs'
+import { Route as ApiBackupsJobsRouteImport } from './routes/api/backups/jobs'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiQuotaRouteImport } from './routes/api/ai/quota'
 import { Route as ApiAiModelsRouteImport } from './routes/api/ai/models'
@@ -72,7 +74,10 @@ import { Route as AuthAppSupportRouteImport } from './routes/_auth/app/support'
 import { Route as AuthAppReviewsRouteImport } from './routes/_auth/app/reviews'
 import { Route as AuthAppDownloadsRouteImport } from './routes/_auth/app/downloads'
 import { Route as AuthAppBillingRouteImport } from './routes/_auth/app/billing'
+import { Route as AuthAppBackupsRouteImport } from './routes/_auth/app/backups'
 import { Route as ApiSharesIdContentRouteImport } from './routes/api/shares/$id.content'
+import { Route as ApiBackupsRunsIdRouteImport } from './routes/api/backups/runs.$id'
+import { Route as ApiBackupsJobsIdRouteImport } from './routes/api/backups/jobs.$id'
 import { Route as ApiAiChatCompletionsRouteImport } from './routes/api/ai/chat/completions'
 import { Route as ApiAdminTelemetrySummaryRouteImport } from './routes/api/admin/telemetry/summary'
 import { Route as ApiAdminReviewsModerateRouteImport } from './routes/api/admin/reviews/moderate'
@@ -82,6 +87,8 @@ import { Route as ApiAdminLicenseRevokeRouteImport } from './routes/api/admin/li
 import { Route as ApiAdminLicenseInfoRouteImport } from './routes/api/admin/license/info'
 import { Route as ApiAdminLicenseDevicesRouteImport } from './routes/api/admin/license/devices'
 import { Route as ApiAdminGiveawayDrawRouteImport } from './routes/api/admin/giveaway/draw'
+import { Route as ApiBackupsRunsIdDownloadRouteImport } from './routes/api/backups/runs.$id.download'
+import { Route as ApiBackupsRunsIdPartsNRouteImport } from './routes/api/backups/runs.$id.parts.$n'
 
 const ThemesRoute = ThemesRouteImport.update({
   id: '/themes',
@@ -361,6 +368,16 @@ const ApiDesktopSignOutRoute = ApiDesktopSignOutRouteImport.update({
   path: '/api/desktop/sign-out',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBackupsRunsRoute = ApiBackupsRunsRouteImport.update({
+  id: '/api/backups/runs',
+  path: '/api/backups/runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBackupsJobsRoute = ApiBackupsJobsRouteImport.update({
+  id: '/api/backups/jobs',
+  path: '/api/backups/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -396,10 +413,25 @@ const AuthAppBillingRoute = AuthAppBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AuthAppRouteRoute,
 } as any)
+const AuthAppBackupsRoute = AuthAppBackupsRouteImport.update({
+  id: '/backups',
+  path: '/backups',
+  getParentRoute: () => AuthAppRouteRoute,
+} as any)
 const ApiSharesIdContentRoute = ApiSharesIdContentRouteImport.update({
   id: '/content',
   path: '/content',
   getParentRoute: () => ApiSharesIdRoute,
+} as any)
+const ApiBackupsRunsIdRoute = ApiBackupsRunsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiBackupsRunsRoute,
+} as any)
+const ApiBackupsJobsIdRoute = ApiBackupsJobsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiBackupsJobsRoute,
 } as any)
 const ApiAiChatCompletionsRoute = ApiAiChatCompletionsRouteImport.update({
   id: '/api/ai/chat/completions',
@@ -447,6 +479,17 @@ const ApiAdminGiveawayDrawRoute = ApiAdminGiveawayDrawRouteImport.update({
   path: '/api/admin/giveaway/draw',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBackupsRunsIdDownloadRoute =
+  ApiBackupsRunsIdDownloadRouteImport.update({
+    id: '/download',
+    path: '/download',
+    getParentRoute: () => ApiBackupsRunsIdRoute,
+  } as any)
+const ApiBackupsRunsIdPartsNRoute = ApiBackupsRunsIdPartsNRouteImport.update({
+  id: '/parts/$n',
+  path: '/parts/$n',
+  getParentRoute: () => ApiBackupsRunsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -487,6 +530,7 @@ export interface FileRoutesByFullPath {
   '/compare/': typeof CompareIndexRoute
   '/databases/': typeof DatabasesIndexRoute
   '/docs/': typeof DocsIndexRoute
+  '/app/backups': typeof AuthAppBackupsRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
   '/app/reviews': typeof AuthAppReviewsRoute
@@ -494,6 +538,8 @@ export interface FileRoutesByFullPath {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -519,7 +565,11 @@ export interface FileRoutesByFullPath {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/backups/jobs/$id': typeof ApiBackupsJobsIdRoute
+  '/api/backups/runs/$id': typeof ApiBackupsRunsIdRouteWithChildren
   '/api/shares/$id/content': typeof ApiSharesIdContentRoute
+  '/api/backups/runs/$id/download': typeof ApiBackupsRunsIdDownloadRoute
+  '/api/backups/runs/$id/parts/$n': typeof ApiBackupsRunsIdPartsNRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -559,6 +609,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareIndexRoute
   '/databases': typeof DatabasesIndexRoute
   '/docs': typeof DocsIndexRoute
+  '/app/backups': typeof AuthAppBackupsRoute
   '/app/billing': typeof AuthAppBillingRoute
   '/app/downloads': typeof AuthAppDownloadsRoute
   '/app/reviews': typeof AuthAppReviewsRoute
@@ -566,6 +617,8 @@ export interface FileRoutesByTo {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -591,7 +644,11 @@ export interface FileRoutesByTo {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/backups/jobs/$id': typeof ApiBackupsJobsIdRoute
+  '/api/backups/runs/$id': typeof ApiBackupsRunsIdRouteWithChildren
   '/api/shares/$id/content': typeof ApiSharesIdContentRoute
+  '/api/backups/runs/$id/download': typeof ApiBackupsRunsIdDownloadRoute
+  '/api/backups/runs/$id/parts/$n': typeof ApiBackupsRunsIdPartsNRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -635,6 +692,7 @@ export interface FileRoutesById {
   '/compare/': typeof CompareIndexRoute
   '/databases/': typeof DatabasesIndexRoute
   '/docs/': typeof DocsIndexRoute
+  '/_auth/app/backups': typeof AuthAppBackupsRoute
   '/_auth/app/billing': typeof AuthAppBillingRoute
   '/_auth/app/downloads': typeof AuthAppDownloadsRoute
   '/_auth/app/reviews': typeof AuthAppReviewsRoute
@@ -642,6 +700,8 @@ export interface FileRoutesById {
   '/api/ai/models': typeof ApiAiModelsRoute
   '/api/ai/quota': typeof ApiAiQuotaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/backups/jobs': typeof ApiBackupsJobsRouteWithChildren
+  '/api/backups/runs': typeof ApiBackupsRunsRouteWithChildren
   '/api/desktop/sign-out': typeof ApiDesktopSignOutRoute
   '/api/desktop/token': typeof ApiDesktopTokenRoute
   '/api/license/activate': typeof ApiLicenseActivateRoute
@@ -667,7 +727,11 @@ export interface FileRoutesById {
   '/api/admin/reviews/moderate': typeof ApiAdminReviewsModerateRoute
   '/api/admin/telemetry/summary': typeof ApiAdminTelemetrySummaryRoute
   '/api/ai/chat/completions': typeof ApiAiChatCompletionsRoute
+  '/api/backups/jobs/$id': typeof ApiBackupsJobsIdRoute
+  '/api/backups/runs/$id': typeof ApiBackupsRunsIdRouteWithChildren
   '/api/shares/$id/content': typeof ApiSharesIdContentRoute
+  '/api/backups/runs/$id/download': typeof ApiBackupsRunsIdDownloadRoute
+  '/api/backups/runs/$id/parts/$n': typeof ApiBackupsRunsIdPartsNRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -710,6 +774,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/databases/'
     | '/docs/'
+    | '/app/backups'
     | '/app/billing'
     | '/app/downloads'
     | '/app/reviews'
@@ -717,6 +782,8 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/backups/jobs'
+    | '/api/backups/runs'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -742,7 +809,11 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/backups/jobs/$id'
+    | '/api/backups/runs/$id'
     | '/api/shares/$id/content'
+    | '/api/backups/runs/$id/download'
+    | '/api/backups/runs/$id/parts/$n'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -782,6 +853,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/databases'
     | '/docs'
+    | '/app/backups'
     | '/app/billing'
     | '/app/downloads'
     | '/app/reviews'
@@ -789,6 +861,8 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/backups/jobs'
+    | '/api/backups/runs'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -814,7 +888,11 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/backups/jobs/$id'
+    | '/api/backups/runs/$id'
     | '/api/shares/$id/content'
+    | '/api/backups/runs/$id/download'
+    | '/api/backups/runs/$id/parts/$n'
   id:
     | '__root__'
     | '/'
@@ -857,6 +935,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/databases/'
     | '/docs/'
+    | '/_auth/app/backups'
     | '/_auth/app/billing'
     | '/_auth/app/downloads'
     | '/_auth/app/reviews'
@@ -864,6 +943,8 @@ export interface FileRouteTypes {
     | '/api/ai/models'
     | '/api/ai/quota'
     | '/api/auth/$'
+    | '/api/backups/jobs'
+    | '/api/backups/runs'
     | '/api/desktop/sign-out'
     | '/api/desktop/token'
     | '/api/license/activate'
@@ -889,7 +970,11 @@ export interface FileRouteTypes {
     | '/api/admin/reviews/moderate'
     | '/api/admin/telemetry/summary'
     | '/api/ai/chat/completions'
+    | '/api/backups/jobs/$id'
+    | '/api/backups/runs/$id'
     | '/api/shares/$id/content'
+    | '/api/backups/runs/$id/download'
+    | '/api/backups/runs/$id/parts/$n'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -933,6 +1018,8 @@ export interface RootRouteChildren {
   ApiAiModelsRoute: typeof ApiAiModelsRoute
   ApiAiQuotaRoute: typeof ApiAiQuotaRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiBackupsJobsRoute: typeof ApiBackupsJobsRouteWithChildren
+  ApiBackupsRunsRoute: typeof ApiBackupsRunsRouteWithChildren
   ApiDesktopSignOutRoute: typeof ApiDesktopSignOutRoute
   ApiDesktopTokenRoute: typeof ApiDesktopTokenRoute
   ApiLicenseActivateRoute: typeof ApiLicenseActivateRoute
@@ -1353,6 +1440,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDesktopSignOutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/backups/runs': {
+      id: '/api/backups/runs'
+      path: '/api/backups/runs'
+      fullPath: '/api/backups/runs'
+      preLoaderRoute: typeof ApiBackupsRunsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/backups/jobs': {
+      id: '/api/backups/jobs'
+      path: '/api/backups/jobs'
+      fullPath: '/api/backups/jobs'
+      preLoaderRoute: typeof ApiBackupsJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -1402,12 +1503,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppBillingRouteImport
       parentRoute: typeof AuthAppRouteRoute
     }
+    '/_auth/app/backups': {
+      id: '/_auth/app/backups'
+      path: '/backups'
+      fullPath: '/app/backups'
+      preLoaderRoute: typeof AuthAppBackupsRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
     '/api/shares/$id/content': {
       id: '/api/shares/$id/content'
       path: '/content'
       fullPath: '/api/shares/$id/content'
       preLoaderRoute: typeof ApiSharesIdContentRouteImport
       parentRoute: typeof ApiSharesIdRoute
+    }
+    '/api/backups/runs/$id': {
+      id: '/api/backups/runs/$id'
+      path: '/$id'
+      fullPath: '/api/backups/runs/$id'
+      preLoaderRoute: typeof ApiBackupsRunsIdRouteImport
+      parentRoute: typeof ApiBackupsRunsRoute
+    }
+    '/api/backups/jobs/$id': {
+      id: '/api/backups/jobs/$id'
+      path: '/$id'
+      fullPath: '/api/backups/jobs/$id'
+      preLoaderRoute: typeof ApiBackupsJobsIdRouteImport
+      parentRoute: typeof ApiBackupsJobsRoute
     }
     '/api/ai/chat/completions': {
       id: '/api/ai/chat/completions'
@@ -1472,10 +1594,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminGiveawayDrawRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/backups/runs/$id/download': {
+      id: '/api/backups/runs/$id/download'
+      path: '/download'
+      fullPath: '/api/backups/runs/$id/download'
+      preLoaderRoute: typeof ApiBackupsRunsIdDownloadRouteImport
+      parentRoute: typeof ApiBackupsRunsIdRoute
+    }
+    '/api/backups/runs/$id/parts/$n': {
+      id: '/api/backups/runs/$id/parts/$n'
+      path: '/parts/$n'
+      fullPath: '/api/backups/runs/$id/parts/$n'
+      preLoaderRoute: typeof ApiBackupsRunsIdPartsNRouteImport
+      parentRoute: typeof ApiBackupsRunsIdRoute
+    }
   }
 }
 
 interface AuthAppRouteRouteChildren {
+  AuthAppBackupsRoute: typeof AuthAppBackupsRoute
   AuthAppBillingRoute: typeof AuthAppBillingRoute
   AuthAppDownloadsRoute: typeof AuthAppDownloadsRoute
   AuthAppReviewsRoute: typeof AuthAppReviewsRoute
@@ -1484,6 +1621,7 @@ interface AuthAppRouteRouteChildren {
 }
 
 const AuthAppRouteRouteChildren: AuthAppRouteRouteChildren = {
+  AuthAppBackupsRoute: AuthAppBackupsRoute,
   AuthAppBillingRoute: AuthAppBillingRoute,
   AuthAppDownloadsRoute: AuthAppDownloadsRoute,
   AuthAppReviewsRoute: AuthAppReviewsRoute,
@@ -1519,6 +1657,43 @@ const GuestRouteRouteChildren: GuestRouteRouteChildren = {
 
 const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(
   GuestRouteRouteChildren,
+)
+
+interface ApiBackupsJobsRouteChildren {
+  ApiBackupsJobsIdRoute: typeof ApiBackupsJobsIdRoute
+}
+
+const ApiBackupsJobsRouteChildren: ApiBackupsJobsRouteChildren = {
+  ApiBackupsJobsIdRoute: ApiBackupsJobsIdRoute,
+}
+
+const ApiBackupsJobsRouteWithChildren = ApiBackupsJobsRoute._addFileChildren(
+  ApiBackupsJobsRouteChildren,
+)
+
+interface ApiBackupsRunsIdRouteChildren {
+  ApiBackupsRunsIdDownloadRoute: typeof ApiBackupsRunsIdDownloadRoute
+  ApiBackupsRunsIdPartsNRoute: typeof ApiBackupsRunsIdPartsNRoute
+}
+
+const ApiBackupsRunsIdRouteChildren: ApiBackupsRunsIdRouteChildren = {
+  ApiBackupsRunsIdDownloadRoute: ApiBackupsRunsIdDownloadRoute,
+  ApiBackupsRunsIdPartsNRoute: ApiBackupsRunsIdPartsNRoute,
+}
+
+const ApiBackupsRunsIdRouteWithChildren =
+  ApiBackupsRunsIdRoute._addFileChildren(ApiBackupsRunsIdRouteChildren)
+
+interface ApiBackupsRunsRouteChildren {
+  ApiBackupsRunsIdRoute: typeof ApiBackupsRunsIdRouteWithChildren
+}
+
+const ApiBackupsRunsRouteChildren: ApiBackupsRunsRouteChildren = {
+  ApiBackupsRunsIdRoute: ApiBackupsRunsIdRouteWithChildren,
+}
+
+const ApiBackupsRunsRouteWithChildren = ApiBackupsRunsRoute._addFileChildren(
+  ApiBackupsRunsRouteChildren,
 )
 
 interface ApiSharesIdRouteChildren {
@@ -1574,6 +1749,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiModelsRoute: ApiAiModelsRoute,
   ApiAiQuotaRoute: ApiAiQuotaRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiBackupsJobsRoute: ApiBackupsJobsRouteWithChildren,
+  ApiBackupsRunsRoute: ApiBackupsRunsRouteWithChildren,
   ApiDesktopSignOutRoute: ApiDesktopSignOutRoute,
   ApiDesktopTokenRoute: ApiDesktopTokenRoute,
   ApiLicenseActivateRoute: ApiLicenseActivateRoute,

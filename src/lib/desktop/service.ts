@@ -373,3 +373,26 @@ export async function revokeDesktopSession(userId: string, id: string) {
     .returning({ id: desktopTokens.id });
   return rows.length > 0;
 }
+
+// ---------------------------------------------------------------------------
+// Pro check for server features (scheduled backups)
+// ---------------------------------------------------------------------------
+
+/**
+ * True when the account has Pro the way the v3 app sees it: an active license
+ * bought with this account, or its v3 trial still running. Read-only: the
+ * trial starts on GET /api/me, not here.
+ */
+export async function accountHasPro(userId: string, email: string): Promise<boolean> {
+  const now = Date.now();
+  const license = await resolveLicense(userId, email);
+  if (license && !license.revokedAt && (!license.expiresAt || license.expiresAt.getTime() > now)) {
+    return true;
+  }
+  const [trial] = await db
+    .select({ startedAt: accountTrials.startedAt })
+    .from(accountTrials)
+    .where(eq(accountTrials.userId, userId))
+    .limit(1);
+  return !!trial && trial.startedAt.getTime() + TRIAL_DAYS * DAY_SEC * 1000 > now;
+}

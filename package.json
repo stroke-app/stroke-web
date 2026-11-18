@@ -60,6 +60,7 @@
     "better-auth": "1.6.14",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
+    "croner": "9.1.0",
     "dodopayments": "^2.36.0",
     "drizzle-orm": "0.45.2",
     "lucide-react": "^1.17.0",
