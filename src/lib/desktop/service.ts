@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { createHash, randomBytes } from "node:crypto";
 
-import { and, eq, isNull, lt } from "drizzle-orm";
+import { and, asc, eq, isNull, lt } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import {
@@ -205,12 +205,28 @@ export const VERSION_HEADER = "x-stroke-version";
  * signing-in device already ran carries over (earliest start wins), so signing
  * in can't hand out a second trial.
  *
- * The v3 app (`fresh`) uses its own table: every account gets one new trial
- * there, with no device trial carried over.
+ * The v3 app (`fresh`) uses its own table: an account gets one new trial
+ * there, unless the device signing in already ran a v3 trial for another
+ * account; then it shares that one, so new accounts don't mean new trials.
  */
 async function ensureUserTrial(userId: string, deviceId: string, fresh: boolean) {
   if (fresh) {
-    await db.insert(accountTrials).values({ userId, startedAt: new Date() }).onConflictDoNothing();
+    const [mine] = await db
+      .select()
+      .from(accountTrials)
+      .where(eq(accountTrials.userId, userId))
+      .limit(1);
+    if (mine) return mine;
+    // One trial per computer: another account's trial on this device is this
+    // account's trial too (earliest start wins), running or over.
+    const [onDevice] = await db
+      .select({ startedAt: accountTrials.startedAt })
+      .from(accountTrials)
+      .where(eq(accountTrials.deviceId, deviceId))
+      .orderBy(asc(accountTrials.startedAt))
+      .limit(1);
+    const startedAt = onDevice?.startedAt ?? new Date();
+    await db.insert(accountTrials).values({ userId, startedAt, deviceId }).onConflictDoNothing();
     const [row] = await db
       .select()
       .from(accountTrials)
