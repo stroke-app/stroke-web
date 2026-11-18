@@ -5,7 +5,7 @@ import * as z from "zod";
 import { authMiddleware, freshAuthMiddleware } from "#/lib/auth/middleware";
 import { desktopCallbackUrl, desktopSignInParams } from "#/lib/desktop/params";
 import { overLimit } from "#/lib/desktop/rate-limit";
-import { listDesktopSessions, mintDesktopCode, revokeDesktopSession } from "#/lib/desktop/service";
+import { listAccountDevices, mintDesktopCode, removeAccountDevice } from "#/lib/desktop/service";
 
 /**
  * "Continue" on /desktop/sign-in: mint a one-time code for the signed-in user
@@ -25,21 +25,21 @@ export const $authorizeDesktop = createServerFn({ method: "POST" })
     return { code, url: desktopCallbackUrl(data.port, { code, state: data.state }) };
   });
 
-/** Desktop apps signed in to this account, most recently seen first. */
-export const $getDesktopSessions = createServerFn({ method: "GET" })
+/** Every computer on the account: signed in (v3) or holding the license key (2.x). */
+export const $getAccountDevices = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => listDesktopSessions(context.user.id));
+  .handler(async ({ context }) => listAccountDevices(context.user.id));
 
-/** Sign one desktop app out; it finds out on its next /api/me (401). */
-export const $revokeDesktopSession = createServerFn({ method: "POST" })
+/** Sign a computer out and free its license seat. */
+export const $removeAccountDevice = createServerFn({ method: "POST" })
   .middleware([freshAuthMiddleware])
-  .inputValidator(z.object({ id: z.string().min(1).max(64) }))
+  .inputValidator(z.object({ deviceId: z.string().min(1).max(128) }))
   .handler(async ({ context, data }) => ({
-    revoked: await revokeDesktopSession(context.user.id, data.id),
+    removed: await removeAccountDevice(context.user.id, data.deviceId),
   }));
 
-export const desktopSessionsQueryOptions = () =>
+export const accountDevicesQueryOptions = () =>
   queryOptions({
-    queryKey: ["desktop", "sessions"],
-    queryFn: ({ signal }) => $getDesktopSessions({ signal }),
+    queryKey: ["account", "devices"],
+    queryFn: ({ signal }) => $getAccountDevices({ signal }),
   });

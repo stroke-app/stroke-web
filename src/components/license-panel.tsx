@@ -1,19 +1,15 @@
 import { SiApple, SiLinux } from "@icons-pack/react-simple-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon, Loader2Icon, MonitorIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
-import { appButton, Badge, Card, CardHeader, ROW_LIST } from "#/components/app-ui";
+import { AccountDevices } from "#/components/account-devices";
+import { appButton, Badge } from "#/components/app-ui";
 import { WindowsLogo } from "#/components/download-targets";
 import { Textarea } from "#/components/ui/textarea";
-import {
-  $removeDevice,
-  $requestMoreDevices,
-  deviceRequestQueryOptions,
-  devicesQueryOptions,
-} from "#/lib/billing/functions";
-import { type DeviceOs, guessOs, parseOs } from "#/lib/license/platform";
+import { $requestMoreDevices, deviceRequestQueryOptions } from "#/lib/billing/functions";
+import type { DeviceOs } from "#/lib/license/platform";
 import { cn } from "#/lib/utils";
 
 type DateLike = string | number | Date;
@@ -26,9 +22,6 @@ export type PanelLicense = {
 };
 
 const ICON_SWAP = "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)]";
-const DAY = 86_400_000;
-/** A device that hasn't checked in for this long is probably gone. */
-const STALE_AFTER = 30 * DAY;
 
 /** Fixed locale and zone, so the server and the browser render the same day. */
 export function formatDate(value: DateLike) {
@@ -121,7 +114,9 @@ export function LicensePanel({
         </p>
       </section>
 
-      <DeviceList maxDevices={license.maxDevices} />
+      <AccountDevices maxDevices={license.maxDevices}>
+        <MoreDevices maxDevices={license.maxDevices} />
+      </AccountDevices>
     </>
   );
 }
@@ -201,64 +196,6 @@ function LicenseKeyField({ licenseKey }: { licenseKey: string }) {
         </span>
       </button>
     </div>
-  );
-}
-
-/** Seats in use, one row per machine, then the free seats left. */
-function DeviceList({ maxDevices }: { maxDevices: number }) {
-  const { data: devices, isPending, isError } = useQuery(devicesQueryOptions());
-  const now = useNow();
-  const used = devices?.length ?? 0;
-  const free = Math.max(0, maxDevices - used);
-
-  return (
-    <Card aria-labelledby="devices-title">
-      <CardHeader
-        id="devices-title"
-        title="Devices"
-        description="Lost a computer? Remove it here and its seat frees up right away."
-        action={
-          <span className="flex items-center gap-2.5 text-[13px] text-muted-foreground tabular-nums">
-            {isPending ? "–" : used} of {maxDevices} in use
-            <span aria-hidden="true" className="flex gap-1">
-              {Array.from({ length: maxDevices }, (_, i) => (
-                <span
-                  key={i}
-                  className={cn(
-                    "h-1.5 w-4 rounded-full transition-colors",
-                    i < used ? "bg-foreground/75" : "bg-foreground/10",
-                  )}
-                />
-              ))}
-            </span>
-          </span>
-        }
-      />
-
-      {isPending ? (
-        <div aria-hidden="true" className="mt-4 h-14 animate-pulse rounded-lg bg-muted" />
-      ) : isError ? (
-        <p className="mt-4 text-[13px] text-muted-foreground">
-          Couldn't load your devices. Refresh the page to try again.
-        </p>
-      ) : (
-        <ul className={cn("mt-4", ROW_LIST)}>
-          {devices.map((d) => (
-            <DeviceRow key={d.id} device={d} now={now} />
-          ))}
-          {Array.from({ length: free }, (_, i) => (
-            <li
-              key={`free-${i}`}
-              className="flex h-14 items-center gap-3 text-[13px] text-muted-foreground"
-            >
-              <span className="flex w-5 justify-center text-faint">–</span>
-              Free seat
-            </li>
-          ))}
-        </ul>
-      )}
-      <MoreDevices maxDevices={maxDevices} />
-    </Card>
   );
 }
 
@@ -359,110 +296,3 @@ export const PLATFORMS: Record<
   windows: { label: "Windows", fallbackName: "Windows PC", Icon: WindowsLogo },
   linux: { label: "Linux", fallbackName: "Linux machine", Icon: SiLinux },
 };
-
-type Device = {
-  id: string;
-  hostname: string | null;
-  os: string | null;
-  appVersion: string | null;
-  activatedAt: DateLike;
-  lastSeenAt: DateLike;
-};
-
-function DeviceRow({ device, now }: { device: Device; now: number | null }) {
-  const queryClient = useQueryClient();
-  const [confirming, setConfirming] = useState(false);
-  const os = parseOs(device.os) ?? guessOs(device.hostname);
-  const platform = os ? PLATFORMS[os] : null;
-  const name =
-    device.hostname && device.hostname !== "unknown"
-      ? device.hostname
-      : (platform?.fallbackName ?? "Unnamed device");
-  const stale = now !== null && now - new Date(device.lastSeenAt).getTime() > STALE_AFTER;
-  const seen =
-    now === null
-      ? `activated ${formatDate(device.activatedAt)}`
-      : `last seen ${timeAgo(device.lastSeenAt, now)}`;
-  const head = [platform?.label, device.appVersion && `v${device.appVersion}`].filter(Boolean);
-  // Sentence case only when the time leads the line ("macOS" keeps its casing).
-  const meta = head.length
-    ? `${head.join(" · ")} · ${seen}`
-    : seen.charAt(0).toUpperCase() + seen.slice(1);
-
-  const remove = useMutation({
-    mutationFn: () => $removeDevice({ data: { id: device.id } }),
-    onSuccess: async ({ removed }) => {
-      await queryClient.invalidateQueries({ queryKey: ["billing", "devices"] });
-      if (removed) toast.success(`${name} removed. Its seat is free now.`);
-      else toast.error("That device was already removed.");
-    },
-    onError: () => {
-      setConfirming(false);
-      toast.error("Couldn't remove the device. Try again.");
-    },
-  });
-
-  return (
-    <li
-      className={cn(
-        "flex min-h-14 items-center gap-3 py-2.5 transition-colors",
-        confirming && "-mx-3 rounded-lg bg-destructive/[0.05] px-3",
-      )}
-    >
-      <span className="flex w-5 shrink-0 justify-center text-foreground/70">
-        {platform ? (
-          <platform.Icon className="size-3.5" aria-hidden="true" />
-        ) : (
-          <MonitorIcon className="size-4" strokeWidth={1.75} aria-hidden="true" />
-        )}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-[14px] font-medium">
-          <span className="truncate">{name}</span>
-          {stale && (
-            <Badge dot={false} className="h-[18px] px-1.5 text-[11px]">
-              Inactive
-            </Badge>
-          )}
-        </p>
-        <p
-          className="mt-0.5 truncate text-[12px] text-muted-foreground"
-          title={confirming ? undefined : `Activated ${formatDate(device.activatedAt)}`}
-        >
-          {confirming ? "Stroke on this machine signs out the next time it goes online." : meta}
-        </p>
-      </div>
-
-      {confirming ? (
-        <div className="flex shrink-0 items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setConfirming(false)}
-            disabled={remove.isPending}
-            className={appButton({ variant: "ghost", size: "sm" })}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => remove.mutate()}
-            disabled={remove.isPending}
-            className={appButton({ variant: "danger", size: "sm" })}
-          >
-            {remove.isPending && <Loader2Icon className="size-3.5 motion-safe:animate-spin" />}
-            Remove
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setConfirming(true)}
-          aria-label={`Remove ${name}`}
-          className={appButton({ variant: "ghost", size: "sm" })}
-        >
-          Remove
-        </button>
-      )}
-    </li>
-  );
-}

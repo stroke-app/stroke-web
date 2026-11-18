@@ -12,18 +12,14 @@ import {
 } from "lucide-react";
 import posthog from "posthog-js";
 
+import { AccountDevices } from "#/components/account-devices";
 import { appButton, Badge, Card, CardBody, CardFooter, CardHeader } from "#/components/app-ui";
-import { DesktopSessions } from "#/components/desktop-sessions";
 import { BrewCommand, SmartDownloadButton } from "#/components/download-button";
 import { LicensePanel } from "#/components/license-panel";
 import { SyncStatus } from "#/components/sync-status";
 import { useAuth } from "#/lib/auth/hooks";
-import {
-  billingQueryOptions,
-  devicesQueryOptions,
-  licenseQueryOptions,
-} from "#/lib/billing/functions";
-import { desktopSessionsQueryOptions } from "#/lib/desktop/functions";
+import { billingQueryOptions, licenseQueryOptions } from "#/lib/billing/functions";
+import { accountDevicesQueryOptions } from "#/lib/desktop/functions";
 import { RELEASES_URL } from "#/lib/releases";
 import { syncStatusQueryOptions } from "#/lib/sync/functions";
 
@@ -31,8 +27,7 @@ export const Route = createFileRoute("/_auth/app/")({
   loader: ({ context }) => {
     context.queryClient.prefetchQuery(billingQueryOptions());
     context.queryClient.prefetchQuery(licenseQueryOptions());
-    context.queryClient.prefetchQuery(devicesQueryOptions());
-    context.queryClient.prefetchQuery(desktopSessionsQueryOptions());
+    context.queryClient.prefetchQuery(accountDevicesQueryOptions());
     context.queryClient.prefetchQuery(syncStatusQueryOptions());
   },
   component: Dashboard,
@@ -128,7 +123,8 @@ function Dashboard() {
         </CardBody>
       </Card>
 
-      <DesktopSessions />
+      {/* With a license, its panel lists the devices. */}
+      {!loading && !license && <AccountDevices />}
 
       <SyncStatus />
 

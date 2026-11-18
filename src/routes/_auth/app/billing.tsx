@@ -21,10 +21,10 @@ import { authClient } from "#/lib/auth/auth-client";
 import {
   $recoverLicense,
   billingQueryOptions,
-  devicesQueryOptions,
   enterpriseQueryOptions,
   licenseQueryOptions,
 } from "#/lib/billing/functions";
+import { accountDevicesQueryOptions } from "#/lib/desktop/functions";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { cn } from "#/lib/utils";
 
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_auth/app/billing")({
     context.queryClient.prefetchQuery(billingQueryOptions());
     context.queryClient.prefetchQuery(licenseQueryOptions());
     context.queryClient.prefetchQuery(enterpriseQueryOptions());
-    context.queryClient.prefetchQuery(devicesQueryOptions());
+    context.queryClient.prefetchQuery(accountDevicesQueryOptions());
   },
   component: BillingPage,
 });

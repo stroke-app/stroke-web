@@ -1,11 +1,12 @@
 import "@tanstack/react-start/server-only";
 import { createHash, randomBytes } from "node:crypto";
 
-import { and, desc, eq, isNull, lt } from "drizzle-orm";
+import { and, eq, isNull, lt } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import {
   accountTrials,
+  activations,
   desktopCodes,
   desktopTokens,
   deviceTrials,
@@ -196,6 +197,8 @@ function publicUser(u: UserRow) {
 
 /** The header the v3 app sends to get its own account trial. */
 export const TRIAL_SCHEME_HEADER = "x-stroke-trial";
+/** The app's version, sent with GET /api/me. */
+export const VERSION_HEADER = "x-stroke-version";
 
 /**
  * Start the account trial on first sight, then return it. A device trial the
@@ -249,16 +252,17 @@ export async function meResponse(
   const now = new Date();
   const nowSec = toSec(now);
 
-  await db.update(desktopTokens).set({ lastSeenAt: now }).where(eq(desktopTokens.id, token.id));
+  // The app says which version it is on every check, so the device list shows
+  // what each computer runs now, not what it signed in with.
+  const version = request?.headers.get(VERSION_HEADER)?.trim().slice(0, 64) || null;
+  await db
+    .update(desktopTokens)
+    .set(version ? { lastSeenAt: now, version } : { lastSeenAt: now })
+    .where(eq(desktopTokens.id, token.id));
 
-  const [license, trial, sessions] = await Promise.all([
+  const [license, trial] = await Promise.all([
     resolveLicense(account.id, account.email),
     ensureUserTrial(account.id, token.deviceId, freshTrial),
-    db
-      .select()
-      .from(desktopTokens)
-      .where(and(eq(desktopTokens.userId, account.id), isNull(desktopTokens.revokedAt)))
-      .orderBy(desc(desktopTokens.lastSeenAt)),
   ]);
 
   const licenseActive =
@@ -292,12 +296,14 @@ export async function meResponse(
 
   const entitlementJson = JSON.stringify(entitlement);
   const signature = signWithLicenseKey(Buffer.from(entitlementJson, "utf8"));
-  const devices = sessions.map((s) => ({
-    device_id: s.deviceId,
-    name: s.deviceName,
-    os: s.os,
-    last_seen_at: toSec(s.id === token.id ? now : s.lastSeenAt),
-    current: s.id === token.id,
+  // Every computer on the account, signed in or holding its 2.x license key,
+  // so the app's list matches the website's.
+  const devices = (await listAccountDevices(account.id)).map((d) => ({
+    device_id: d.deviceId,
+    name: d.name ?? "",
+    os: d.os ?? "",
+    last_seen_at: d.deviceId === token.deviceId ? nowSec : Math.floor(d.lastSeenAt / 1000),
+    current: d.deviceId === token.deviceId,
   }));
 
   const body =
@@ -344,34 +350,114 @@ export async function linkLicenseKey(account: UserRow, key: string): Promise<Res
 // Account page
 // ---------------------------------------------------------------------------
 
-export function listDesktopSessions(userId: string) {
-  return db
-    .select({
-      id: desktopTokens.id,
-      deviceName: desktopTokens.deviceName,
-      os: desktopTokens.os,
-      version: desktopTokens.version,
-      createdAt: desktopTokens.createdAt,
-      lastSeenAt: desktopTokens.lastSeenAt,
-    })
-    .from(desktopTokens)
-    .where(and(eq(desktopTokens.userId, userId), isNull(desktopTokens.revokedAt)))
-    .orderBy(desc(desktopTokens.lastSeenAt));
+// ---------------------------------------------------------------------------
+// Devices: one list for the website and the app
+// ---------------------------------------------------------------------------
+
+/**
+ * A computer using Stroke with this account. 2.x apps hold a license key
+ * (a row in `activations`); v3 apps sign in (a row in `desktop_tokens`). Both
+ * report the same device id (license::device_id in the app), so a computer
+ * that did both is one device here, not two.
+ */
+export type AccountDevice = {
+  deviceId: string;
+  name: string | null;
+  os: string | null;
+  version: string | null;
+  firstSeenAt: number;
+  lastSeenAt: number;
+  /** Signed in to this account (v3). */
+  signedIn: boolean;
+  /** Holds this account's license key (2.x), taking one of its seats. */
+  licenseKey: boolean;
+};
+
+export async function listAccountDevices(userId: string): Promise<AccountDevice[]> {
+  const [sessions, license] = await Promise.all([
+    db
+      .select()
+      .from(desktopTokens)
+      .where(and(eq(desktopTokens.userId, userId), isNull(desktopTokens.revokedAt))),
+    db.select({ id: licenses.id }).from(licenses).where(eq(licenses.userId, userId)).limit(1),
+  ]);
+  const keyed = license[0]
+    ? await db.select().from(activations).where(eq(activations.licenseId, license[0].id))
+    : [];
+
+  const byId = new Map<string, AccountDevice>();
+  const merge = (
+    deviceId: string,
+    seen: {
+      name: string | null;
+      os: string | null;
+      version: string | null;
+      first: Date;
+      last: Date;
+    },
+    kind: "signedIn" | "licenseKey",
+  ) => {
+    const prev = byId.get(deviceId);
+    const last = seen.last.getTime();
+    const newer = !prev || last >= prev.lastSeenAt;
+    byId.set(deviceId, {
+      deviceId,
+      // The most recently reported name, OS and version win.
+      name: (newer ? seen.name : prev.name) ?? prev?.name ?? seen.name,
+      os: (newer ? seen.os : prev.os) ?? prev?.os ?? seen.os,
+      version: (newer ? seen.version : prev.version) ?? prev?.version ?? seen.version,
+      firstSeenAt: Math.min(prev?.firstSeenAt ?? Infinity, seen.first.getTime()),
+      lastSeenAt: Math.max(prev?.lastSeenAt ?? 0, last),
+      signedIn: (prev?.signedIn ?? false) || kind === "signedIn",
+      licenseKey: (prev?.licenseKey ?? false) || kind === "licenseKey",
+    });
+  };
+  for (const s of sessions) {
+    merge(
+      s.deviceId,
+      { name: s.deviceName, os: s.os, version: s.version, first: s.createdAt, last: s.lastSeenAt },
+      "signedIn",
+    );
+  }
+  for (const a of keyed) {
+    const name = a.hostname && a.hostname !== "unknown" ? a.hostname : null;
+    merge(
+      a.deviceId,
+      { name, os: a.os, version: a.appVersion, first: a.activatedAt, last: a.lastSeenAt },
+      "licenseKey",
+    );
+  }
+  return [...byId.values()].sort((a, b) => b.lastSeenAt - a.lastSeenAt);
 }
 
-export async function revokeDesktopSession(userId: string, id: string) {
-  const rows = await db
+/**
+ * Remove a computer from the account: sign it out and free its license seat.
+ * It finds out the next time it reaches stroke.click.
+ */
+export async function removeAccountDevice(userId: string, deviceId: string): Promise<boolean> {
+  const revoked = await db
     .update(desktopTokens)
     .set({ revokedAt: new Date() })
     .where(
       and(
-        eq(desktopTokens.id, id),
         eq(desktopTokens.userId, userId),
+        eq(desktopTokens.deviceId, deviceId),
         isNull(desktopTokens.revokedAt),
       ),
     )
     .returning({ id: desktopTokens.id });
-  return rows.length > 0;
+  const [license] = await db
+    .select({ id: licenses.id })
+    .from(licenses)
+    .where(eq(licenses.userId, userId))
+    .limit(1);
+  const freed = license
+    ? await db
+        .delete(activations)
+        .where(and(eq(activations.licenseId, license.id), eq(activations.deviceId, deviceId)))
+        .returning({ id: activations.id })
+    : [];
+  return revoked.length + freed.length > 0;
 }
 
 // ---------------------------------------------------------------------------
