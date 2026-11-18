@@ -22,7 +22,6 @@ import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GiveawayRouteImport } from './routes/giveaway'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DownloadRouteImport } from './routes/download'
-import { Route as DevDevicesRouteImport } from './routes/dev-devices'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
@@ -154,11 +153,6 @@ const FeaturesRoute = FeaturesRouteImport.update({
 const DownloadRoute = DownloadRouteImport.update({
   id: '/download',
   path: '/download',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevDevicesRoute = DevDevicesRouteImport.update({
-  id: '/dev-devices',
-  path: '/dev-devices',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogRoute = ChangelogRouteImport.update({
@@ -500,7 +494,6 @@ const ApiBackupsRunsIdPartsNRoute = ApiBackupsRunsIdPartsNRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
-  '/dev-devices': typeof DevDevicesRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
@@ -581,7 +574,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
-  '/dev-devices': typeof DevDevicesRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
@@ -664,7 +656,6 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/changelog': typeof ChangelogRoute
-  '/dev-devices': typeof DevDevicesRoute
   '/download': typeof DownloadRoute
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
@@ -747,7 +738,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/changelog'
-    | '/dev-devices'
     | '/download'
     | '/features'
     | '/giveaway'
@@ -828,7 +818,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/changelog'
-    | '/dev-devices'
     | '/download'
     | '/features'
     | '/giveaway'
@@ -910,7 +899,6 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/changelog'
-    | '/dev-devices'
     | '/download'
     | '/features'
     | '/giveaway'
@@ -994,7 +982,6 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   ChangelogRoute: typeof ChangelogRoute
-  DevDevicesRoute: typeof DevDevicesRoute
   DownloadRoute: typeof DownloadRoute
   FeaturesRoute: typeof FeaturesRoute
   GiveawayRoute: typeof GiveawayRoute
@@ -1150,13 +1137,6 @@ declare module '@tanstack/react-router' {
       path: '/download'
       fullPath: '/download'
       preLoaderRoute: typeof DownloadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev-devices': {
-      id: '/dev-devices'
-      path: '/dev-devices'
-      fullPath: '/dev-devices'
-      preLoaderRoute: typeof DevDevicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changelog': {
@@ -1733,7 +1713,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   ChangelogRoute: ChangelogRoute,
-  DevDevicesRoute: DevDevicesRoute,
   DownloadRoute: DownloadRoute,
   FeaturesRoute: FeaturesRoute,
   GiveawayRoute: GiveawayRoute,
