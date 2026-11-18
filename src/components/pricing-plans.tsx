@@ -26,10 +26,7 @@ function PlanCell({ plan }: { plan: Plan }) {
       <div className="flex h-6 items-center justify-between">
         <h3 className="text-[15px] font-medium tracking-normal">{plan.name}</h3>
         {plan.featured && (
-          <span className="flex items-center gap-1.5 rounded-full bg-ink/[0.07] px-2 py-0.5 text-[12px] font-medium">
-            <span className="size-1.5 rounded-full bg-copper" aria-hidden="true" />
-            Most people pick this
-          </span>
+          <span className="text-[12px] font-medium text-muted-foreground">Pay once, keep it</span>
         )}
       </div>
       <p className="mt-7 flex items-baseline gap-2">
@@ -63,7 +60,8 @@ const COMPARE: {
   { label: "SQL editor, grid editing and charts", trial: true, pro: true, team: true },
   { label: "AI chat and the MCP server", trial: true, pro: true, team: true },
   { label: "Backup, restore and Postgres admin", trial: true, pro: true, team: true },
-  { label: "End-to-end encrypted sync", trial: true, pro: true, team: true },
+  { label: "End-to-end encrypted sync", trial: false, pro: true, team: true },
+  { label: "Scheduled backups to your S3 or Stroke Cloud", trial: false, pro: true, team: true },
   { label: "How long", trial: `${TRIAL_DAYS} days`, pro: "Forever", team: "Forever" },
   { label: "Computers", trial: "All yours", pro: "All yours", team: "Everyone at the company" },
   { label: "Future updates", trial: true, pro: true, team: true },
@@ -89,13 +87,13 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
       name: "Free trial",
       price: "$0",
       suffix: `for ${TRIAL_DAYS} days`,
-      pitch: "Everything, while you decide.",
+      pitch: "Try the whole app before you pay.",
       cta: (
         <SmartDownloadButton size="lg" variant="outline" alternates={false} className="w-full" />
       ),
       note: "Sign in with Google or GitHub in the app. No card.",
       perks: [
-        "Every feature and engine",
+        "Every database and editor feature",
         "On every computer you sign in on",
         "No card, nothing to cancel",
       ],
@@ -113,6 +111,7 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
       note: "One-time payment. No renewal, ever.",
       perks: [
         "Everything in the trial, kept",
+        "Sync and scheduled backups",
         "Every future update",
         "Priority answers to support email",
       ],

@@ -1,7 +1,9 @@
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
+  BadgeCheckIcon,
   BotIcon,
   CheckIcon,
   CommandIcon,
@@ -11,27 +13,21 @@ import {
   KeyRoundIcon,
   LockKeyholeIcon,
   MapIcon,
+  MonitorIcon,
   NetworkIcon,
   PaletteIcon,
   PlusIcon,
   RefreshCwIcon,
   ReplaceIcon,
   Share2Icon,
+  ShieldCheckIcon,
   SquareTerminalIcon,
   TableIcon,
   TerminalIcon,
 } from "lucide-react";
-import { useState } from "react";
 
 import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
-import {
-  AGENT_COMMANDS,
-  CommandChip,
-  CommandMenu,
-  DocsButton,
-  INSTALL_COMMANDS,
-} from "#/components/hero-commands";
-import { HeroConsole } from "#/components/hero-console";
+import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
 import {
   ArrowLink,
   Cell,
@@ -47,12 +43,11 @@ import {
 } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
 import { SponsorBand } from "#/components/sponsor-goal";
-import { StrokeIcon } from "#/components/stroke-icon";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
-import { useLatestRelease } from "#/lib/releases";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
+import { REPO_URL } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
 export function LandingPage() {
@@ -75,38 +70,114 @@ export function LandingPage() {
 // ── Hero ─────────────────────────────────────────────────────────────────────
 
 function Hero() {
-  const { data: release } = useLatestRelease();
-  const [scene, setScene] = useState(0);
+  const others = SHIPPED_ENGINES.length - 5;
   return (
-    <section className="pt-16 md:pt-24">
-      <div className={GUTTER}>
-        <span className="flex size-9 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
-          <StrokeIcon className="size-5" />
-        </span>
-        <h1 className="mt-7 text-[2.75rem] leading-[1] tracking-[-0.05em] sm:text-[4rem] md:text-[4.75rem]">
-          Every database.
-          <br />
-          <span className="text-muted-foreground">One fast app.</span>
+    <section className="relative isolate">
+      {/* A low warm light behind the window, so the screenshot reads as the page's subject. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-[22rem] -z-10 h-[38rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.10),transparent_70%)]"
+      />
+      <div className={cn(GUTTER, "flex flex-col items-center pt-14 text-center md:pt-20")}>
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-8 items-center gap-2 rounded-full bg-ink/[0.04] px-3.5 text-[13px] text-soft shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.07] hover:text-foreground"
+        >
+          <SiGithub className="size-3.5" />
+          The source is on GitHub
+          <ArrowRightIcon className="size-3.5 opacity-60" />
+        </a>
+        <h1 className="mt-6 max-w-[17ch] text-[2.5rem] leading-[1.04] tracking-[-0.045em] text-balance sm:text-[3.4rem] md:text-[4.1rem]">
+          The database client for every database you run
         </h1>
-        <p className="mt-6 max-w-xl text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
-          A native client for Postgres, MySQL, MongoDB, Redis and {SHIPPED_ENGINES.length - 4} more,
-          with agents built in.
+        <p className="mt-6 max-w-[40rem] text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
+          Browse, edit and query PostgreSQL, MySQL, SQLite, MongoDB, Redis and {others} more
+          databases in one native app for macOS, Windows and Linux.
         </p>
-        <div className="mt-8 flex flex-wrap items-center gap-2.5">
-          <CommandChip command="npx strokedb" />
-          <CommandMenu label="Install" items={INSTALL_COMMANDS} />
-          <CommandMenu label="For agents" items={AGENT_COMMANDS} />
-          <DocsButton />
+        <div className="mt-9 flex flex-wrap items-start justify-center gap-3">
+          <SmartDownloadButton size="lg" variant="default" align="center" />
+          <Link to="/download" className={siteButton({ variant: "secondary", size: "lg" })}>
+            All platforms
+          </Link>
         </div>
-        <p className="mt-4 text-[13px] text-faint">
-          {release ? `Currently ${release.tag_name}` : "macOS, Windows, Linux"} · {TRIAL_DAYS} days
-          free, then {PRO_PRICE} once
+        <p className="mt-2 text-[13px] text-faint">
+          Free for {TRIAL_DAYS} days with every feature. Then {PRO_PRICE} once, no subscription.
         </p>
       </div>
-      <div className={cn(GUTTER, "mt-14 md:mt-16")}>
-        <HeroConsole index={scene} onIndex={setScene} />
+      <div className={cn(GUTTER, "mt-14 md:mt-20")}>
+        <HeroShot />
       </div>
+      <TrustStrip />
     </section>
+  );
+}
+
+/** The app itself, in a window frame: the first thing a buyer wants to see. */
+function HeroShot() {
+  return (
+    <figure className="mx-auto max-w-[72rem]">
+      <div className="rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px shadow-[0_40px_120px_-40px_rgb(0_0_0/0.65)]">
+        <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
+          <img
+            src="/shots/mongo.webp"
+            alt="Stroke with a MongoDB orders collection open in the data grid, and Postgres, Turso and other connections in the sidebar"
+            width={1600}
+            height={1005}
+            fetchPriority="high"
+            decoding="async"
+            className="block h-auto w-full"
+          />
+        </div>
+      </div>
+    </figure>
+  );
+}
+
+const TRUST = [
+  {
+    icon: MonitorIcon,
+    title: "Mac, Windows and Linux",
+    body: "Apple Silicon and Intel. One purchase covers all your computers.",
+  },
+  {
+    icon: LockKeyholeIcon,
+    title: "Credentials stay with you",
+    body: "Stroke connects straight from your computer. Passwords live in your OS keychain.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Nothing changes by accident",
+    body: "Edits wait until you press Apply. Read-only connections refuse every write.",
+  },
+  {
+    icon: BadgeCheckIcon,
+    title: `${PRO_PRICE}, paid once`,
+    body: "Every feature and every update. No subscription to cancel.",
+  },
+];
+
+function TrustStrip() {
+  return (
+    <div className={cn(GUTTER, "mt-14 md:mt-20")}>
+      <ul className="mx-auto grid max-w-[72rem] grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {TRUST.map((t) => (
+          <li key={t.title} className="flex gap-3.5">
+            <t.icon
+              className="mt-0.5 size-[18px] shrink-0 text-muted-foreground"
+              strokeWidth={1.6}
+            />
+            <div>
+              <p className="text-[15px] font-medium text-foreground">{t.title}</p>
+              <p className="mt-1 text-[14px] leading-[1.55] text-pretty text-muted-foreground">
+                {t.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -161,16 +232,18 @@ function Introducing() {
     <section className={cn(GUTTER, "py-20 md:py-28")}>
       <div className="grid grid-cols-1 items-center gap-10 rounded-2xl bg-card p-8 shadow-[0_0_0_1px_var(--border)_inset] md:p-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
-          <p className="text-[19px] font-medium tracking-[-0.01em]">Introducing</p>
+          <p className="text-[19px] font-medium tracking-[-0.01em]">Built in</p>
           <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[3rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.5rem]">
             Agents
           </p>
           <p className="mt-4 max-w-sm text-[17px] leading-[1.6] text-pretty text-muted-foreground">
-            Give Claude, Codex or Cursor your database, with the access level you choose.
+            Claude Code, Codex and Cursor read your schema and run queries through Stroke, and every
+            query is held to the access level you set for that connection.
           </p>
           <div className="mt-8 flex flex-wrap gap-2.5">
-            <Link to="/docs/mcp" className={siteButton({ size: "lg" })}>
-              Get started
+            <CommandMenu label="Add to your agent" items={AGENT_COMMANDS} />
+            <Link to="/docs/mcp" className={siteButton({ variant: "ghost", size: "lg" })}>
+              How it works
               <ArrowRightIcon className="size-4" />
             </Link>
           </div>
@@ -251,8 +324,8 @@ const FEATURES: Feature[] = [
     ],
     screen: {
       kind: "image",
-      src: "/shots/table.webp",
-      alt: "A movies table open in Stroke's grid",
+      src: "/shots/column-stats.webp",
+      alt: "A table in Stroke's grid with a column's menu and its stats: rows, nulls and distinct values",
       width: 1600,
       height: 1005,
     },
@@ -312,8 +385,8 @@ const FEATURES: Feature[] = [
     ],
     screen: {
       kind: "image",
-      src: "/shots/mongo.webp",
-      alt: "A MongoDB orders collection shown as a grid",
+      src: "/shots/mongo-aggregate.webp",
+      alt: "A MongoDB aggregation built stage by stage in Stroke",
       width: 1600,
       height: 1005,
     },
@@ -584,8 +657,8 @@ function PricingTeaser() {
           title={`Try it for ${TRIAL_DAYS} days. Then ${PRO_PRICE}, once.`}
         >
           <p>
-            Most database clients rent themselves to you for $100 or more a year. Stroke is{" "}
-            <strong>{PRO_PRICE} once</strong>, with every update included and nothing to cancel.
+            Use every feature free for {TRIAL_DAYS} days. If Stroke earns its place, it's{" "}
+            <strong>{PRO_PRICE} once</strong>: every update included, nothing to renew or cancel.
           </p>
         </SectionIntro>
         <div className="rounded-2xl p-1.5 shadow-[0_0_0_1px_var(--border)_inset]">
@@ -605,7 +678,7 @@ function PricingTeaser() {
                 "Every feature and engine",
                 "Every future update",
                 "All your computers",
-                "AI chat and MCP server",
+                "Sync and scheduled backups",
               ].map((p) => (
                 <li key={p} className="flex items-center gap-2.5">
                   <CheckIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
@@ -652,8 +725,8 @@ const FAQ_ITEMS = [
     a: "No. Stroke connects to your databases straight from your computer, and passwords are kept in your OS keychain. Query results never pass through our servers. Synced connections are end-to-end encrypted.",
   },
   {
-    q: "Is Stroke open source?",
-    a: "Yes. The whole app, Pro features included, is on GitHub. It's free to read and build yourself, just not to resell.",
+    q: "Can I read the source?",
+    a: "Yes. The whole app, Pro features included, is on GitHub. Read it, audit it and build it yourself; reselling it isn't allowed.",
   },
 ];
 
