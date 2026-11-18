@@ -24,7 +24,14 @@ import {
 import { useState } from "react";
 
 import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
-import { HeroConsole, SCENES } from "#/components/hero-console";
+import {
+  AGENT_COMMANDS,
+  CommandChip,
+  CommandMenu,
+  DocsButton,
+  INSTALL_COMMANDS,
+} from "#/components/hero-commands";
+import { HeroConsole } from "#/components/hero-console";
 import {
   ArrowLink,
   Cell,
@@ -40,6 +47,7 @@ import {
 } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
 import { SponsorBand } from "#/components/sponsor-goal";
+import { StrokeIcon } from "#/components/stroke-icon";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
@@ -51,6 +59,7 @@ export function LandingPage() {
   return (
     <PageShell>
       <Hero />
+      <Introducing />
       <Engines />
       <Features />
       <EverythingElse />
@@ -65,106 +74,98 @@ export function LandingPage() {
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
 
-function ReleasePill() {
+function Hero() {
   const { data: release } = useLatestRelease();
   return (
-    <Link
-      to="/changelog"
-      className="group inline-flex h-7 items-center gap-2 rounded-full pr-3 pl-1 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:text-foreground"
-    >
-      <span className="flex items-center gap-1.5 rounded-full bg-ink/[0.07] px-2 py-0.5 text-[12px] font-medium text-foreground">
-        <span className="size-1.5 rounded-full bg-copper" aria-hidden="true" />
-        New
+    <section className={cn(GUTTER, "pt-16 pb-14 md:pt-24 md:pb-20")}>
+      <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <StrokeIcon className="size-6" />
       </span>
-      {release ? `Stroke ${release.tag_name.replace(/^v/, "")} is out` : "See what's new"}
-      <ArrowRightIcon className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
-    </Link>
+      <h1 className="mt-7 max-w-[17ch] text-[2.75rem] leading-[1.02] tracking-[-0.045em] sm:text-[3.75rem] md:text-[4.25rem]">
+        Every database you run, now with agents
+      </h1>
+      <p className="mt-6 max-w-[46rem] text-[17px] leading-[1.65] text-pretty text-muted-foreground md:text-[19px]">
+        <code className="font-mono text-[0.92em] text-foreground">stroke</code> is a native database
+        client for {SHIPPED_ENGINES.length} databases: Postgres, MySQL, SQLite, MongoDB, Redis,
+        DynamoDB, Elasticsearch and more. Query, edit, chart and back up, and let Claude, Codex or
+        Cursor in through the built-in MCP server. Made by{" "}
+        <a
+          href="https://github.com/broisnees"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-foreground underline decoration-ink/30 underline-offset-4 hover:decoration-ink/70"
+        >
+          one developer
+        </a>
+        , in the open.
+      </p>
+      <div className="mt-9 flex flex-wrap items-center gap-3">
+        <CommandChip command="npx strokedb" />
+        <CommandMenu label="Install" items={INSTALL_COMMANDS} />
+        <CommandMenu label="For agents" items={AGENT_COMMANDS} />
+        <DocsButton />
+      </div>
+      <p className="mt-5 text-[13px] text-muted-foreground">
+        {release ? `Currently ${release.tag_name}` : "macOS, Windows and Linux"} ·{" "}
+        <Link
+          to="/download"
+          className="underline decoration-ink/25 underline-offset-4 hover:text-foreground"
+        >
+          Download the app
+        </Link>{" "}
+        · {TRIAL_DAYS} days free, then {PRO_PRICE} once
+      </p>
+    </section>
   );
 }
 
-/** Fact cells under the console: things that are true today, no fluff. */
-const HERO_FACTS = [
-  { k: `${SHIPPED_ENGINES.length}`, v: "databases, SQL and not" },
-  { k: "3", v: "platforms, native on each" },
-  { k: "MCP", v: "built in, for any agent" },
-  { k: PRO_PRICE, v: "once, no subscription" },
-];
-
-function Hero() {
+/** "Introducing": the newest thing, as one big card, then the live console. */
+function Introducing() {
   const [scene, setScene] = useState(0);
-  const engine = SCENES[scene]!;
   return (
-    <section className="relative isolate overflow-hidden">
-      <div
-        aria-hidden="true"
-        className="dot-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(80%_70%_at_30%_0%,black,transparent)]"
-      />
-      {/* The engine's own color, very faint, follows the console. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/4 -z-10 size-[42rem] rounded-full opacity-[0.13] blur-[120px] transition-[background-color] duration-700"
-        style={{ backgroundColor: engine.color }}
-      />
-      <div className={cn(GUTTER, "pt-14 md:pt-20")}>
-        <ReleasePill />
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-14">
-          <h1 className="text-[2.75rem] leading-[0.98] tracking-[-0.05em] sm:text-[4rem] md:text-[5rem]">
-            One window
-            <br />
-            for {/* Every name stacked in one cell, so the line never jumps width. */}
-            <span className="inline-grid align-bottom">
-              {SCENES.map((s) => (
-                <span
-                  key={s.id}
-                  aria-hidden={s.id !== engine.id}
-                  className={cn(
-                    "col-start-1 row-start-1 transition-[opacity,translate,filter] duration-300 ease-out",
-                    s.id === engine.id
-                      ? "blur-0 translate-y-0 opacity-100"
-                      : "pointer-events-none translate-y-3 opacity-0 blur-[6px]",
-                  )}
-                  style={{ color: s.id === engine.id ? s.color : undefined }}
-                >
-                  {s.engine}
-                </span>
-              ))}
-            </span>
-          </h1>
-          <div className="lg:pb-2">
-            <p className="max-w-md text-[17px] leading-[1.6] text-pretty text-muted-foreground">
-              <span className="text-foreground">
-                Stroke is a native client for {SHIPPED_ENGINES.length} databases.
-              </span>{" "}
-              Query, edit, chart and back up all of them with the same shortcuts, or hand them to
-              Claude and Cursor over MCP.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <SmartDownloadButton size="lg" variant="default" alternates={false} />
-              <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
-                See pricing
-              </Link>
-            </div>
-            <p className="mt-4 text-[13px] text-muted-foreground">
-              macOS, Windows, Linux · {TRIAL_DAYS} days free
-            </p>
+    <section className={cn(GUTTER, "flex flex-col gap-5 pb-20 md:pb-28")}>
+      <div className="grid grid-cols-1 items-center gap-10 overflow-hidden rounded-2xl bg-card p-7 shadow-[0_0_0_1px_var(--border)_inset] md:p-12 lg:grid-cols-2 lg:gap-14">
+        <div>
+          <p className="text-[19px] font-medium tracking-[-0.01em]">Introducing</p>
+          <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[2.75rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.25rem]">
+            Agents
+          </p>
+          <p className="mt-4 max-w-md text-[17px] leading-[1.6] text-pretty text-muted-foreground">
+            Ask the AI chat in the app, or hand your database to Claude Code, Codex or Cursor over
+            MCP. Every query it runs is listed, and you choose read-only, write or schema access per
+            connection.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to="/docs/mcp" className={siteButton({ size: "lg" })}>
+              Get started
+              <ArrowRightIcon className="size-4" />
+            </Link>
+            <CommandMenu label="Setup commands" items={AGENT_COMMANDS} tone="dark" />
           </div>
         </div>
+        <Panel className="aspect-[16/11] lg:-mr-24">
+          <img
+            src="/shots/ai-steps.webp"
+            alt="The AI chat creating tables and inserting rows, each step listed"
+            width={1600}
+            height={1004}
+            className="block h-full w-full object-cover object-top-left"
+          />
+        </Panel>
       </div>
 
-      <div className={cn(GUTTER, "mt-12 md:mt-16")}>
+      <div className="overflow-hidden rounded-2xl bg-card p-3 shadow-[0_0_0_1px_var(--border)_inset] md:p-4">
+        <div className="flex flex-wrap items-end justify-between gap-3 px-3 pt-3 pb-5 md:px-5 md:pt-5">
+          <div>
+            <p className="text-[13px] text-muted-foreground">One console, every engine</p>
+            <p className="mt-1 text-[22px] font-semibold tracking-[-0.02em]">
+              SQL, mongosh, redis-cli, PartiQL and Query DSL, side by side.
+            </p>
+          </div>
+          <p className="text-[13px] text-muted-foreground">Click a connection to switch</p>
+        </div>
         <HeroConsole index={scene} onIndex={setScene} />
       </div>
-
-      <dl className="mt-12 grid grid-cols-2 gap-px border-t border-border bg-border md:mt-16 lg:grid-cols-4">
-        {HERO_FACTS.map((f) => (
-          <div key={f.v} className="flex flex-col bg-background px-6 py-6 md:px-10">
-            <dt className="text-[13px] text-muted-foreground">{f.v}</dt>
-            <dd className="order-first text-[28px] font-semibold tracking-[-0.03em] tabular-nums">
-              {f.k}
-            </dd>
-          </div>
-        ))}
-      </dl>
     </section>
   );
 }
