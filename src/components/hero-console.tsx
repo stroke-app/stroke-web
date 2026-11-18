@@ -233,8 +233,11 @@ function Query({ scene, shown }: { scene: Scene; shown: number }) {
 export function HeroConsole({ index, onIndex }: { index: number; onIndex: (i: number) => void }) {
   const scene = SCENES[index]!;
   const total = queryLength(scene);
-  const [typed, setTyped] = useState(0);
-  const [rowsShown, setRowsShown] = useState(0);
+  // The first scene arrives finished, so the page never opens on an empty
+  // editor; the ones after it are typed out.
+  const [typed, setTyped] = useState(total);
+  const [rowsShown, setRowsShown] = useState(scene.rows.length);
+  const shownIndex = useRef(index);
   const [still, setStill] = useState(false);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -253,6 +256,9 @@ export function HeroConsole({ index, onIndex }: { index: number; onIndex: (i: nu
 
   // A new scene starts from an empty editor (or complete, with reduced motion).
   useEffect(() => {
+    // Only a change of scene restarts the typing (effects can run twice in dev).
+    if (shownIndex.current === index) return;
+    shownIndex.current = index;
     setTyped(still ? total : 0);
     setRowsShown(still ? scene.rows.length : 0);
   }, [index, still, total, scene.rows.length]);

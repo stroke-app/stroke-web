@@ -59,8 +59,8 @@ export function LandingPage() {
   return (
     <PageShell>
       <Hero />
-      <Introducing />
       <Engines />
+      <Introducing />
       <Features />
       <EverythingElse />
       <Reviews />
@@ -76,95 +76,106 @@ export function LandingPage() {
 
 function Hero() {
   const { data: release } = useLatestRelease();
+  const [scene, setScene] = useState(0);
   return (
-    <section className={cn(GUTTER, "pt-16 pb-14 md:pt-24 md:pb-20")}>
-      <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-        <StrokeIcon className="size-6" />
-      </span>
-      <h1 className="mt-7 max-w-[17ch] text-[2.75rem] leading-[1.02] tracking-[-0.045em] sm:text-[3.75rem] md:text-[4.25rem]">
-        Every database you run, now with agents
-      </h1>
-      <p className="mt-6 max-w-[46rem] text-[17px] leading-[1.65] text-pretty text-muted-foreground md:text-[19px]">
-        <code className="font-mono text-[0.92em] text-foreground">stroke</code> is a native database
-        client for {SHIPPED_ENGINES.length} databases: Postgres, MySQL, SQLite, MongoDB, Redis,
-        DynamoDB, Elasticsearch and more. Query, edit, chart and back up, and let Claude, Codex or
-        Cursor in through the built-in MCP server. Made by{" "}
-        <a
-          href="https://github.com/broisnees"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-foreground underline decoration-ink/30 underline-offset-4 hover:decoration-ink/70"
-        >
-          one developer
-        </a>
-        , in the open.
-      </p>
-      <div className="mt-9 flex flex-wrap items-center gap-3">
-        <CommandChip command="npx strokedb" />
-        <CommandMenu label="Install" items={INSTALL_COMMANDS} />
-        <CommandMenu label="For agents" items={AGENT_COMMANDS} />
-        <DocsButton />
+    <section className="pt-16 md:pt-24">
+      <div className={GUTTER}>
+        <span className="flex size-9 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
+          <StrokeIcon className="size-5" />
+        </span>
+        <h1 className="mt-7 text-[2.75rem] leading-[1] tracking-[-0.05em] sm:text-[4rem] md:text-[4.75rem]">
+          Every database.
+          <br />
+          <span className="text-muted-foreground">One fast app.</span>
+        </h1>
+        <p className="mt-6 max-w-xl text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
+          A native client for Postgres, MySQL, MongoDB, Redis and {SHIPPED_ENGINES.length - 4} more,
+          with agents built in.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-2.5">
+          <CommandChip command="npx strokedb" />
+          <CommandMenu label="Install" items={INSTALL_COMMANDS} />
+          <CommandMenu label="For agents" items={AGENT_COMMANDS} />
+          <DocsButton />
+        </div>
+        <p className="mt-4 text-[13px] text-faint">
+          {release ? `Currently ${release.tag_name}` : "macOS, Windows, Linux"} · {TRIAL_DAYS} days
+          free, then {PRO_PRICE} once
+        </p>
       </div>
-      <p className="mt-5 text-[13px] text-muted-foreground">
-        {release ? `Currently ${release.tag_name}` : "macOS, Windows and Linux"} ·{" "}
-        <Link
-          to="/download"
-          className="underline decoration-ink/25 underline-offset-4 hover:text-foreground"
-        >
-          Download the app
-        </Link>{" "}
-        · {TRIAL_DAYS} days free, then {PRO_PRICE} once
-      </p>
+      <div className={cn(GUTTER, "mt-14 md:mt-16")}>
+        <HeroConsole index={scene} onIndex={setScene} />
+      </div>
     </section>
   );
 }
 
-/** "Introducing": the newest thing, as one big card, then the live console. */
-function Introducing() {
-  const [scene, setScene] = useState(0);
+/** One line of an agent's MCP session, as the app logs it. */
+const AGENT_STEPS: { tool: string; arg: string; out: string; blocked?: boolean }[] = [
+  { tool: "list_tables", arg: "public", out: "21 tables" },
+  { tool: "describe_table", arg: "orders", out: "9 columns" },
+  { tool: "query", arg: "SELECT status, count(*) FROM orders GROUP BY 1", out: "4 rows · 6 ms" },
+  { tool: "query", arg: "UPDATE orders SET status = 'refunded' WHERE id = 8812", out: "1 row" },
+  { tool: "query", arg: "DROP TABLE orders", out: "Blocked: needs Full access", blocked: true },
+];
+
+function AgentCard() {
   return (
-    <section className={cn(GUTTER, "flex flex-col gap-5 pb-20 md:pb-28")}>
-      <div className="grid grid-cols-1 items-center gap-10 overflow-hidden rounded-2xl bg-card p-7 shadow-[0_0_0_1px_var(--border)_inset] md:p-12 lg:grid-cols-2 lg:gap-14">
+    <div className="keep-dark dark rounded-xl bg-[#0d0d0d] p-5 text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_30px_80px_-30px_rgb(0_0_0/0.8)]">
+      <div className="flex items-center justify-between">
+        <p className="text-[15px] font-semibold">Claude Code · prod</p>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/[0.07] px-2 py-0.5 text-[12px] text-[#c8c8c8]">
+          <span className="size-1.5 rounded-full bg-[#f5b400]" />
+          Read and write
+        </span>
+      </div>
+      <p className="mt-1 text-[13px] text-[#8f8f8f]">Every call the agent makes, as it happens.</p>
+      <ul className="mt-5 space-y-2.5 font-mono text-[12.5px]">
+        {AGENT_STEPS.map((s, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <span
+              className={cn(
+                "mt-[5px] size-1.5 shrink-0 rounded-full",
+                s.blocked ? "bg-[#ff5f57]" : "bg-[#28c840]",
+              )}
+            />
+            <span className="flex min-w-0 flex-1 gap-2">
+              <span className="shrink-0 text-[#8ab8ff]">{s.tool}</span>
+              <span className="truncate text-[#a8a8a8]" title={s.arg}>
+                {s.arg}
+              </span>
+            </span>
+            <span className={cn("shrink-0", s.blocked ? "text-[#ff8a80]" : "text-[#6b6b6b]")}>
+              {s.out}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** The newest thing, as one card: a word, a sentence, a button, a real visual. */
+function Introducing() {
+  return (
+    <section className={cn(GUTTER, "py-20 md:py-28")}>
+      <div className="grid grid-cols-1 items-center gap-10 rounded-2xl bg-card p-8 shadow-[0_0_0_1px_var(--border)_inset] md:p-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <p className="text-[19px] font-medium tracking-[-0.01em]">Introducing</p>
-          <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[2.75rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.25rem]">
+          <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[3rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.5rem]">
             Agents
           </p>
-          <p className="mt-4 max-w-md text-[17px] leading-[1.6] text-pretty text-muted-foreground">
-            Ask the AI chat in the app, or hand your database to Claude Code, Codex or Cursor over
-            MCP. Every query it runs is listed, and you choose read-only, write or schema access per
-            connection.
+          <p className="mt-4 max-w-sm text-[17px] leading-[1.6] text-pretty text-muted-foreground">
+            Give Claude, Codex or Cursor your database, with the access level you choose.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-2.5">
             <Link to="/docs/mcp" className={siteButton({ size: "lg" })}>
               Get started
               <ArrowRightIcon className="size-4" />
             </Link>
-            <CommandMenu label="Setup commands" items={AGENT_COMMANDS} tone="dark" />
           </div>
         </div>
-        <Panel className="aspect-[16/11] lg:-mr-24">
-          <img
-            src="/shots/ai-steps.webp"
-            alt="The AI chat creating tables and inserting rows, each step listed"
-            width={1600}
-            height={1004}
-            className="block h-full w-full object-cover object-top-left"
-          />
-        </Panel>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl bg-card p-3 shadow-[0_0_0_1px_var(--border)_inset] md:p-4">
-        <div className="flex flex-wrap items-end justify-between gap-3 px-3 pt-3 pb-5 md:px-5 md:pt-5">
-          <div>
-            <p className="text-[13px] text-muted-foreground">One console, every engine</p>
-            <p className="mt-1 text-[22px] font-semibold tracking-[-0.02em]">
-              SQL, mongosh, redis-cli, PartiQL and Query DSL, side by side.
-            </p>
-          </div>
-          <p className="text-[13px] text-muted-foreground">Click a connection to switch</p>
-        </div>
-        <HeroConsole index={scene} onIndex={setScene} />
+        <AgentCard />
       </div>
     </section>
   );
@@ -173,35 +184,36 @@ function Introducing() {
 // ── Engines ──────────────────────────────────────────────────────────────────
 
 function Engines() {
-  const shown = SHIPPED_ENGINES.slice(0, 12);
   return (
     <section className="border-t border-border" aria-labelledby="engines-title">
-      <div className={cn(GUTTER, "flex flex-wrap items-end justify-between gap-4 pt-12 pb-8")}>
+      <div
+        className={cn(GUTTER, "flex flex-col gap-6 py-10 md:flex-row md:items-center md:gap-10")}
+      >
         <h2
           id="engines-title"
-          className="text-[15px] font-medium tracking-normal text-muted-foreground"
+          className="shrink-0 text-[14px] font-medium tracking-normal text-muted-foreground"
         >
-          <span className="text-foreground">{SHIPPED_ENGINES.length} databases.</span> One app, the
-          same shortcuts everywhere.
+          {SHIPPED_ENGINES.length} databases
         </h2>
-        <ArrowLink to="/databases" className="text-[13px]">
+        <ul className="flex flex-1 flex-wrap items-center gap-x-7 gap-y-4">
+          {SHIPPED_ENGINES.map((e) => (
+            <li key={e.slug}>
+              <Link
+                to="/databases/$engine"
+                params={{ engine: e.slug }}
+                title={e.name}
+                aria-label={e.name}
+                className="block opacity-80 transition-[opacity,scale] duration-150 hover:scale-110 hover:opacity-100"
+              >
+                <e.Icon className="size-6" color={e.color} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ArrowLink to="/databases" className="shrink-0 text-[13px]">
           All databases
         </ArrowLink>
       </div>
-      <ul className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-3 lg:grid-cols-6">
-        {shown.map((e) => (
-          <li key={e.slug} className="bg-background">
-            <Link
-              to="/databases/$engine"
-              params={{ engine: e.slug }}
-              className="group flex h-24 flex-col items-center justify-center gap-2.5 text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-ink/[0.03] hover:text-foreground"
-            >
-              <e.Icon className="size-6 text-soft transition-colors group-hover:text-foreground" />
-              {e.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
