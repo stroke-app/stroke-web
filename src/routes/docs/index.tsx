@@ -19,7 +19,7 @@ export const Route = createFileRoute("/docs/")({
     seo({
       title: "Stroke Documentation · Getting started",
       description:
-        "Download and install the Stroke database client, connect your first database, activate your license, and let your AI agents query it through the built-in MCP server.",
+        "Download and install the Stroke database client, connect your first database, get Stroke Pro, and let your AI agents query it through the built-in MCP server.",
       path: "/docs",
       breadcrumbs: [{ name: "Docs", path: "/docs" }],
     }),
@@ -38,7 +38,7 @@ const STEPS: Step[] = [
       <>
         <p>
           Stroke runs natively on macOS, Windows, and Linux. Grab the build for your platform and
-          open it. The full app is free to try, with no account required.
+          open it. Sign in with Google or GitHub and the full app is yours for 17 days.
         </p>
         <div className="mt-5">
           <SmartDownloadButton size="sm" />
@@ -57,17 +57,16 @@ const STEPS: Step[] = [
     ),
   },
   {
-    title: "Activate your license",
+    title: "Keep it with Stroke Pro",
     body: (
       <>
         <p>
-          When you decide to keep Stroke, buy a license and paste the key into{" "}
-          <strong>Settings → License</strong>. One purchase covers three devices, with every future
-          update included.
+          When you decide to keep Stroke, buy Pro for $9.99 once. It lands on your account, so the
+          app unlocks by itself on every computer you sign in on. There is no key to paste.
         </p>
         <div className="mt-5">
           <Link to="/app/billing" className={siteButton({ variant: "secondary", size: "sm" })}>
-            Get your license key
+            Get Stroke Pro
             <ArrowRightIcon className="size-3.5" />
           </Link>
         </div>

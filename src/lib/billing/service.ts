@@ -5,6 +5,11 @@ import { db } from "#/lib/db";
 import { enterpriseDomains, licenses, payments, subscriptions, user } from "#/lib/db/schema";
 import { getOrIssueLicense } from "#/lib/license";
 import { sendPaymentFailedEmail, sendPurchaseSuccessEmail } from "#/lib/mail";
+import {
+  isSponsorPayment,
+  recordSponsorPayment,
+  refundSponsorPayment,
+} from "#/lib/sponsors/service";
 
 import { domainFromEmail, getEnterpriseDomain, isPublicEmailDomain, TEAM_PLAN } from "./enterprise";
 import type { BillingEvent } from "./providers/types";
@@ -250,6 +255,12 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
     case "payment.succeeded": {
       if (!data.paymentId) return;
 
+      // A sponsorship pays for signing certificates; it never issues a license.
+      if (isSponsorPayment(data.productIds)) {
+        await recordSponsorPayment(data);
+        return;
+      }
+
       // Resolve the user: prefer metadata userId, fall back to email lookup.
       let resolvedUserId = data.userId;
       let resolvedEmail: string | undefined;
@@ -455,6 +466,7 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
 
     case "refund.succeeded": {
       if (!data.paymentId) return;
+      await refundSponsorPayment(data.paymentId);
       await db
         .update(payments)
         .set({ status: "refunded" })

@@ -22,6 +22,10 @@ export interface BillingEventData {
   userId?: string;
   /** customer email from the payment provider, used when userId is missing/stale */
   email?: string;
+  /** Products in the payment, to tell a sponsorship from a license purchase. */
+  productIds?: string[];
+  /** The payer's name, shown with their sponsorship when they allow it. */
+  customerName?: string;
 }
 
 export interface BillingEvent {

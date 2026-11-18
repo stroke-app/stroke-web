@@ -355,11 +355,11 @@ const WHAT_YOU_GET = [
   },
   {
     title: "Everything while you try",
-    body: "Every feature is unlocked while you evaluate. No account and no card needed.",
+    body: "Sign in with Google or GitHub and every feature is yours for 17 days. No card needed.",
   },
   {
     title: "Yours for $9.99",
-    body: "Pay once and keep it: a license key for up to 3 of your devices and every future update. No subscription.",
+    body: "Pay once and keep it, on every computer you sign in on, with every future update. No subscription.",
   },
 ];
 

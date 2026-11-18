@@ -55,6 +55,8 @@ export const env = createEnv({
     // Team/Enterprise product ($99, covers a whole email domain). Optional.
     // the Team plan is only offered when this is set.
     DODO_TEAM_PRODUCT_ID: z.string().optional(),
+    /** Pay-what-you-want "Sponsor Stroke" product. Unset hides the sponsor button. */
+    DODO_SPONSOR_PRODUCT_ID: z.string().optional(),
     DODO_ENVIRONMENT: z.enum(["live_mode", "test_mode"]).default("test_mode"),
   },
   runtimeEnv: process.env,

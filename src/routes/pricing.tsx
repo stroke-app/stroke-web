@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Faq, Pricing } from "#/components/landing-page";
-import { SITE } from "#/components/page";
-import { SiteFooter, SiteHeader } from "#/components/site-chrome";
+import { PageShell } from "#/components/page";
 import { seo } from "#/lib/seo";
 
 export const Route = createFileRoute("/pricing")({
@@ -10,7 +9,7 @@ export const Route = createFileRoute("/pricing")({
     seo({
       title: "Pricing · Stroke",
       description:
-        "Stroke costs $9.99 once, not $100 a year. Try every feature free, buy a license for 3 devices, or license your whole company's email domain for $99. No subscription.",
+        "Stroke costs $9.99 once, not $100 a year. Try every feature free for 17 days, or license your whole company's email domain for $99. No subscription.",
       path: "/pricing",
       breadcrumbs: [{ name: "Pricing", path: "/pricing" }],
     }),
@@ -19,13 +18,9 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   return (
-    <div className={SITE}>
-      <SiteHeader />
-      <main>
-        <Pricing as="h1" />
-        <Faq />
-      </main>
-      <SiteFooter />
-    </div>
+    <PageShell>
+      <Pricing as="h1" />
+      <Faq />
+    </PageShell>
   );
 }

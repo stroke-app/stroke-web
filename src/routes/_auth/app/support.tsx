@@ -22,37 +22,37 @@ export const Route = createFileRoute("/_auth/app/support")({
 // Every answer here matches the Terms, the pricing page, and the app itself.
 const FAQ: { q: string; a: React.ReactNode }[] = [
   {
-    q: "How do I activate my license?",
+    q: "How do I get Pro in the app?",
     a: (
       <>
-        Copy your key from the <Link to="/app">dashboard</Link>, then open Stroke, go to Settings →
-        License, and paste it.
+        Sign in to Stroke with the account you bought it on. Pro comes with the account, so there is
+        no key to paste. Bought a key for an older version? Sign in with the email you bought it
+        with and it's already there.
       </>
     ),
   },
   {
-    q: "How many devices can I use?",
+    q: "How many computers can I use?",
     a: (
       <>
-        A license is active on up to 3 devices at a time. To move it to a new machine, remove the
-        old one under Devices on <a href="/app/billing">License &amp; billing</a>, even if you no
-        longer have it, or deactivate it in Stroke (Settings → License).
+        All of yours: sign in on each one. Remove a computer you no longer use under Devices on the{" "}
+        <Link to="/app">Overview</Link>, even if you no longer have it.
       </>
     ),
   },
   {
-    q: "I paid but don't see a license key.",
+    q: "I paid but the app still shows the trial.",
     a: (
       <>
-        Keys usually appear on your dashboard within a minute of payment. If it's still missing
-        after a few minutes, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the
-        address on your account.
+        Pro reaches your account within a minute. In the app, choose "I bought it, check again", or
+        restart it. Still nothing after a few minutes? Email{" "}
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the address on your account.
       </>
     ),
   },
   {
     q: "Which databases does Stroke support?",
-    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is in beta.",
+    a: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, Oracle, ClickHouse, CockroachDB, Turso, Cloudflare D1, MongoDB, Redis, Valkey, DynamoDB, Elasticsearch, OpenSearch and more. The databases page lists them all.",
   },
   {
     q: "How do I connect Claude or Cursor?",

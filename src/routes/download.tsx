@@ -94,10 +94,10 @@ function DownloadPage() {
       />
 
       <Section id="platforms">
-        <SectionIntro index="1.0" eyebrow="Platforms" title="Every platform, one license">
+        <SectionIntro index="1.0" eyebrow="Platforms" title="Every platform, one purchase">
           <p>
-            Native builds for macOS, Windows, and Linux ship with every release. One $9.99 license
-            covers up to two of your devices.
+            Native builds for macOS, Windows, and Linux ship with every release. One $9.99 purchase
+            covers every computer you sign in on.
           </p>
         </SectionIntro>
         <div className="mt-16 md:mt-24">

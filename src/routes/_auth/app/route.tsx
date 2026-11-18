@@ -1,31 +1,21 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link, Outlet, useNavigate, useRouter } from "@tanstack/react-router";
 import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
-import {
-  ArrowUpRightIcon,
   BookOpenIcon,
   ChevronsUpDownIcon,
   DownloadIcon,
   HelpCircleIcon,
   KeyRoundIcon,
-  LayoutDashboardIcon,
   LogOutIcon,
   MonitorIcon,
   MoonIcon,
   PaletteIcon,
   RocketIcon,
-  SparklesIcon,
-  StarIcon,
   SunIcon,
 } from "lucide-react";
 import posthog from "posthog-js";
 
+import { SITE } from "#/components/page";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { useTheme } from "#/components/theme-provider";
 import {
@@ -53,41 +43,23 @@ export const Route = createFileRoute("/_auth/app")({
 });
 
 const NAV_ITEMS = [
-  { to: "/app" as const, label: "Dashboard", icon: LayoutDashboardIcon, exact: true },
-  { to: "/app/billing" as const, label: "License & billing", icon: KeyRoundIcon, exact: false },
-  { to: "/app/downloads" as const, label: "Downloads", icon: DownloadIcon, exact: false },
-  { to: "/app/reviews" as const, label: "Reviews", icon: StarIcon, exact: false },
-  { to: "/app/support" as const, label: "Support", icon: HelpCircleIcon, exact: false },
-];
-
-const RESOURCES = [
-  { to: "/docs" as const, label: "Docs", icon: BookOpenIcon },
-  { to: "/changelog" as const, label: "What's new", icon: SparklesIcon },
+  { to: "/app" as const, label: "Overview", exact: true },
+  { to: "/app/billing" as const, label: "Plan & billing", exact: false },
+  { to: "/app/backups" as const, label: "Backups", exact: false },
+  { to: "/app/downloads" as const, label: "Downloads", exact: false },
+  { to: "/app/reviews" as const, label: "Review", exact: false },
+  { to: "/app/support" as const, label: "Support", exact: false },
 ];
 
 type NavItem = (typeof NAV_ITEMS)[number];
 
-function NavLink({ to, label, icon: Icon, exact }: NavItem) {
-  // Link marks itself active (data-status, aria-current); style off that.
+/** A tab in the bar under the header: the active one gets the underline. */
+function NavTab({ to, label, exact }: NavItem) {
   return (
     <Link
       to={to}
       activeOptions={{ exact }}
-      className="flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground data-[status=active]:bg-accent data-[status=active]:font-medium data-[status=active]:text-foreground data-[status=active]:shadow-[inset_0_0_0_1px_var(--border)]"
-    >
-      <Icon className="size-4 shrink-0" strokeWidth={1.75} />
-      {label}
-    </Link>
-  );
-}
-
-/** The same pages as tabs, for screens too narrow for the sidebar. */
-function MobileTab({ to, label, exact }: NavItem) {
-  return (
-    <Link
-      to={to}
-      activeOptions={{ exact }}
-      className="flex h-8 shrink-0 items-center rounded-lg px-3 text-[13px] text-muted-foreground transition-colors hover:text-foreground data-[status=active]:bg-accent data-[status=active]:font-medium data-[status=active]:text-foreground"
+      className="relative flex h-11 shrink-0 items-center px-3 text-[14px] text-muted-foreground transition-colors duration-150 hover:text-foreground data-[status=active]:text-foreground data-[status=active]:after:absolute data-[status=active]:after:inset-x-3 data-[status=active]:after:-bottom-px data-[status=active]:after:h-0.5 data-[status=active]:after:rounded-full data-[status=active]:after:bg-foreground"
     >
       {label}
     </Link>
@@ -176,7 +148,7 @@ function AccountMenu({ compact = false }: { compact?: boolean }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate({ to: "/app/billing" })}>
           <KeyRoundIcon />
-          License &amp; billing
+          Plan &amp; billing
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate({ to: "/app/downloads" })}>
           <DownloadIcon />
@@ -233,85 +205,59 @@ function AccountMenu({ compact = false }: { compact?: boolean }) {
 }
 
 function AppLayout() {
-  const pathname = useLocation({ select: (l) => l.pathname.replace(/\/$/, "") });
-  const page =
-    NAV_ITEMS.find((item) => (item.exact ? pathname === item.to : pathname.startsWith(item.to)))
-      ?.label ?? "Dashboard";
-
+  const { data: license } = useQuery(licenseQueryOptions());
   return (
-    <div className="flex min-h-svh bg-background text-foreground">
-      {/* Sidebar */}
-      <aside className="sticky top-0 hidden h-svh w-60 shrink-0 flex-col border-r border-border bg-muted/30 md:flex">
-        <div className="flex h-14 items-center px-4">
-          <Link to="/" className="flex items-center gap-2.5 text-foreground">
+    <div className={cn(SITE, "flex min-h-svh flex-col")}>
+      <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 w-full max-w-[1120px] items-center gap-3 px-4 md:px-8">
+          <Link to="/" aria-label="Stroke home" className="flex items-center gap-2.5">
             <StrokeIcon className="size-5" />
-            <span className="text-[14px] font-semibold tracking-[-0.01em]">Stroke</span>
+            <span className="text-[15px] font-semibold tracking-[-0.02em]">Stroke</span>
           </Link>
-        </div>
-
-        <nav aria-label="Dashboard" className="flex flex-col gap-0.5 px-2.5 pt-2">
-          {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} {...item} />
-          ))}
-        </nav>
-
-        <div className="mt-7 px-2.5">
-          <p className="px-2.5 text-[11px] font-medium tracking-wide text-faint uppercase">
-            Resources
-          </p>
-          <div className="mt-1.5 flex flex-col gap-0.5">
-            {RESOURCES.map((r) => (
-              <Link
-                key={r.to}
-                to={r.to}
-                className="group flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
-              >
-                <r.icon className="size-4 shrink-0" strokeWidth={1.75} />
-                {r.label}
-                <ArrowUpRightIcon className="ml-auto size-3.5 opacity-0 transition-opacity group-hover:opacity-60" />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-auto p-2.5">
-          <AccountMenu />
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/85 px-4 backdrop-blur md:px-8">
-          <Link to="/" className="flex items-center md:hidden" aria-label="Stroke home">
-            <StrokeIcon className="size-5" />
-          </Link>
-          <div className="flex min-w-0 items-center gap-1.5 text-[13px] text-muted-foreground">
-            <Link to="/" className="hidden transition-colors hover:text-foreground md:inline">
-              stroke.click
+          <span className="text-faint" aria-hidden="true">
+            /
+          </span>
+          <span className="text-[14px] text-muted-foreground">Account</span>
+          {!license && (
+            <Link
+              to="/app/billing"
+              className="ml-2 hidden h-6 items-center gap-1.5 rounded-full bg-ink/[0.07] px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-ink/[0.1] sm:flex"
+            >
+              <RocketIcon className="size-3" />
+              Get Pro
             </Link>
-            <span className="hidden text-faint md:inline">/</span>
-            <span className="truncate font-medium text-foreground">{page}</span>
-          </div>
-          <div className="ml-auto md:hidden">
+          )}
+          <div className="ml-auto flex items-center gap-1">
+            <Link
+              to="/docs"
+              className="hidden h-8 items-center gap-1.5 rounded-lg px-2.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground sm:flex"
+            >
+              Docs
+            </Link>
+            <Link
+              to="/changelog"
+              className="hidden h-8 items-center gap-1.5 rounded-lg px-2.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground sm:flex"
+            >
+              Changelog
+            </Link>
             <AccountMenu compact />
           </div>
-        </header>
-
+        </div>
         <nav
-          aria-label="Dashboard"
-          className="flex [scrollbar-width:none] gap-1 overflow-x-auto border-b border-border px-3 py-2 md:hidden"
+          aria-label="Account"
+          className="mx-auto flex w-full max-w-[1120px] [scrollbar-width:none] overflow-x-auto px-1 md:px-5"
         >
           {NAV_ITEMS.map((item) => (
-            <MobileTab key={item.to} {...item} />
+            <NavTab key={item.to} {...item} />
           ))}
         </nav>
+      </header>
 
-        <main className="flex-1 px-4 py-8 sm:px-6 md:px-10 md:py-12">
-          <div className="mx-auto w-full max-w-3xl">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      <main className="flex-1 px-4 py-10 sm:px-6 md:px-8 md:py-14">
+        <div className="mx-auto w-full max-w-[1056px]">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }

@@ -36,3 +36,24 @@ export const SPONSORS: Sponsor[] = [];
 export function sponsorsIn(tier: SponsorTierId) {
   return SPONSORS.filter((s) => s.tier === tier);
 }
+
+/**
+ * What sponsorships pay for: the certificates that stop macOS and Windows from
+ * warning about Stroke on install. Yearly, in USD.
+ */
+export const SIGNING_GOALS = [
+  {
+    id: "apple",
+    title: "Apple Developer Program",
+    usd: 99,
+    body: "Signs and notarizes the Mac app, so Gatekeeper opens it without the “unidentified developer” warning.",
+  },
+  {
+    id: "windows",
+    title: "Windows code signing",
+    usd: 120,
+    body: "Azure Trusted Signing at $9.99 a month, so SmartScreen stops calling the installer unrecognized.",
+  },
+] as const;
+
+export const SIGNING_GOAL_USD = SIGNING_GOALS.reduce((sum, g) => sum + g.usd, 0);
