@@ -365,11 +365,21 @@ export const ENGINES: Engine[] = [
     Icon: SiElasticsearch,
     color: "#00bfb3",
     category: "search",
-    status: "soon",
-    searchTitle: "Elasticsearch GUI client",
-    summary: "Browse indices and documents and run queries. Being built now.",
-    highlights: ["Indices with their mappings as columns", "Query DSL and SQL in the editor"],
-    connect: ["The cluster URL with an API key or user and password"],
+    status: "stable",
+    searchTitle: "Elasticsearch GUI client for Mac, Windows and Linux",
+    summary:
+      "Browse indices and documents, run Query DSL, SQL and PPL, and edit documents, from the same app as your SQL databases.",
+    highlights: [
+      "Indices as a list, their mappings as columns, documents in the grid",
+      "A console for Query DSL, with SQL and PPL beside it",
+      "Edit and add documents; index deletion and cluster settings stay locked",
+      "Agents over MCP get read, write or mapping access by the level you set",
+    ],
+    connect: [
+      "Paste the cluster URL, local or Elastic Cloud",
+      "Sign in with an API key, or a user and password",
+      "Accept a self-signed certificate for a local cluster",
+    ],
   },
   {
     slug: "opensearch",
@@ -377,11 +387,21 @@ export const ENGINES: Engine[] = [
     Icon: SiOpensearch,
     color: "#005eb8",
     category: "search",
-    status: "soon",
-    searchTitle: "OpenSearch GUI client",
-    summary: "OpenSearch with everything the Elasticsearch support has. Being built now.",
-    highlights: ["Indices, mappings and documents", "Query DSL and SQL in the editor"],
-    connect: ["The cluster URL with its credentials"],
+    status: "stable",
+    searchTitle: "OpenSearch GUI client for Mac, Windows and Linux",
+    summary:
+      "Everything the Elasticsearch support does, on OpenSearch: indices, documents, Query DSL, SQL and PPL.",
+    highlights: [
+      "Indices, mappings and documents in the grid",
+      "Query DSL in the console, plus OpenSearch SQL and PPL",
+      "Edit and add documents; destructive cluster calls stay locked",
+      "Stroke reads the server's answer and talks OpenSearch to it",
+    ],
+    connect: [
+      "Paste the cluster URL with its user and password",
+      "Accept the demo certificate of a local OpenSearch",
+      "Amazon OpenSearch with its endpoint and credentials",
+    ],
   },
 ];
 

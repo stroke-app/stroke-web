@@ -2,6 +2,7 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  ArrowRightIcon,
   BookOpenIcon,
   BotIcon,
   ChevronDownIcon,
@@ -107,8 +108,6 @@ const RESOURCES: MenuLink[] = [
   },
 ];
 
-const MENU_ENGINES = ENGINES.filter((e) => e.status !== "soon").slice(0, 12);
-
 type MenuId = "product" | "databases" | "resources";
 
 const THEMES = [
@@ -173,12 +172,17 @@ function formatStars(n: number) {
 function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
   const inner = (
     <>
-      <item.icon
-        className="mt-0.5 size-[18px] shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
-        strokeWidth={1.6}
-      />
-      <span className="min-w-0">
-        <span className="block text-[14px] font-medium text-foreground">{item.label}</span>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-ink/[0.04] shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 group-hover:bg-ink/[0.08]">
+        <item.icon
+          className="size-4 text-soft transition-colors group-hover:text-foreground"
+          strokeWidth={1.6}
+        />
+      </span>
+      <span className="min-w-0 pt-0.5">
+        <span className="flex items-center gap-1 text-[14px] font-medium text-foreground">
+          {item.label}
+          <ArrowRightIcon className="size-3 -translate-x-1 opacity-0 transition-[opacity,translate] duration-150 group-hover:translate-x-0 group-hover:opacity-60" />
+        </span>
         <span className="mt-0.5 block text-[13px] leading-snug text-muted-foreground">
           {item.body}
         </span>
@@ -186,7 +190,7 @@ function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
     </>
   );
   const cls =
-    "group -mx-3 flex gap-3.5 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-ink/[0.05] focus-visible:bg-ink/[0.05] focus-visible:outline-none";
+    "group -mx-2.5 flex gap-3 rounded-xl px-2.5 py-2 transition-colors duration-150 hover:bg-ink/[0.04] focus-visible:bg-ink/[0.05] focus-visible:outline-none";
   return item.href ? (
     <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls} onClick={onPick}>
       {inner}
@@ -198,50 +202,123 @@ function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
   );
 }
 
+/** The big card on the left of a menu: one real screen and where it leads. */
+function Feature({
+  to,
+  img,
+  eyebrow,
+  title,
+  onPick,
+}: {
+  to: React.ComponentProps<typeof Link>["to"];
+  img: string;
+  eyebrow: string;
+  title: string;
+  onPick: () => void;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onPick}
+      className="group relative flex h-full min-h-[15rem] flex-col justify-end overflow-hidden rounded-xl bg-[#0a0a0a] p-5 shadow-[0_0_0_1px_var(--border)_inset]"
+    >
+      <img
+        src={img}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-top-left opacity-70 transition-[opacity,scale] duration-300 group-hover:scale-[1.03] group-hover:opacity-90"
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"
+      />
+      <span className="relative text-[12px] font-medium text-[#f5b400]">{eyebrow}</span>
+      <span className="relative mt-1 flex items-center gap-1.5 text-[15px] font-medium text-white">
+        {title}
+        <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+      </span>
+    </Link>
+  );
+}
+
+const MENU_GROUPS: { label: string; cats: string[] }[] = [
+  { label: "Relational", cats: ["relational"] },
+  { label: "Documents and keys", cats: ["document", "key-value"] },
+  { label: "Analytics and search", cats: ["analytics", "search"] },
+];
+
 function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
   if (id === "databases") {
     return (
       <div>
-        <ul className="grid grid-cols-2 gap-x-6 gap-y-1 md:grid-cols-3 lg:grid-cols-4">
-          {MENU_ENGINES.map((e) => (
-            <li key={e.slug}>
-              <Link
-                to="/databases/$engine"
-                params={{ engine: e.slug }}
-                onClick={onPick}
-                className="group -mx-3 flex h-11 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors duration-150 hover:bg-ink/[0.05]"
-              >
-                <e.Icon className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-                {e.name}
-              </Link>
-            </li>
+        <div className="grid grid-cols-3 gap-8">
+          {MENU_GROUPS.map((g) => (
+            <div key={g.label}>
+              <p className="mb-2 text-[12px] font-medium text-faint">{g.label}</p>
+              <ul className="grid grid-cols-1 gap-0.5">
+                {ENGINES.filter((e) => g.cats.includes(e.category) && e.status !== "soon").map(
+                  (e) => (
+                    <li key={e.slug}>
+                      <Link
+                        to="/databases/$engine"
+                        params={{ engine: e.slug }}
+                        onClick={onPick}
+                        className="group -mx-2 flex h-9 items-center gap-2.5 rounded-lg px-2 text-[14px] text-soft transition-colors duration-150 hover:bg-ink/[0.04] hover:text-foreground"
+                      >
+                        <e.Icon className="size-4 shrink-0" color={e.color} />
+                        {e.name}
+                        {e.status === "beta" && (
+                          <span className="text-[11px] text-faint">Beta</span>
+                        )}
+                      </Link>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </div>
           ))}
-        </ul>
-        <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
-          <p className="text-[13px] text-muted-foreground">
-            {ENGINES.filter((e) => e.status !== "soon").length} databases, one app, the same
-            keyboard shortcuts.
-          </p>
+        </div>
+        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+          <p className="text-[13px] text-muted-foreground">One download opens all of them.</p>
           <Link
             to="/databases"
             onClick={onPick}
-            className="text-[13px] font-medium text-foreground hover:text-soft"
+            className="group flex items-center gap-1 text-[13px] font-medium text-foreground"
           >
             All databases
+            <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>
     );
   }
-  const items = id === "product" ? PRODUCT : RESOURCES;
+  const product = id === "product";
   return (
-    <ul className="grid grid-cols-1 gap-x-10 gap-y-1 md:grid-cols-2 lg:grid-cols-3">
-      {items.map((item) => (
-        <li key={item.label}>
-          <MenuItem item={item} onPick={onPick} />
-        </li>
-      ))}
-    </ul>
+    <div className="grid grid-cols-[15rem_minmax(0,1fr)] gap-8">
+      {product ? (
+        <Feature
+          to="/features"
+          img="/shots/command-palette.webp"
+          eyebrow="Tour"
+          title="Every feature, screen by screen"
+          onPick={onPick}
+        />
+      ) : (
+        <Feature
+          to="/sponsors"
+          img="/shots/settings-sync.webp"
+          eyebrow="Sponsor"
+          title="Help sign Stroke for macOS and Windows"
+          onPick={onPick}
+        />
+      )}
+      <ul className="grid grid-cols-2 content-start gap-x-6 gap-y-1">
+        {(product ? PRODUCT : RESOURCES).map((item) => (
+          <li key={item.label}>
+            <MenuItem item={item} onPick={onPick} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -378,10 +455,10 @@ export function SiteHeader() {
         id={panelId}
         hidden={!menu}
         onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
-        className="absolute inset-x-0 top-full hidden md:block"
+        className="absolute inset-x-0 top-full hidden pt-2 md:block"
       >
-        <div className={cn(FRAME, "px-3")}>
-          <div className="animate-in rounded-b-2xl border border-t-0 border-border bg-popover px-8 pt-6 pb-7 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.55)] duration-200 fade-in-0 slide-in-from-top-1">
+        <div className={cn(FRAME, "px-4 lg:px-10")}>
+          <div className="animate-in rounded-2xl bg-popover p-5 shadow-[0_0_0_1px_var(--border),0_30px_80px_-24px_rgb(0_0_0/0.6)] backdrop-blur-xl duration-200 fade-in-0 slide-in-from-top-2">
             {menu && <MenuPanel id={menu} onPick={() => setMenu(null)} />}
           </div>
         </div>
@@ -458,7 +535,6 @@ const FOOTER: { title: string; links: FooterLink[] }[] = [
       { label: "Blog", to: "/blog" },
       { label: "Compare", to: "/compare" },
       { label: "Sponsor", to: "/sponsors" },
-      { label: "Giveaway", to: "/giveaway" },
     ],
   },
   {

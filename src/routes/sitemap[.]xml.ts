@@ -24,7 +24,6 @@ const PAGES: { path: string; priority: string; changefreq: string; release?: boo
   { path: "/changelog", priority: "0.6", changefreq: "weekly", release: true },
   { path: "/roadmap", priority: "0.5", changefreq: "monthly" },
   { path: "/themes", priority: "0.5", changefreq: "weekly" },
-  { path: "/giveaway", priority: "0.5", changefreq: "weekly" },
   { path: "/sponsors", priority: "0.4", changefreq: "monthly" },
   { path: "/databases", priority: "0.8", changefreq: "monthly" },
   ...ENGINES.map((e) => ({ path: `/databases/${e.slug}`, priority: "0.7", changefreq: "monthly" })),
