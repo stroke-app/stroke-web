@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_auth/app/billing")({
 const PRO_PERKS = [
   `All ${SHIPPED_ENGINES.length} engines, from Postgres to MongoDB`,
   "Built-in MCP server for Claude & Cursor",
-  "macOS, Windows & Linux, 3 devices at once",
+  "macOS, Windows & Linux, on all your computers",
   "Every future update included",
 ];
 
@@ -53,7 +53,7 @@ const PROMISES = [
   },
   {
     title: "Fixed within 14 days",
-    body: "A double charge or a key that won't activate? Email us within 14 days and we'll make it right.",
+    body: "A double charge, or Pro not showing in the app? Email us within 14 days and we'll make it right.",
   },
   {
     title: "We never see your card",
@@ -68,15 +68,15 @@ const BUYER_FAQ = [
   },
   {
     q: "What if I switch computers?",
-    a: "Your key can be active on up to 3 devices at a time, and you can ask for more under Devices. To switch, remove the old machine under Devices on this page, even if you no longer have it, or deactivate it in Stroke (Settings → License).",
+    a: "Sign in on the new computer with this same account and Pro comes with you. Remove old computers under Devices on the Overview tab, even ones you no longer have.",
   },
   {
     q: "Can I try it first?",
-    a: "Yes. The first time you open Stroke on a device, a 17-day trial starts with every feature unlocked. No account or payment needed.",
+    a: "Yes. Sign in to the app and a 17-day trial starts for your account, with every feature unlocked. No card needed.",
   },
   {
     q: "What happens after I pay?",
-    a: "You come back to this page and your license key appears, usually within a minute. Paste it into Stroke → Settings → License to activate.",
+    a: 'Pro lands on your account within a minute. Stroke picks it up by itself the next time it checks, or right away from "I bought it, check again" in the app. There\'s no key to enter.',
   },
 ];
 
@@ -248,7 +248,7 @@ function BillingPage() {
         {license && (
           <section aria-labelledby="activate-title" className="mt-14">
             <h2 id="activate-title" className="text-[16px] font-semibold tracking-[-0.01em]">
-              Activate in 3 steps
+              Start using Pro
             </h2>
             <ol className="mt-4 divide-y divide-border border-y border-border">
               {[
@@ -256,8 +256,8 @@ function BillingPage() {
                   step: "Download Stroke if you haven't already",
                   action: <SmartDownloadButton size="sm" alternates={false} />,
                 },
-                { step: "Open Stroke → Settings → License", action: null },
-                { step: "Paste your key and press Activate", action: null },
+                { step: "Open Stroke and sign in with this account", action: null },
+                { step: "Pro unlocks by itself, no key to enter", action: null },
               ].map(({ step, action }, i) => (
                 <li
                   key={step}
@@ -293,7 +293,7 @@ function BillingPage() {
 
   return (
     <div>
-      <PageTitle title="License & billing">{subtitle}</PageTitle>
+      <PageTitle title="Plan & billing">{subtitle}</PageTitle>
 
       <div className="mt-8 space-y-4">
         {/* Team owner summary */}
@@ -389,7 +389,7 @@ function BillingPage() {
             <div>
               <p className="text-[16px] font-semibold">Stroke Pro · $9.99 once</p>
               <p className="mt-1 text-[15px] text-muted-foreground">
-                Every feature and every update, on 3 devices.
+                Every feature and every update, on all your computers.
               </p>
             </div>
             <BuyButton loading={loading} onClick={handleUpgrade} className="w-full sm:w-auto" />
@@ -543,7 +543,7 @@ function ProOffer({ loading, onBuy }: { loading: boolean; onBuy: () => void }) {
           ))}
         </ul>
         <p className="mt-6 border-t border-border pt-5 text-[15px] text-pretty text-muted-foreground">
-          Try every feature free for 17 days first, no account needed.
+          Try every feature free for 17 days first. No card needed.
         </p>
       </div>
     </section>

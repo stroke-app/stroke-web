@@ -198,7 +198,7 @@ function EmptyState({ pro }: { pro: boolean }) {
         description={
           pro
             ? "In the Stroke app, open a database, go to Backup, and add a schedule under Scheduled backups. It shows up here once saved."
-            : "Scheduled backups are part of Stroke Pro. Get Pro on the License & billing page, then add a schedule from the Stroke app."
+            : "Scheduled backups are part of Stroke Pro. Get Pro on the Plan & billing tab, then add a schedule from the Stroke app."
         }
       />
     </Card>
