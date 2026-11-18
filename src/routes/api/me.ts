@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/me")({
       GET: async ({ request }) => {
         const auth = await authenticateDesktop(request);
         if (!auth) return unauthorized();
-        return meResponse(auth.user, auth.token);
+        return meResponse(auth.user, auth.token, request);
       },
     },
   },

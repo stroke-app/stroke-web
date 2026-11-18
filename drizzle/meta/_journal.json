@@ -120,6 +120,13 @@
       "when": 1794723193146,
       "tag": "0016_shares",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1794977159861,
+      "tag": "0017_account_trials",
+      "breakpoints": true
     }
   ]
 }

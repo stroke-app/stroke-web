@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/license/link")({
 
         const failed = await linkLicenseKey(auth.user, body.key.trim());
         if (failed) return failed;
-        return meResponse(auth.user, auth.token);
+        return meResponse(auth.user, auth.token, request);
       },
     },
   },
