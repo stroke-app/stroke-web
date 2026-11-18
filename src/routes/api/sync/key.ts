@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { overLimit, tooManyRequests } from "#/lib/desktop/rate-limit";
-import { apiError, authenticateDesktop, unauthorized } from "#/lib/desktop/service";
+import {
+  apiError,
+  authenticateDesktop,
+  unauthorized,
+  accountHasPaidPro,
+  paidProRequired,
+} from "#/lib/desktop/service";
 import { getSyncKey, putSyncKey } from "#/lib/sync/service";
 
 /**
@@ -15,6 +21,8 @@ export const Route = createFileRoute("/api/sync/key")({
       GET: async ({ request }) => {
         const auth = await authenticateDesktop(request);
         if (!auth) return unauthorized();
+        if (!(await accountHasPaidPro(auth.user.id, auth.user.email)))
+          return paidProRequired("Sync");
         const retry = await overLimit(`sync-key-get:user:${auth.user.id}`, 60, 60);
         if (retry !== null) return tooManyRequests(retry);
         return getSyncKey(auth.user.id);
@@ -22,6 +30,8 @@ export const Route = createFileRoute("/api/sync/key")({
       PUT: async ({ request }) => {
         const auth = await authenticateDesktop(request);
         if (!auth) return unauthorized();
+        if (!(await accountHasPaidPro(auth.user.id, auth.user.email)))
+          return paidProRequired("Sync");
         const retry = await overLimit(`sync-key-put:user:${auth.user.id}`, 10, 600);
         if (retry !== null) return tooManyRequests(retry);
 
