@@ -242,7 +242,7 @@ export function Panel({ className, children, ...props }: React.ComponentProps<"d
     <div
       {...props}
       className={cn(
-        "keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0a] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset,0_30px_80px_-20px_rgb(0_0_0/0.7)]",
+        "keep-dark dark bezel overflow-hidden rounded-xl bg-[#0a0a0a] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset]",
         className,
       )}
     >
@@ -287,7 +287,7 @@ export function PageHeader({
 }) {
   const center = align === "center";
   return (
-    <section className="relative isolate overflow-hidden">
+    <section className="relative isolate z-10 overflow-x-clip">
       <div
         aria-hidden="true"
         className={cn(
@@ -366,7 +366,7 @@ export function ProductShot({
 }) {
   return (
     <figure className={cn("mx-auto w-full max-w-[72rem]", className)}>
-      <div className="rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px shadow-[0_40px_120px_-40px_rgb(0_0_0/0.65)]">
+      <div className="bezel rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px">
         <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
           <img
             src={src}

@@ -546,24 +546,26 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mega menu: one panel under the bar, its content swapped per menu. */}
-      <div
-        id={panelId}
-        hidden={!menu}
-        onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
-        className="absolute inset-x-0 top-full hidden pt-2 md:block"
-      >
-        <div className={cn(FRAME, "flex justify-center px-4 lg:px-10")}>
-          <div
-            className={cn(
-              "w-full animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] backdrop-blur-xl duration-150 fade-in-0 slide-in-from-top-1",
-              menu === "databases" ? "max-w-[52rem]" : "max-w-[48rem]",
-            )}
-          >
-            {menu && <MenuPanel id={menu} onPick={() => setMenu(null)} />}
+      {/* Mega menu: one panel under the bar, its content swapped per menu.
+          Mounted only while open, so nothing invisible sits over the page,
+          one width for every menu so switching never jumps, and no backdrop
+          blur: the panel is opaque, and blurring the page under it made each
+          switch repaint the whole viewport. */}
+      {menu && (
+        <div
+          id={panelId}
+          onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
+          className="absolute inset-x-0 top-full hidden pt-2 md:block"
+        >
+          <div className={cn(FRAME, "flex justify-center px-4 lg:px-10")}>
+            <div className="w-full max-w-[52rem] animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] duration-150 fade-in-0 slide-in-from-top-1">
+              <div key={menu} className="animate-in duration-150 fade-in-0">
+                <MenuPanel id={menu} onPick={() => setMenu(null)} />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {mobile && (
         <nav

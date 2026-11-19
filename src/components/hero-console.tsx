@@ -285,7 +285,7 @@ export function HeroConsole({ index, onIndex }: { index: number; onIndex: (i: nu
       ref={root}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="keep-dark dark grid grid-cols-1 overflow-hidden rounded-xl bg-[#0a0a0a] text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset,0_40px_100px_-30px_rgb(0_0_0/0.8)] md:grid-cols-[13.5rem_minmax(0,1fr)]"
+      className="keep-dark dark bezel grid grid-cols-1 overflow-hidden rounded-xl bg-[#0a0a0a] text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset] md:grid-cols-[13.5rem_minmax(0,1fr)]"
     >
       {/* Connections */}
       <div className="hidden border-r border-white/[0.07] bg-[#070707] md:block">
