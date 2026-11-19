@@ -3,7 +3,7 @@ import { ArrowRightIcon } from "lucide-react";
 
 import { NextLinks, PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
 import { competitorBySlug, STROKE_FACTS } from "#/lib/competitors";
-import { seo } from "#/lib/seo";
+import { faqPage, seo } from "#/lib/seo";
 
 import { CompareNav, CompareNote, StrokeExtras } from "./index";
 
@@ -22,6 +22,22 @@ export const Route = createFileRoute("/compare/$slug")({
       breadcrumbs: [
         { name: "Compare", path: "/compare" },
         { name: `Stroke vs ${c.name}`, path: `/compare/${c.slug}` },
+      ],
+      schema: [
+        faqPage([
+          {
+            q: `Is Stroke a good ${c.name} alternative?`,
+            a: `Stroke: ${STROKE_FACTS.runtime}, on ${STROKE_FACTS.platforms}, with an AI agent and a built-in MCP server. ${c.name}: ${c.runtime}, on ${c.platforms}. ${c.name} suits ${c.goodFor.charAt(0).toLowerCase()}${c.goodFor.slice(1)}`,
+          },
+          {
+            q: `How much does Stroke cost compared with ${c.name}?`,
+            a: `Stroke: ${STROKE_FACTS.pricing}. ${c.name}: ${c.pricing}.`,
+          },
+          {
+            q: `What does ${c.name} need before it opens a database, and what does Stroke need?`,
+            a: `${c.name}: ${c.needs}. Stroke: ${STROKE_FACTS.needs}.`,
+          },
+        ]),
       ],
     });
   },

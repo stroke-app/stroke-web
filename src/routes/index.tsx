@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LandingPage } from "#/components/landing-page";
 import { TAGLINE } from "#/components/site-chrome";
+import { FAQ_ITEMS } from "#/lib/faq";
 import { latestReleaseQueryOptions } from "#/lib/latest-release";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
-import { ENGINES, seo, SITE_IDENTITY, softwareApplication } from "#/lib/seo";
+import { ENGINES, faqPage, seo, SITE_IDENTITY, softwareApplication } from "#/lib/seo";
 
 const DESCRIPTION = `Stroke is a native database client for PostgreSQL, MySQL, SQLite, SQL Server, ClickHouse, DuckDB, and more. Query, browse, and edit every database you run in one fast app, with a built-in MCP server for AI agents.`;
 
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/")({
       title: "Stroke · Native database client for Postgres, MySQL, SQLite & more",
       description: DESCRIPTION,
       path: "/",
-      schema: [...SITE_IDENTITY, APP],
+      schema: [...SITE_IDENTITY, APP, faqPage(FAQ_ITEMS)],
     }),
   component: LandingPage,
 });

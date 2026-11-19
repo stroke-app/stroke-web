@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
+import { platformQueryOptions } from "#/lib/platform-hint";
+
 export const REPO_SLUG = "stroke-app/stroke";
 export const RELEASES_URL = `https://github.com/${REPO_SLUG}/releases`;
 // Server-side proxy (src/routes/api/releases.ts), cached and immune to
@@ -106,12 +108,26 @@ export async function detectPlatform(): Promise<Platform | null> {
   return null;
 }
 
+/**
+ * The visitor's system. The server reads it from the request (platform-hint.ts)
+ * so the first render is already right; the browser then corrects the one
+ * thing the server can miss, an Intel Mac in a browser that sent no arch hint.
+ */
 export function usePlatform() {
-  const [platform, setPlatform] = useState<Platform | null>(null);
+  const { data: server } = useQuery(platformQueryOptions());
+  const [refined, setRefined] = useState<Platform | null>(null);
   useEffect(() => {
-    detectPlatform().then(setPlatform);
-  }, []);
-  return platform;
+    let live = true;
+    void detectPlatform().then((p) => {
+      if (!live || !p) return;
+      // Only ever a change of Mac chip, or a system the server couldn't name.
+      if (!server || (p.os === server.os && p.arch !== server.arch)) setRefined(p);
+    });
+    return () => {
+      live = false;
+    };
+  }, [server]);
+  return refined ?? server ?? null;
 }
 
 /** One downloadable artifact on the /download page. */

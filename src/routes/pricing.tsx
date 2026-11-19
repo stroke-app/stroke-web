@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Faq, Pricing } from "#/components/landing-page";
 import { PageShell } from "#/components/page";
-import { seo } from "#/lib/seo";
+import { FAQ_ITEMS } from "#/lib/faq";
+import { faqPage, seo, softwareApplication } from "#/lib/seo";
 
 export const Route = createFileRoute("/pricing")({
   head: () =>
@@ -12,6 +13,14 @@ export const Route = createFileRoute("/pricing")({
         "Stroke costs $9.99 once, not $100 a year. Try every feature free for 17 days, or license your whole company's email domain for $99. No subscription.",
       path: "/pricing",
       breadcrumbs: [{ name: "Pricing", path: "/pricing" }],
+      schema: [
+        softwareApplication({
+          path: "/pricing",
+          description:
+            "Stroke, a native database client for macOS, Windows and Linux: $9.99 once after a 17-day free trial.",
+        }),
+        faqPage(FAQ_ITEMS),
+      ],
     }),
   component: PricingPage,
 });

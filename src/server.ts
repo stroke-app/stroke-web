@@ -10,6 +10,20 @@ export { StudioRelay };
  * cron in wrangler.toml draws the giveaway week that just closed.
  * https://developers.cloudflare.com/workers/framework-guides/web-apps/tanstack-start/
  */
+/**
+ * Pages ask Chromium for the CPU architecture, so the next request says
+ * whether a Mac is Apple Silicon or Intel and the download button is right in
+ * the server's HTML (lib/platform-hint.ts). The platform itself comes on
+ * every request already.
+ */
+function withClientHints(response: Response) {
+  if (!response.headers.get("content-type")?.includes("text/html")) return response;
+  const out = new Response(response.body, response);
+  out.headers.set("Accept-CH", "Sec-CH-UA-Platform, Sec-CH-UA-Arch");
+  out.headers.append("Vary", "Sec-CH-UA-Platform, Sec-CH-UA-Arch");
+  return out;
+}
+
 export default {
   async fetch(
     request: Request,
@@ -25,11 +39,10 @@ export default {
       const stub = env.STUDIO_RELAY.get(env.STUDIO_RELAY.idFromName(m[1]));
       return stub.fetch(request);
     }
-    return (handler.fetch as (r: Request, e: unknown, c: ExecutionContext) => Promise<Response>)(
-      request,
-      env,
-      ctx,
-    );
+    const response = await (
+      handler.fetch as (r: Request, e: unknown, c: ExecutionContext) => Promise<Response>
+    )(request, env, ctx);
+    return withClientHints(response);
   },
 
   async scheduled(_event: ScheduledController, _env: unknown, ctx: ExecutionContext) {
