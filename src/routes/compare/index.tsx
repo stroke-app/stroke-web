@@ -2,10 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
 
 import { SUPPORT_EMAIL } from "#/components/legal";
-import { PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
-import { SponsorRail } from "#/components/sponsor-rail";
+import {
+  GUTTER,
+  PageHeader,
+  PageShell,
+  Section,
+  SectionIntro,
+  siteButton,
+} from "#/components/page";
 import { COMPETITORS, STROKE_EXTRAS, STROKE_FACTS } from "#/lib/competitors";
 import { seo } from "#/lib/seo";
+import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/compare/")({
   head: () =>
@@ -42,9 +49,15 @@ export function CompareNote() {
   );
 }
 
-export function StrokeExtras() {
+export function StrokeExtras({ columns = 2, className }: { columns?: 1 | 2; className?: string }) {
   return (
-    <ul className="mt-5 flex flex-col gap-3">
+    <ul
+      className={cn(
+        "grid grid-cols-1 gap-x-8 gap-y-4",
+        columns === 2 && "md:grid-cols-2",
+        className,
+      )}
+    >
       {STROKE_EXTRAS.map((x) => (
         <li
           key={x}
@@ -66,43 +79,92 @@ function ComparePage() {
         title="Stroke and the other database clients"
         description="What each one is built on, where it runs and what it costs, side by side. Then what Stroke adds."
         actions={
-          <Link to="/download" className={siteButton({ size: "md" })}>
+          <Link to="/download" className={siteButton({ size: "lg" })}>
             Try Stroke free
             <ArrowRightIcon className="size-4" />
           </Link>
         }
       />
-      <PageBody rail={<SponsorRail />} aside={<CompareNav />} wide>
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[56rem] border-collapse text-left text-[13px]">
+      <div className={cn(GUTTER, "pb-20 md:pb-28")}>
+        {/* Phones: one card per client. */}
+        <ul className="flex flex-col gap-3 md:hidden">
+          {[{ slug: "", name: "Stroke", ...STROKE_FACTS }, ...COMPETITORS].map((c) => (
+            <li
+              key={c.name}
+              className={cn("rounded-xl border border-border p-4", !c.slug && "bg-ink/[0.04]")}
+            >
+              <p className="text-[15px] font-semibold">
+                {c.slug ? (
+                  <Link
+                    to="/compare/$slug"
+                    params={{ slug: c.slug }}
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {c.name}
+                  </Link>
+                ) : (
+                  c.name
+                )}
+              </p>
+              <dl className="mt-3 grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-2 text-[13.5px]">
+                {ROWS.map((r) => (
+                  <div key={r.key} className="contents">
+                    <dt className="text-muted-foreground">{r.label}</dt>
+                    <dd className={c.slug ? "text-soft" : "text-foreground"}>{c[r.key]}</dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          ))}
+        </ul>
+        {/* Wider screens: one row per client, so nothing scrolls sideways. */}
+        <div className="hidden overflow-x-auto rounded-xl border border-border md:block">
+          <table className="w-full min-w-[46rem] border-collapse text-left text-[13.5px]">
             <thead>
-              <tr className="border-b border-border bg-ink/[0.02]">
-                <th scope="col" className="w-32 px-4 py-3 font-medium text-muted-foreground"></th>
-                <th scope="col" className="px-4 py-3 font-semibold text-foreground">
-                  Stroke
+              <tr className="border-b border-border bg-ink/[0.02] text-[12.5px]">
+                <th scope="col" className="w-44 px-5 py-3 font-medium text-muted-foreground">
+                  Client
                 </th>
-                {COMPETITORS.map((c) => (
-                  <th key={c.slug} scope="col" className="px-4 py-3 font-medium">
-                    <Link
-                      to="/compare/$slug"
-                      params={{ slug: c.slug }}
-                      className="text-foreground/90 underline-offset-4 hover:underline"
-                    >
-                      {c.name}
-                    </Link>
+                {ROWS.map((r) => (
+                  <th
+                    key={r.key}
+                    scope="col"
+                    className="px-5 py-3 font-medium text-muted-foreground"
+                  >
+                    {r.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((r) => (
-                <tr key={r.key} className="border-b border-border align-top last:border-0">
-                  <th scope="row" className="px-4 py-3 font-medium text-muted-foreground">
-                    {r.label}
+              <tr className="border-b border-border bg-ink/[0.04] align-top">
+                <th scope="row" className="px-5 py-4 text-[14.5px] font-semibold text-foreground">
+                  <span className="flex items-center gap-2">
+                    Stroke
+                    <span className="rounded-full bg-ink/[0.08] px-1.5 py-px text-[11px] font-medium text-soft">
+                      This one
+                    </span>
+                  </span>
+                </th>
+                {ROWS.map((r) => (
+                  <td key={r.key} className="px-5 py-4 leading-relaxed text-foreground">
+                    {STROKE_FACTS[r.key]}
+                  </td>
+                ))}
+              </tr>
+              {COMPETITORS.map((c) => (
+                <tr key={c.slug} className="border-b border-border align-top last:border-0">
+                  <th scope="row" className="px-5 py-4 font-medium">
+                    <Link
+                      to="/compare/$slug"
+                      params={{ slug: c.slug }}
+                      className="text-foreground underline-offset-4 hover:underline"
+                    >
+                      {c.name}
+                    </Link>
                   </th>
-                  <td className="bg-ink/[0.03] px-4 py-3 text-foreground">{STROKE_FACTS[r.key]}</td>
-                  {COMPETITORS.map((c) => (
-                    <td key={c.slug} className="px-4 py-3 text-muted-foreground">
+                  {ROWS.map((r) => (
+                    <td key={r.key} className="px-5 py-4 leading-relaxed text-muted-foreground">
                       {c[r.key]}
                     </td>
                   ))}
@@ -112,14 +174,41 @@ function ComparePage() {
           </table>
         </div>
         <CompareNote />
+      </div>
 
-        <section aria-labelledby="extras" className="mt-16 max-w-3xl">
-          <h2 id="extras" className="text-xl font-semibold tracking-[-0.01em]">
-            In Stroke
-          </h2>
+      <Section>
+        <SectionIntro eyebrow="Head to head" title="One client at a time">
+          <p>Where each one fits best, and how Stroke differs, on a page of its own.</p>
+        </SectionIntro>
+        <ul className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {COMPETITORS.map((c) => (
+            <li key={c.slug}>
+              <Link
+                to="/compare/$slug"
+                params={{ slug: c.slug }}
+                className="group flex h-full flex-col rounded-xl border border-border bg-ink/[0.015] p-5 transition-[background-color,border-color] duration-150 hover:border-ink/20 hover:bg-ink/[0.04]"
+              >
+                <span className="flex items-center justify-between gap-3 text-[16px] font-semibold">
+                  Stroke vs {c.name}
+                  <ArrowRightIcon className="size-4 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-foreground" />
+                </span>
+                <span className="mt-2 text-[14px] leading-relaxed text-pretty text-muted-foreground">
+                  {c.goodFor}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section inner="md:pb-28">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
+          <SectionIntro eyebrow="In Stroke" title="What it adds">
+            <p>Stated as what Stroke does, not as what others lack.</p>
+          </SectionIntro>
           <StrokeExtras />
-        </section>
-      </PageBody>
+        </div>
+      </Section>
     </PageShell>
   );
 }

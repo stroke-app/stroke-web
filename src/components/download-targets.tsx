@@ -237,6 +237,118 @@ function BuildRows({
   );
 }
 
+/**
+ * The three systems side by side, each a card with its builds: the system's
+ * name and install guide on top, then one row per build with its format,
+ * size and a download button. The build that fits this computer is marked
+ * and gets the solid button.
+ */
+export function PlatformCards({
+  release,
+  platform,
+}: {
+  release: LatestRelease | undefined;
+  platform: Platform | null;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      {OS_ROWS.map((row) => {
+        const mine = platform?.os === row.os;
+        const best =
+          release && mine ? getDownloadAsset(release.assets, row.os, platform.arch) : null;
+        return (
+          <article
+            key={row.os}
+            className={cn(
+              "flex flex-col rounded-xl border bg-ink/[0.015] p-5",
+              mine ? "border-ink/25 shadow-[0_0_0_1px_var(--border)]" : "border-border",
+            )}
+          >
+            <header className="flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-ink/[0.05] text-foreground">
+                <row.Icon className="size-[18px]" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[17px] font-semibold tracking-[-0.01em]">{row.name}</h3>
+                <p className="text-[13px] text-muted-foreground">
+                  {row.os === "macos"
+                    ? "macOS 11 or later"
+                    : row.os === "windows"
+                      ? "Windows 10 and 11"
+                      : "x86-64, glibc 2.31+"}
+                </p>
+              </div>
+              {mine && (
+                <span className="flex items-center gap-1.5 rounded-full bg-ink/[0.06] px-2 py-0.5 text-[12px] text-foreground">
+                  <span aria-hidden="true" className="size-1.5 rounded-full bg-[#4cb782]" />
+                  This computer
+                </span>
+              )}
+            </header>
+            <ul className="mt-5 flex flex-1 flex-col gap-2">
+              {DOWNLOAD_TARGETS.filter((t) => t.os === row.os).map((target) => {
+                const info = TARGET_INFO[target.key];
+                const asset = release ? findAsset(release.assets, target) : null;
+                if (release && !asset) return null;
+                const detected = asset !== null && best !== null && asset.name === best.name;
+                return (
+                  <li key={target.key}>
+                    <a
+                      href={asset?.browser_download_url}
+                      title={asset?.name}
+                      aria-label={`Download Stroke for ${row.short}, ${info?.name ?? target.label} (${info?.format})`}
+                      className={cn(
+                        "group flex items-center gap-3 rounded-lg px-3.5 py-3 transition-[background-color,scale] duration-150 active:scale-[0.99]",
+                        detected
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "bg-ink/[0.03] shadow-[0_0_0_1px_var(--border)_inset] hover:bg-ink/[0.06]",
+                        !asset && "pointer-events-none",
+                      )}
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[14px] font-medium">
+                          {info?.name ?? target.label}
+                        </span>
+                        <span
+                          className={cn(
+                            "block truncate text-[12.5px]",
+                            detected ? "text-primary-foreground/70" : "text-muted-foreground",
+                          )}
+                        >
+                          {info?.detail}
+                        </span>
+                      </span>
+                      <span
+                        className={cn(
+                          "shrink-0 text-right font-mono text-[11.5px] tabular-nums",
+                          detected ? "text-primary-foreground/70" : "text-faint",
+                        )}
+                      >
+                        {info?.format}
+                        <br />
+                        {asset ? formatBytes(asset.size) : "\u00a0"}
+                      </span>
+                      <DownloadIcon className="size-4 shrink-0 opacity-70 transition-transform duration-150 group-hover:translate-y-px" />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+            <Link
+              to="/download/$os"
+              params={{ os: row.os }}
+              className="group mt-4 inline-flex items-center gap-1.5 self-start text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {`Install guide for ${row.short}`}
+              <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+            </Link>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 /** A terminal command with a copy button. */
 export function CommandCard({ label, command }: { label: string; command: string }) {
   const [copied, setCopied] = useState(false);
@@ -347,7 +459,7 @@ export function DownloadHero({
 const WHAT_YOU_GET = [
   {
     title: "Every engine you run",
-    body: "PostgreSQL, MySQL, MariaDB, SQLite, DuckDB, SQL Server, ClickHouse, CockroachDB, Turso / LibSQL, and Cloudflare D1. Redis is in beta.",
+    body: "PostgreSQL, MySQL, SQLite, MongoDB, Redis, SQL Server, Oracle, ClickHouse, DuckDB, DynamoDB and more, in one app with one set of shortcuts.",
   },
   {
     title: "AI that knows your schema",

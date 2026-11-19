@@ -31,7 +31,8 @@ export const STROKE_FACTS = {
 export const STROKE_EXTRAS = [
   "An AI agent in the app that reads your schema, runs queries, plans multi-step work and asks before anything destructive",
   "A built-in MCP server, so Claude Code, Cursor and other agents can query your database with access levels you set",
-  "Start PostgreSQL, MySQL, MongoDB, Redis, Oracle and 13 more in Docker from the command palette, already connected",
+  "Local database servers: any version of PostgreSQL, MySQL, MariaDB, Redis or MongoDB side by side, natively or in Docker, one click to open",
+  "A migrations view that shows which Prisma, Drizzle or Cloudflare D1 migrations ran, which are pending and which failed",
   "The engine's own CLI (psql, mysql, sqlcmd, redis-cli…) in a terminal tab, signed in",
   "Connections, workspaces and settings synced across devices, end-to-end encrypted",
   "SQL, document and key-value databases in one app: Postgres to MongoDB to DynamoDB",

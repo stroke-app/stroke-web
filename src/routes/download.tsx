@@ -3,17 +3,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { TriangleAlertIcon } from "lucide-react";
 
 import { SmartDownloadButton } from "#/components/download-button";
+import { CommandCard, OS_ROWS, PlatformCards, WhatYouGet } from "#/components/download-targets";
 import {
-  BuildList,
-  CommandCard,
-  DownloadHero,
-  OS_ROWS,
-  WhatYouGet,
-} from "#/components/download-targets";
-import {
-  Eyebrow,
+  GUTTER,
   NextLinks,
+  PageHeader,
   PageShell,
+  ProductShot,
   Section,
   SectionIntro,
   siteButton,
@@ -23,6 +19,7 @@ import { NIGHTLY_ASSETS, nightlyReleaseQueryOptions, nightlyUrl } from "#/lib/ni
 import { formatReleaseDate } from "#/lib/releases";
 import { DOWNLOAD_TARGETS, findAsset, RELEASES_URL, usePlatform } from "#/lib/releases";
 import { ORGANIZATION, seo, softwareApplication } from "#/lib/seo";
+import { cn } from "#/lib/utils";
 
 const MAIN_SHOT = {
   src: "/shots/table.webp",
@@ -77,33 +74,54 @@ function DownloadPage() {
 
   return (
     <PageShell>
-      <DownloadHero
-        eyebrow={<Eyebrow>Download</Eyebrow>}
-        title="Download Stroke"
-        lede="The fast database client for Mac, Windows, and Linux. Every feature is unlocked while you try it, and you don't need an account."
-        action={
-          <div className="flex flex-wrap items-start gap-3">
-            <SmartDownloadButton size="lg" variant="default" />
-            <a href="#platforms" className={siteButton({ variant: "secondary", size: "lg" })}>
-              All platforms
-            </a>
-          </div>
+      <PageHeader
+        eyebrow={
+          release ? (
+            <>
+              <span className="font-mono text-[12px]">{release.tag_name}</span>
+              <span aria-hidden="true" className="text-faint">
+                ·
+              </span>
+              {`Released ${formatReleaseDate(release.published_at)}`}
+            </>
+          ) : (
+            "Download"
+          )
         }
-        release={release}
-        shots={[MAIN_SHOT, SIDE_SHOT]}
+        title="Download Stroke"
+        description="One native app for every database you run, on macOS, Windows and Linux. Every feature is yours for 17 days, without a card."
+        actions={
+          <>
+            <SmartDownloadButton size="lg" variant="default" align="center" />
+            <a href="#platforms" className={siteButton({ variant: "secondary", size: "lg" })}>
+              Other platforms
+            </a>
+          </>
+        }
+        note="Then $9.99 once to keep it, on every computer you sign in on."
       />
+      <div className={cn(GUTTER, "pb-20 md:pb-28")}>
+        <ProductShot
+          src="/shots/insights.webp"
+          alt="Stroke's Instance insights page for a PostgreSQL server: connections, transactions, row writes and cache hit ratio, beside the schema tree"
+          priority
+          className="max-w-[64rem]"
+        />
+      </div>
 
       <Section id="platforms">
-        <SectionIntro index="1.0" eyebrow="Platforms" title="Every platform, one purchase">
-          <p>
-            Native builds for macOS, Windows, and Linux ship with every release. One $9.99 purchase
-            covers every computer you sign in on.
-          </p>
+        <SectionIntro
+          eyebrow="Platforms"
+          title="Pick your system"
+          align="center"
+          className="mx-auto"
+        >
+          <p>Every build ships with every release. The one that fits this computer is marked.</p>
         </SectionIntro>
-        <div className="mt-16 md:mt-24">
-          <BuildList release={release} platform={platform} />
+        <div className="mt-12 md:mt-16">
+          <PlatformCards release={release} platform={platform} />
         </div>
-        <p className="mt-8 text-sm text-muted-foreground">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Older versions and checksums are on{" "}
           <a
             href={RELEASES_URL}
@@ -118,37 +136,39 @@ function DownloadPage() {
       </Section>
 
       <Section>
-        <SectionIntro index="2.0" eyebrow="Install" title="Prefer the terminal?">
-          <p>Homebrew and Scoop installs skip the first-launch prompt and update in place.</p>
-        </SectionIntro>
-        <div className="mt-16 grid grid-cols-1 gap-4 md:mt-24 md:grid-cols-2">
-          <CommandCard
-            label="macOS · Homebrew"
-            command="brew install --cask stroke-app/tap/stroke"
-          />
-          <CommandCard
-            label="Windows · Scoop"
-            command={
-              "scoop bucket add stroke https://github.com/stroke-app/stroke\nscoop install stroke"
-            }
-          />
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
+          <SectionIntro eyebrow="Package managers" title="Or install it from the terminal">
+            <p>Homebrew, Scoop and the AUR skip the first-launch prompt and update in place.</p>
+          </SectionIntro>
+          <div className="grid grid-cols-1 gap-3">
+            <CommandCard
+              label="macOS · Homebrew"
+              command="brew install --cask stroke-app/tap/stroke"
+            />
+            <CommandCard
+              label="Windows · Scoop"
+              command={
+                "scoop bucket add stroke https://github.com/stroke-app/stroke\nscoop install stroke"
+              }
+            />
+            <CommandCard label="Arch Linux · AUR" command="yay -S stroke-bin" />
+          </div>
         </div>
         <FirstLaunch />
       </Section>
 
       <Section inner="md:pb-28">
         <SectionIntro
-          index="3.0"
-          eyebrow="Pricing"
+          eyebrow="What you get"
           title="Free to try, $9.99 to keep"
           link={{ to: "/pricing", label: "See pricing" }}
         >
           <p>
-            Download Stroke and use all of it while you decide. If it earns a place in your day, buy
-            it once. No subscription, no renewals.
+            Use all of it while you decide. If it earns a place in your day, buy it once. No
+            subscription, no renewals.
           </p>
         </SectionIntro>
-        <div className="mt-16 md:mt-24">
+        <div className="mt-12 md:mt-16">
           <WhatYouGet />
         </div>
         <NightlyDownloads />
@@ -169,13 +189,13 @@ function DownloadPage() {
 /** What an unsigned build asks on first launch, and how to get past it. */
 function FirstLaunch() {
   return (
-    <div className="mt-12 grid grid-cols-1 gap-4 border-t border-border pt-8 md:grid-cols-2 md:gap-16 lg:gap-24">
-      <h3 className="flex items-center gap-2.5 text-[15px] font-[560]">
-        <TriangleAlertIcon className="size-4 text-copper" />
-        Direct downloads aren't code-signed yet
+    <div className="mt-12 flex flex-col gap-4 rounded-xl border border-border bg-ink/[0.02] p-5 md:flex-row md:gap-10 md:p-6">
+      <h3 className="flex shrink-0 items-start gap-2.5 text-[15px] font-[560] md:w-72">
+        <TriangleAlertIcon className="mt-0.5 size-4 shrink-0 text-copper" />
+        The direct downloads aren't code-signed yet
       </h3>
-      <div className="space-y-3 text-[15px] leading-relaxed text-muted-foreground [&_strong]:font-medium [&_strong]:text-soft">
-        <p>So your system asks once, the first time you open Stroke:</p>
+      <div className="space-y-2 text-[14.5px] leading-relaxed text-muted-foreground [&_strong]:font-medium [&_strong]:text-soft">
+        <p>So your system asks once, the first time you open Stroke.</p>
         <p>
           <strong>macOS:</strong> right-click Stroke and choose Open, or allow it under System
           Settings → Privacy &amp; Security.

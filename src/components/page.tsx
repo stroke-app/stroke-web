@@ -261,41 +261,126 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** The title band at the top of every inner page. */
+/**
+ * The title band at the top of every inner page, the homepage's hero at a
+ * smaller size: the section name in a pill, the headline, one paragraph, the
+ * actions, all centered over a low warm light. `align="start"` keeps it left
+ * for reading pages (docs, legal) whose body starts at the left edge.
+ */
 export function PageHeader({
   eyebrow,
   title,
   description,
   actions,
+  note,
+  align = "center",
   children,
 }: {
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   actions?: React.ReactNode;
+  /** A small line under the actions (version, price). */
+  note?: React.ReactNode;
+  align?: "center" | "start";
   children?: React.ReactNode;
 }) {
+  const center = align === "center";
   return (
-    <section className="relative">
-      <div className={cn(GUTTER, "pt-16 pb-12 md:pt-24 md:pb-16")}>
-        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+    <section className="relative isolate overflow-hidden">
+      <div
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute -top-40 -z-10 h-[30rem] w-[56rem] max-w-[160%] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.09),transparent_70%)]",
+          center ? "left-1/2 -translate-x-1/2" : "-left-40",
+        )}
+      />
+      <div
+        className={cn(
+          GUTTER,
+          "flex flex-col pt-16 pb-14 md:pt-24 md:pb-20",
+          center && "items-center text-center",
+        )}
+      >
+        {eyebrow && <PagePill>{eyebrow}</PagePill>}
         <h1
           className={cn(
-            "max-w-3xl text-[2.375rem] text-balance sm:text-[3rem] md:text-[3.5rem]",
-            eyebrow && "mt-4",
+            "max-w-[20ch] text-[2.5rem] leading-[1.05] tracking-[-0.04em] text-balance sm:text-[3.1rem] md:text-[3.6rem]",
+            eyebrow && "mt-6",
           )}
         >
           {title}
         </h1>
         {description && (
-          <p className="mt-5 max-w-2xl text-[16px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
+          <p className="mt-6 max-w-[40rem] text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
             {description}
           </p>
         )}
-        {actions && <div className="mt-8 flex flex-wrap items-center gap-3">{actions}</div>}
+        {actions && (
+          <div className={cn("mt-9 flex flex-wrap items-start gap-3", center && "justify-center")}>
+            {actions}
+          </div>
+        )}
+        {note && <p className="mt-3 text-[13px] text-faint">{note}</p>}
         {children}
       </div>
     </section>
+  );
+}
+
+/** The small rounded label over a page title. */
+export function PagePill({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <p
+      className={cn(
+        "inline-flex h-7 w-fit items-center gap-2 rounded-full bg-ink/[0.04] px-3 text-[13px] font-medium text-soft shadow-[0_0_0_1px_var(--border)_inset]",
+        className,
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+/** A screenshot of the app in the site's window frame, as the homepage shows one. */
+export function ProductShot({
+  src,
+  alt,
+  width = 1600,
+  height = 1000,
+  priority = false,
+  className,
+}: {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
+  className?: string;
+}) {
+  return (
+    <figure className={cn("mx-auto w-full max-w-[72rem]", className)}>
+      <div className="rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px shadow-[0_40px_120px_-40px_rgb(0_0_0/0.65)]">
+        <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
+          <img
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
+            className="block h-auto w-full"
+          />
+        </div>
+      </div>
+    </figure>
   );
 }
 
