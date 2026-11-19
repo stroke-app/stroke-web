@@ -143,7 +143,7 @@ function Picture({ t }: { t: PicTile }) {
         <span className="font-semibold text-[#0a0a0a]">{t.title}</span> {t.text}
       </p>
       <img
-        src={`${IMG}/${t.img}.jpg?v=2`}
+        src={`${IMG}/${t.img}.jpg`}
         alt={t.alt}
         width={540}
         height={340}
@@ -233,7 +233,7 @@ function Stroke3Page() {
               access level you pick: read only, read and write, schema changes, or everything.
             </p>
             <img
-              src={`${IMG}/hero.jpg?v=2`}
+              src={`${IMG}/hero.jpg`}
               alt="Stroke's AI chat in a tab: it created two tables and inserted 45 rows"
               width={1104}
               height={660}
