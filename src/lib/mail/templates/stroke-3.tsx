@@ -12,7 +12,6 @@ import {
 import type { CSSProperties, ReactNode } from "react";
 
 import {
-  Badge,
   body,
   btnDark,
   btnLight,
@@ -147,6 +146,7 @@ function Pair({ children }: { children: [ReactNode, ReactNode] }) {
       cellPadding={0}
       cellSpacing={0}
       role="presentation"
+      className="pair"
       style={{ borderCollapse: "separate", marginBottom: `${GAP}px` }}
     >
       <tbody>
@@ -171,7 +171,6 @@ const LABS: [string, string, boolean][] = [
     false,
   ],
   ["Share as a web studio", "Share a database through a link that opens in any browser.", false],
-  ["New web studio", "A bigger studio for the browser, still being built and polished.", false],
   ["Live mode, ⌘K AI, Vim mode", "Self-refreshing tables, AI in the palette, and Vim keys.", false],
 ];
 
@@ -190,8 +189,14 @@ const RESPONSIVE = `
 @media only screen and (max-width: 620px) {
   .col { display: block !important; width: 100% !important; margin-bottom: 12px !important; }
   .gap { display: none !important; }
+  .pair { margin-bottom: 0 !important; }
   .copy { height: auto !important; }
   .col[height] { height: auto !important; }
+  .px { padding-left: 16px !important; padding-right: 16px !important; }
+  .h1 { font-size: 32px !important; line-height: 37px !important; }
+  .lead { font-size: 16px !important; line-height: 25px !important; }
+  .big { font-size: 80px !important; line-height: 84px !important; padding-top: 22px !important; }
+  .dark-pad { padding-bottom: 22px !important; }
 }`;
 
 export function Stroke3Email() {
@@ -202,8 +207,8 @@ export function Stroke3Email() {
         <style>{RESPONSIVE}</style>
       </Head>
       <Preview>
-        AI chat beside your tables, dashboards, local servers, encrypted backups, sync and 5 new
-        databases. Here's what's new and how to update.
+        AI chat beside your tables, dashboards, sharing, local servers, encrypted backups and sync.
+        Here's what's new and how to update.
       </Preview>
       <Body style={{ backgroundColor: "#ffffff", margin: 0, padding: 0, fontFamily: sans }}>
         <TopBar>
@@ -220,10 +225,11 @@ export function Stroke3Email() {
         <Container style={{ maxWidth: "616px", margin: "0 auto" }}>
           <Header action={{ href: `${SITE}/download`, label: "Download" }} />
 
-          <Section style={{ padding: "44px 32px 0" }}>
-            <Badge tag="3.0" title="New major version" sub="Stroke · Nov 19, 2026" />
-            <Text style={text.h1}>Stroke 3 is here</Text>
-            <Text style={text.lead}>
+          <Section className="px" style={{ padding: "44px 32px 0" }}>
+            <Text className="h1" style={text.h1}>
+              Stroke 3 is here
+            </Text>
+            <Text className="lead" style={text.lead}>
               The biggest update to Stroke so far: a new design, a faster app, and the features
               below. Each one is a sentence, so it takes a minute.
             </Text>
@@ -240,7 +246,7 @@ export function Stroke3Email() {
           </Section>
 
           {/* The bento */}
-          <Section style={{ padding: "36px 32px 0" }}>
+          <Section className="px" style={{ padding: "36px 32px 0" }}>
             {/* Hero: the only window */}
             <T
               style={{ backgroundColor: "#0a0a0b", borderRadius: "16px", marginBottom: `${GAP}px` }}
@@ -287,6 +293,7 @@ export function Stroke3Email() {
                 <DarkTile key="s">
                   <Text style={{ ...leadDark, padding: "20px 20px 0" }}>Works with</Text>
                   <Text
+                    className="big"
                     style={{
                       fontFamily: display,
                       fontSize: "96px",
@@ -308,8 +315,8 @@ export function Stroke3Email() {
                       padding: "4px 20px 22px",
                     }}
                   >
-                    <span style={{ color: "#ffffff" }}>databases.</span> New in 3: Oracle,
-                    Elasticsearch, OpenSearch, Xata and SingleStore.
+                    <span style={{ color: "#ffffff" }}>databases.</span> Postgres, MySQL, SQLite,
+                    MongoDB, Redis, Oracle, ClickHouse and more, in one app.
                   </Text>
                 </DarkTile>,
               ]}
@@ -329,9 +336,9 @@ export function Stroke3Email() {
                   key="p"
                   img="providers"
                   alt="Supabase, Prisma, Turso, Cloudflare and more"
-                  title="Create on your host."
+                  title="Create databases on your host."
                 >
-                  New databases on Neon, Supabase, Turso or D1.
+                  Sign in to Neon, Supabase, Turso or D1, and create from Stroke.
                 </Tile>,
               ]}
             </Pair>
@@ -407,10 +414,10 @@ export function Stroke3Email() {
                 <Tile
                   key="sh"
                   img="share"
-                  alt="A chart shared as a link that expires in 7 days"
-                  title="Share a chart."
+                  alt="Share a chart, a table or a schema diagram as a link"
+                  title="Share anything."
                 >
-                  An encrypted link that opens in any browser.
+                  Charts, tables and diagrams, as an encrypted link.
                 </Tile>,
                 <Tile
                   key="m"
@@ -422,10 +429,39 @@ export function Stroke3Email() {
                 </Tile>,
               ]}
             </Pair>
+
+            {/* Coming next */}
+            <T style={{ backgroundColor: ink, borderRadius: "16px" }}>
+              <tr>
+                <td style={{ padding: "24px 24px 26px" }}>
+                  <Text
+                    style={{
+                      display: "inline-block",
+                      fontFamily: sans,
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      letterSpacing: "0.4px",
+                      color: "#fbbf24",
+                      border: "1px solid #3f3a2a",
+                      borderRadius: "999px",
+                      padding: "3px 9px",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    Coming soon · in Labs
+                  </Text>
+                  <Text style={{ ...leadDark, fontSize: "18px", lineHeight: "26px", padding: 0 }}>
+                    <span style={{ color: "#ffffff", fontWeight: 600 }}>The web studio.</span> The
+                    full Stroke in your browser, for any database you can reach. It's in Labs now
+                    while we build and polish it.
+                  </Text>
+                </td>
+              </tr>
+            </T>
           </Section>
 
           <SectionHead kicker="Also new" title="And a few more things" />
-          <Section style={{ padding: "0 32px" }}>
+          <Section className="px" style={{ padding: "0 32px" }}>
             <T style={{ border: `1px solid ${line}` }}>
               {ALSO.map(([name, what], i) => (
                 <tr key={name}>
@@ -464,7 +500,7 @@ export function Stroke3Email() {
             title="Try it early in Labs"
             intro="These work today and may still change. Turn them on in Settings → Labs."
           />
-          <Section style={{ padding: "0 32px" }}>
+          <Section className="px" style={{ padding: "0 32px" }}>
             <T style={{ border: `1px solid ${line}` }}>
               {LABS.map(([name, what, on], i) => (
                 <tr key={name}>
@@ -519,7 +555,7 @@ export function Stroke3Email() {
             title="How to update"
             intro="Your connections, settings and saved queries carry over."
           />
-          <Section style={{ padding: "0 32px" }}>
+          <Section className="px" style={{ padding: "0 32px" }}>
             <T style={{ border: `1px solid ${line}` }}>
               {[
                 ["01", "Open Stroke. It offers the update."],

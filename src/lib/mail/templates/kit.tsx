@@ -140,7 +140,7 @@ export function TopBar({
 /** Logo and name in a hairline box, with one button on the right. */
 export function Header({ action }: { action: { href: string; label: string } }) {
   return (
-    <Section style={{ padding: "24px 32px 0" }}>
+    <Section className="px" style={{ padding: "24px 32px 0" }}>
       <T style={{ border: `1px solid ${line}` }}>
         <tr>
           <td style={{ padding: "0 14px", height: "48px" }}>
@@ -247,7 +247,7 @@ export function SectionHead({
   intro?: string;
 }) {
   return (
-    <Section style={{ padding: "48px 32px 18px" }}>
+    <Section className="px" style={{ padding: "48px 32px 18px" }}>
       {kicker && <Text style={{ ...text.label, margin: "0 0 8px" }}>{kicker}</Text>}
       <Text style={text.h2}>{title}</Text>
       {intro && (
@@ -260,7 +260,7 @@ export function SectionHead({
 /** Hairline rule, faint reason line, and the big wordmark. */
 export function Footer({ reason }: { reason: string }) {
   return (
-    <Section style={{ padding: "52px 32px 0" }}>
+    <Section className="px" style={{ padding: "52px 32px 0" }}>
       <T style={{ borderTop: `1px solid ${line}` }}>
         <tr>
           <td style={{ padding: "18px 0 0", verticalAlign: "top" }}>
