@@ -1,13 +1,11 @@
 import handler from "@tanstack/react-start/server-entry";
 
-import { runDueDraw } from "#/lib/giveaway/service";
 import { ROOM_RE, StudioRelay } from "#/lib/relay/studio-relay";
 
 export { StudioRelay };
 
 /**
- * Custom Worker entry: TanStack Start serves every request, and the weekly
- * cron in wrangler.toml draws the giveaway week that just closed.
+ * Custom Worker entry: TanStack Start serves every request.
  * https://developers.cloudflare.com/workers/framework-guides/web-apps/tanstack-start/
  */
 /**
@@ -43,14 +41,5 @@ export default {
       handler.fetch as (r: Request, e: unknown, c: ExecutionContext) => Promise<Response>
     )(request, env, ctx);
     return withClientHints(response);
-  },
-
-  async scheduled(_event: ScheduledController, _env: unknown, ctx: ExecutionContext) {
-    ctx.waitUntil(
-      runDueDraw().then(
-        (result) => console.log("[giveaway] weekly draw", JSON.stringify(result)),
-        (err) => console.error("[giveaway] weekly draw failed", err),
-      ),
-    );
   },
 };

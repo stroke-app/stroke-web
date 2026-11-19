@@ -14,10 +14,9 @@ routes = [{ pattern = "stroke.click", custom_domain = true }]
 [ai]
 binding = "AI"
 
-# Weekly giveaway: draw the week that just closed, Mondays 00:05 UTC
-# (src/server.ts -> src/lib/giveaway/service.ts runDueDraw).
+# No scheduled jobs. (The weekly giveaway draw ran here until it ended.)
 [triggers]
-crons = ["5 0 * * 1"]
+crons = []
 
 [[d1_databases]]
 binding = "DB"
