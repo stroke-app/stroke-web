@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as Stroke3RouteImport } from './routes/stroke-3'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SecurityRouteImport } from './routes/security'
@@ -107,6 +108,11 @@ const TermsRoute = TermsRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Stroke3Route = Stroke3RouteImport.update({
+  id: '/stroke-3',
+  path: '/stroke-3',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SponsorsRoute = SponsorsRouteImport.update({
@@ -530,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/stroke-3': typeof Stroke3Route
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
@@ -614,6 +621,7 @@ export interface FileRoutesByTo {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/stroke-3': typeof Stroke3Route
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
@@ -700,6 +708,7 @@ export interface FileRoutesById {
   '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
+  '/stroke-3': typeof Stroke3Route
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/themes': typeof ThemesRoute
@@ -786,6 +795,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/stroke-3'
     | '/studio'
     | '/terms'
     | '/themes'
@@ -870,6 +880,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/stroke-3'
     | '/studio'
     | '/terms'
     | '/themes'
@@ -955,6 +966,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/sitemap.xml'
     | '/sponsors'
+    | '/stroke-3'
     | '/studio'
     | '/terms'
     | '/themes'
@@ -1042,6 +1054,7 @@ export interface RootRouteChildren {
   SecurityRoute: typeof SecurityRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
+  Stroke3Route: typeof Stroke3Route
   StudioRoute: typeof StudioRoute
   TermsRoute: typeof TermsRoute
   ThemesRoute: typeof ThemesRoute
@@ -1119,6 +1132,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stroke-3': {
+      id: '/stroke-3'
+      path: '/stroke-3'
+      fullPath: '/stroke-3'
+      preLoaderRoute: typeof Stroke3RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sponsors': {
@@ -1805,6 +1825,7 @@ const rootRouteChildren: RootRouteChildren = {
   SecurityRoute: SecurityRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
+  Stroke3Route: Stroke3Route,
   StudioRoute: StudioRoute,
   TermsRoute: TermsRoute,
   ThemesRoute: ThemesRoute,

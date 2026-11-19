@@ -25,6 +25,7 @@ const PAGES: {
   { path: "/download/windows", priority: "0.9", changefreq: "weekly", release: true },
   { path: "/download/linux", priority: "0.9", changefreq: "weekly", release: true },
   { path: "/features", priority: "0.8", changefreq: "monthly" },
+  { path: "/stroke-3", priority: "0.8", changefreq: "monthly" },
   { path: "/pricing", priority: "0.8", changefreq: "monthly" },
   { path: "/docs", priority: "0.7", changefreq: "monthly" },
   { path: "/docs/mcp", priority: "0.7", changefreq: "monthly" },
