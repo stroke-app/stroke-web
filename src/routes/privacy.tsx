@@ -145,29 +145,22 @@ function PrivacyPage() {
             </>,
           ]}
         />
-        <p>Two optional features add a little more, only if you use them:</p>
-        <LegalList
-          items={[
-            <>
-              <strong>The weekly giveaway</strong> records your entry for that week. If you win, we
-              email you, and your first name and last initial may be shown on the site as last
-              week's winner. See the <Link to="/giveaway">giveaway rules</Link>.
-            </>,
-            "Reviews you submit are published on the site with the name and title you give, once approved.",
-          ]}
-        />
+        <p>
+          Reviews you submit are published on the site with the name and title you give, once
+          approved.
+        </p>
       </LegalSection>
 
       <LegalSection
         number="04"
         title="Email"
-        summary="We email you about purchases and the giveaway, and occasionally about Stroke."
+        summary="We email you about purchases and your account, and occasionally about Stroke."
       >
         <p>
           When you create an account, your name and email are added to Plunk, the service we use to
           send email. We use it for messages about your purchases (a confirmation, or a notice if a
-          payment fails), for giveaway results, and for occasional product updates. You can stop
-          product updates at any time by unsubscribing from one, or by emailing{" "}
+          payment fails), for notices about your account, and for occasional product updates. You
+          can stop product updates at any time by unsubscribing from one, or by emailing{" "}
           <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
         </p>
       </LegalSection>

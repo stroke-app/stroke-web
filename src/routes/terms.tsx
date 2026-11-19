@@ -178,23 +178,14 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection number="08" title="Weekly giveaway">
-        <p>
-          The weekly free-license giveaway is free to enter, one entry per account per week, and
-          open to anyone who doesn't already own a license. The full rules, including how the winner
-          is drawn and shown, are on the <Link to="/giveaway">giveaway page</Link> and form part of
-          these terms.
-        </p>
-      </LegalSection>
-
-      <LegalSection number="09" title="Reviews">
+      <LegalSection number="08" title="Reviews">
         <p>
           When you submit a review, you let us publish it on stroke.click with the name and title
           you provide. We may choose not to publish a review, or remove one later.
         </p>
       </LegalSection>
 
-      <LegalSection number="10" title="Acceptable use">
+      <LegalSection number="09" title="Acceptable use">
         <p>When using the website, licensing service, and free AI tier, you agree not to:</p>
         <LegalList
           items={[
@@ -206,7 +197,7 @@ function TermsPage() {
         />
       </LegalSection>
 
-      <LegalSection number="11" title="Your data and your databases">
+      <LegalSection number="10" title="Your data and your databases">
         <p>
           Stroke connects to your databases directly from your device. Your credentials, queries,
           and results stay on your machine and are never sent to our servers. What we do collect is
@@ -214,7 +205,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection number="12" title="Disclaimer of warranty">
+      <LegalSection number="11" title="Disclaimer of warranty">
         <p>
           The software and the service are provided <strong>"as is"</strong> and{" "}
           <strong>"as available"</strong>, without warranties of any kind, express or implied,
@@ -224,7 +215,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection number="13" title="Limitation of liability">
+      <LegalSection number="12" title="Limitation of liability">
         <p>
           To the maximum extent permitted by law, we aren't liable for any indirect, incidental,
           special, or consequential damages, or for loss of data, profits, or business, arising from
@@ -233,7 +224,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection number="14" title="Changes to these terms">
+      <LegalSection number="13" title="Changes to these terms">
         <p>
           We may update these terms as Stroke evolves. If a change is material, we'll note it on
           this page and update the date at the top. Continuing to use the service after a change

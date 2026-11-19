@@ -501,18 +501,23 @@ export function SiteHeader() {
             href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={stars ? `Stroke on GitHub, ${stars} stars` : "Stroke on GitHub"}
+            aria-label={
+              stars && stars >= 1000 ? `Stroke on GitHub, ${stars} stars` : "Stroke on GitHub"
+            }
             className="hidden h-8 items-center gap-1.5 rounded-full px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.04] hover:text-foreground lg:inline-flex"
           >
             <SiGithub className="size-3.5" />
-            {stars ? (
+            GitHub
+            {/* The count earns its place once it says something: 1k and up. */}
+            {stars && stars >= 1000 ? (
               <>
-                <StarIcon className="size-3 fill-current opacity-70" />
-                <span className="text-foreground tabular-nums">{formatStars(stars)}</span>
+                <span aria-hidden="true" className="mx-1 h-3.5 w-px bg-border" />
+                <StarIcon className="size-3 fill-[#f5b400] text-[#f5b400]" />
+                <span className="font-medium text-foreground tabular-nums">
+                  {formatStars(stars)}
+                </span>
               </>
-            ) : (
-              "GitHub"
-            )}
+            ) : null}
           </a>
           <Link
             to={user ? "/app" : "/login"}
