@@ -130,16 +130,16 @@ case "$FAMILY" in
       PKG="stroke-bin"; [ "$CHANNEL" = "nightly" ] && PKG="stroke-nightly-bin"
       if curl -fsS -o /dev/null "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$PKG"; then
         say "Installing $PKG from the AUR with $AUR"
-        # Under `curl | sh` stdin is this script, so prompts go to the
-        # terminal; with no terminal at all, install without them.
-        if (exec </dev/tty) 2>/dev/null; then
-          "$AUR" -S --needed "$PKG" </dev/tty
-        elif [ "$AUR" = "yay" ]; then
-          yay -S --needed --noconfirm --answerdiff None --answerclean None "$PKG"
+        # No questions: no clean-build, diff or edit menus, no "Proceed?".
+        # The terminal stays attached under `curl | sh` so sudo can still ask
+        # for the password; with no terminal at all, it runs without one.
+        if [ "$AUR" = "yay" ]; then
+          set -- yay -S --needed --noconfirm --answerclean None --answerdiff None --answeredit None --cleanafter "$PKG"
         else
-          paru -S --needed --noconfirm --skipreview "$PKG"
+          set -- paru -S --needed --noconfirm --skipreview "$PKG"
         fi
-        exit 0
+        if (exec </dev/tty) 2>/dev/null; then "$@" </dev/tty; else "$@"; fi && exit 0
+        say "The AUR install failed; installing the AppImage instead."
       fi
     fi
     install_appimage ;;
