@@ -96,6 +96,7 @@ function DocsPage() {
   return (
     <PageShell>
       <PageHeader
+        align="start"
         eyebrow="Docs"
         title="Getting started"
         description="Four steps from download to a database your agents can query. It takes about a minute."

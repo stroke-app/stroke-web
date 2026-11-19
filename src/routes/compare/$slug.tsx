@@ -2,7 +2,6 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 
 import { NextLinks, PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
-import { SponsorRail } from "#/components/sponsor-rail";
 import { competitorBySlug, STROKE_FACTS } from "#/lib/competitors";
 import { seo } from "#/lib/seo";
 
@@ -46,13 +45,13 @@ function VsPage() {
         title={`Stroke vs ${c.name}`}
         description={`Both open your databases. Here is how they differ, and when ${c.name} may be the better pick.`}
         actions={
-          <Link to="/download" className={siteButton({ size: "md" })}>
+          <Link to="/download" className={siteButton({ size: "lg" })}>
             Try Stroke free
             <ArrowRightIcon className="size-4" />
           </Link>
         }
       />
-      <PageBody aside={<CompareNav current={c.slug} />} rail={<SponsorRail />}>
+      <PageBody aside={<CompareNav current={c.slug} />}>
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full border-collapse text-left text-[14px]">
             <thead>
@@ -85,7 +84,7 @@ function VsPage() {
           <h2 id="extras" className="text-xl font-semibold tracking-[-0.01em]">
             What Stroke adds
           </h2>
-          <StrokeExtras />
+          <StrokeExtras columns={1} className="mt-5" />
         </section>
 
         <section aria-labelledby="fit" className="mt-14">

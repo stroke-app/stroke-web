@@ -163,6 +163,7 @@ function McpPage() {
   return (
     <PageShell>
       <PageHeader
+        align="start"
         eyebrow="Docs"
         title="MCP for agents"
         description="Stroke ships a built-in MCP (Model Context Protocol) server. Point an agent at it and it can read your schema and run queries against a database you already trust, with the connection and credentials staying on your machine."

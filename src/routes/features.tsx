@@ -40,8 +40,19 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { SmartDownloadButton } from "#/components/download-button";
-import { PageHeader, PageShell, Section, SectionIntro, siteButton, WRAP } from "#/components/page";
+import {
+  GUTTER,
+  PageHeader,
+  PageShell,
+  ProductShot,
+  Section,
+  SectionIntro,
+  siteButton,
+  WRAP,
+} from "#/components/page";
 import { clip, shot as tileShot, TileGrid, type Media, type Tile } from "#/components/showcase";
+import { SHIPPED_ENGINES } from "#/lib/engines";
+import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { seo } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
@@ -775,7 +786,7 @@ function GroupNav() {
       <div className={cn(WRAP, "max-md:px-0")}>
         <ul
           ref={list}
-          className="relative flex [scrollbar-width:none] overflow-x-auto max-md:mask-r-from-85% max-md:px-3 md:-ml-3 [&::-webkit-scrollbar]:hidden"
+          className="relative flex [scrollbar-width:none] gap-1 overflow-x-auto max-md:mask-r-from-85% max-md:px-3 md:justify-center [&::-webkit-scrollbar]:hidden"
         >
           {GROUPS.map((g) => {
             const current = active === g.id;
@@ -786,18 +797,13 @@ function GroupNav() {
                   aria-current={current ? "location" : undefined}
                   onClick={() => setActive(g.id)}
                   className={cn(
-                    "relative flex h-11 items-center rounded-md px-3 text-[13px] whitespace-nowrap transition-colors duration-150 outline-none focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                    current ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                    "my-1.5 flex h-8 items-center rounded-full px-3.5 text-[13px] whitespace-nowrap transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    current
+                      ? "bg-ink/[0.08] font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-ink/[0.04] hover:text-foreground",
                   )}
                 >
                   {g.label}
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "absolute inset-x-3 bottom-0 h-px bg-foreground transition-opacity duration-200",
-                      current ? "opacity-100" : "opacity-0",
-                    )}
-                  />
                 </a>
               </li>
             );
@@ -845,7 +851,7 @@ function FeaturesPage() {
       <PageHeader
         eyebrow="Features"
         title="Everything you need to work with data"
-        description={`${TOTAL} features in one native app for exploring, querying, and running every database you have, with an AI chat and an MCP server so your agents can work alongside you.`}
+        description="One native app for exploring, querying and running every database you have, with an AI chat and an MCP server so your agents can work alongside you."
         actions={
           <>
             <SmartDownloadButton
@@ -860,6 +866,32 @@ function FeaturesPage() {
           </>
         }
       />
+
+      <div className={cn(GUTTER, "pb-16 md:pb-24")}>
+        <ProductShot
+          src="/shots/ai-chat.webp"
+          alt="Stroke's AI chat after building a movie database, with the ER diagram of the new schema"
+          width={1600}
+          height={1004}
+          priority
+          className="max-w-[64rem]"
+        />
+        <dl className="mx-auto mt-14 grid max-w-[64rem] grid-cols-2 gap-y-8 md:grid-cols-4">
+          {[
+            [String(SHIPPED_ENGINES.length), "databases, SQL and NoSQL"],
+            [String(TOTAL), "features, every one in the trial"],
+            ["3", "systems: macOS, Windows, Linux"],
+            [PRO_PRICE, `once, after ${TRIAL_DAYS} days free`],
+          ].map(([n, label]) => (
+            <div key={label} className="flex flex-col items-center gap-1 text-center">
+              <dt className="order-2 text-[13.5px] text-muted-foreground">{label}</dt>
+              <dd className="order-1 text-[2rem] leading-none font-semibold tracking-[-0.03em] tabular-nums">
+                {n}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
       <GroupNav />
 
