@@ -98,7 +98,7 @@ function DownloadPage() {
             </a>
           </>
         }
-        note="Then $9.99 once to keep it, on every computer you sign in on."
+        note="Then $9.99 once to keep it, on up to 3 computers."
       />
       <div className={cn(GUTTER, "pb-20 md:pb-28")}>
         <ProductShot

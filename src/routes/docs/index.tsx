@@ -62,7 +62,7 @@ const STEPS: Step[] = [
       <>
         <p>
           When you decide to keep Stroke, buy Pro for $9.99 once. It lands on your account, so the
-          app unlocks by itself on every computer you sign in on. There is no key to paste.
+          app unlocks by itself on up to 3 computers you sign in on. There is no key to paste.
         </p>
         <div className="mt-5">
           <Link to="/app/billing" className={siteButton({ variant: "secondary", size: "sm" })}>

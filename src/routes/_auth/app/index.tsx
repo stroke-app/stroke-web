@@ -275,7 +275,7 @@ function Overview() {
 const PRO_PERKS = [
   "Pay once, nothing to cancel",
   "Every future update",
-  "All your computers",
+  "Up to 3 computers",
   "Priority support",
 ];
 

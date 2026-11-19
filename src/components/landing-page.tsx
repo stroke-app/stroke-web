@@ -135,7 +135,7 @@ const TRUST = [
   {
     icon: MonitorIcon,
     title: "Mac, Windows and Linux",
-    body: "Apple Silicon and Intel. One purchase covers all your computers.",
+    body: "Apple Silicon and Intel. One purchase covers 3 of your computers.",
   },
   {
     icon: LockKeyholeIcon,
@@ -713,7 +713,7 @@ function PricingTeaser() {
               {[
                 "Every feature and engine",
                 "Every future update",
-                "All your computers",
+                "Up to 3 computers",
                 "Sync and scheduled backups",
               ].map((p) => (
                 <li key={p} className="flex items-center gap-2.5">
@@ -746,7 +746,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Do I need an account?",
-    a: "Yes. Sign in with Google or GitHub when you first open the app. Your trial and your purchase belong to that account, so they follow you to every computer you sign in on.",
+    a: "Yes. Sign in with Google or GitHub when you first open the app. Your trial and your purchase belong to that account, so they follow you to up to 3 computers you sign in on.",
   },
   {
     q: "I bought a license key for an older version. Does it still work?",

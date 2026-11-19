@@ -27,7 +27,7 @@ const LEGAL_LINK =
 const PERKS = [
   `${TRIAL_DAYS} days of every feature, free`,
   `Then ${PRO_PRICE} once, no subscription`,
-  "Your plan follows you to every computer",
+  "Your plan follows you to up to 3 computers",
   "Bought a key before? Sign in with that email",
 ];
 

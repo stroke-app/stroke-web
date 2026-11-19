@@ -119,6 +119,10 @@ export async function exchangeDesktopCode(req: TokenRequest, request?: Request):
   const [account] = await db.select().from(user).where(eq(user.id, row.userId)).limit(1);
   if (!account) return apiError(400, "invalid_code", "This account no longer exists.");
 
+  // Three computers per account: a new one waits until a seat is freed.
+  const room = await deviceRoom(account.id, req.deviceId);
+  if (!room.ok) return apiError(409, "device_limit", deviceLimitMessage(room));
+
   // One live session per device: a fresh sign-in replaces the old token.
   await db
     .update(desktopTokens)
@@ -444,6 +448,38 @@ export async function listAccountDevices(userId: string): Promise<AccountDevice[
     );
   }
   return [...byId.values()].sort((a, b) => b.lastSeenAt - a.lastSeenAt);
+}
+
+/** Computers one account can use Stroke on at once, unless its license allows more. */
+export const ACCOUNT_DEVICE_LIMIT = 3;
+
+/**
+ * Whether `deviceId` may sign in to this account: it already holds a seat,
+ * or the account is on fewer computers than its limit. The limit is 3, or a
+ * license's own seat count when that was raised ("I need more devices").
+ * A computer frees its seat by signing out, or by being removed on
+ * stroke.click/app; the trial and Pro follow the account, not the computer.
+ */
+export async function deviceRoom(userId: string, deviceId: string) {
+  const [devices, license] = await Promise.all([
+    listAccountDevices(userId),
+    db
+      .select({ maxDevices: licenses.maxDevices })
+      .from(licenses)
+      .where(eq(licenses.userId, userId)),
+  ]);
+  const limit = Math.max(ACCOUNT_DEVICE_LIMIT, ...license.map((l) => l.maxDevices));
+  const known = devices.some((d) => d.deviceId === deviceId);
+  return { ok: known || devices.length < limit, limit, used: devices.length, devices };
+}
+
+/** The sentence the app shows when a fourth computer tries to sign in. */
+export function deviceLimitMessage(room: Awaited<ReturnType<typeof deviceRoom>>) {
+  const names = room.devices
+    .map((d) => d.name ?? "an unnamed computer")
+    .slice(0, 5)
+    .join(", ");
+  return `Stroke is signed in on ${room.used} computers with this account (${names}), the most it allows. Remove one at stroke.click/app, or sign out of Stroke on it, then sign in here again.`;
 }
 
 /**

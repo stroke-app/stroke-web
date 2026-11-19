@@ -1,9 +1,9 @@
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { CheckIcon, CopyIcon, Loader2Icon, MonitorIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, Loader2Icon, MonitorIcon, XIcon } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { SignInSocialButton } from "#/components/sign-in-social-button";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { authClient } from "#/lib/auth/auth-client";
 import { authQueryOptions } from "#/lib/auth/queries";
-import { $authorizeDesktop } from "#/lib/desktop/functions";
+import { $authorizeDesktop, $getDeviceRoom, $removeAccountDevice } from "#/lib/desktop/functions";
 import {
   desktopCallbackUrl,
   desktopSignInParams,
@@ -220,6 +220,12 @@ function Confirm({
     [storedRaw],
   );
 
+  // Three computers per account: a fourth asks to free a seat first.
+  const room = useQuery({
+    queryKey: ["account", "device-room", params.device_id],
+    queryFn: () => $getDeviceRoom({ data: { deviceId: params.device_id } }),
+  });
+
   const authorize = useMutation({
     mutationFn: (_mode: "redirect" | "code") => $authorizeDesktop({ data: params }),
     onSuccess: ({ url, code }, mode) => {
@@ -288,6 +294,15 @@ function Confirm({
   }
 
   const busy = authorize.isPending;
+  if (room.data && !room.data.ok) {
+    return (
+      <DeviceLimit
+        room={room.data}
+        deviceName={params.device_name}
+        onFreed={() => void room.refetch()}
+      />
+    );
+  }
   return (
     <>
       <h1 className="mt-7 text-[2rem] leading-tight text-balance">
@@ -349,6 +364,87 @@ function Confirm({
       >
         Not you? Use a different account
       </button>
+    </>
+  );
+}
+
+type Room = Awaited<ReturnType<typeof $getDeviceRoom>>;
+
+/**
+ * The account is on as many computers as it may be: list them, and let one
+ * be removed here (it's signed out the next time it reaches stroke.click),
+ * after which this sign-in goes on.
+ */
+function DeviceLimit({
+  room,
+  deviceName,
+  onFreed,
+}: {
+  room: Room;
+  deviceName: string;
+  onFreed: () => void;
+}) {
+  const remove = useMutation({
+    mutationFn: (deviceId: string) => $removeAccountDevice({ data: { deviceId } }),
+    onSuccess: onFreed,
+    onError: (err) => toast.error(err.message || "Couldn't remove that computer."),
+  });
+  const ago = (ms: number) => {
+    const d = Math.round((Date.now() - ms) / 86_400_000);
+    return d < 1 ? "Active today" : d === 1 ? "Active yesterday" : `Active ${d} days ago`;
+  };
+  return (
+    <>
+      <h1 className="mt-7 text-[2rem] leading-tight text-balance">
+        This account is on {room.used} computers
+      </h1>
+      <p className="mt-2.5 text-[15px] leading-normal text-pretty text-muted-foreground">
+        Stroke runs on up to {room.limit} computers per account. Remove one to sign in on{" "}
+        {deviceName}. It's signed out the next time it opens Stroke.
+      </p>
+      <ul className="mt-7 flex w-full flex-col gap-2 text-left">
+        {room.devices.map((d) => (
+          <li
+            key={d.deviceId}
+            className="flex items-center gap-3 rounded-xl bg-ink/[0.03] px-3.5 py-3 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ink)_6%,transparent)]"
+          >
+            <MonitorIcon className="size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[14px] font-medium">
+                {d.name ?? "Unnamed computer"}
+              </span>
+              <span className="block truncate text-[12.5px] text-muted-foreground">
+                {[d.os, d.version && `Stroke ${d.version}`, ago(d.lastSeenAt)]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            </span>
+            <button
+              type="button"
+              disabled={remove.isPending}
+              onClick={() => remove.mutate(d.deviceId)}
+              className={cn(siteButton({ variant: "secondary", size: "sm" }), "shrink-0")}
+            >
+              {remove.isPending && remove.variables === d.deviceId ? (
+                <Loader2Icon className="size-3.5 animate-spin" />
+              ) : (
+                <XIcon className="size-3.5" />
+              )}
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-5 text-[13px] text-muted-foreground">
+        Need Stroke on more computers?{" "}
+        <a
+          href="mailto:support@stroke.click?subject=More%20devices"
+          className="text-foreground underline-offset-[3px] hover:underline"
+        >
+          Ask for more seats
+        </a>
+        .
+      </p>
     </>
   );
 }

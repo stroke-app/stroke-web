@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_auth/app/billing")({
 const PRO_PERKS = [
   `All ${SHIPPED_ENGINES.length} engines, from Postgres to MongoDB`,
   "Built-in MCP server for Claude & Cursor",
-  "macOS, Windows & Linux, on all your computers",
+  "macOS, Windows & Linux, on up to 3 computers",
   "Every future update included",
 ];
 
@@ -389,7 +389,7 @@ function BillingPage() {
             <div>
               <p className="text-[16px] font-semibold">Stroke Pro · $9.99 once</p>
               <p className="mt-1 text-[15px] text-muted-foreground">
-                Every feature and every update, on all your computers.
+                Every feature and every update, on up to 3 computers.
               </p>
             </div>
             <BuyButton loading={loading} onClick={handleUpgrade} className="w-full sm:w-auto" />
