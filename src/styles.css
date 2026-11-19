@@ -518,3 +518,19 @@ html.light .studio {
   --cm-name: #1d5fd1;
   --cm-operator: #0e7490;
 }
+
+/*
+ * A bezel instead of a drop shadow for product pictures and panels: the
+ * element keeps its own hairline, and a soft rim of the page's ink sits
+ * around it. Drop shadows are for things that float (menus, popovers).
+ */
+.site {
+  --bezel: rgb(255 255 255 / 0.07);
+}
+html.light .site {
+  --bezel: rgb(0 0 0 / 0.06);
+}
+.site .bezel {
+  outline: 6px solid var(--bezel);
+  outline-offset: 0;
+}

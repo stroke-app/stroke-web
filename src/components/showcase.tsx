@@ -93,7 +93,7 @@ function TileMedia({ media }: { media: Media }) {
           className={cn(
             "block w-full",
             media.inset
-              ? "h-auto rounded-lg shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_24px_48px_-16px_rgb(0_0_0/0.7)]"
+              ? "bezel h-auto rounded-lg shadow-[0_0_0_1px_rgb(255_255_255/0.08)]"
               : "h-full object-cover object-top-left",
           )}
         />
@@ -138,7 +138,7 @@ export function TileGrid({ tiles, className }: { tiles: Tile[]; className?: stri
         >
           <div
             className={cn(
-              "keep-dark dark overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_10%,transparent),0_24px_60px_-24px_rgb(0_0_0/0.6)]",
+              "keep-dark dark bezel overflow-hidden rounded-xl bg-[#0a0a0b] shadow-[0_0_0_1px_color-mix(in_srgb,var(--ink)_10%,transparent)]",
               tile.span === 6 ? "aspect-[16/9]" : "aspect-[16/10]",
             )}
           >

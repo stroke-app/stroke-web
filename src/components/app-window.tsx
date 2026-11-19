@@ -17,7 +17,7 @@ export function AppWindow({ className }: { className?: string }) {
       />
 
       {/* Hairline frame, brightest along the top edge. */}
-      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+      <div className="bezel rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px">
         <div className="overflow-hidden rounded-[calc(1rem-1px)]">
           <img
             src="/shots/ai-chat.webp"
@@ -56,7 +56,7 @@ export function VideoDemo({
       />
 
       {/* Hairline frame, brightest along the top edge. */}
-      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+      <div className="bezel rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px">
         <div className="aspect-video overflow-hidden rounded-[calc(1rem-1px)] bg-black">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${videoId}`}
@@ -117,7 +117,7 @@ export function LaunchVideo({
       />
 
       {/* Hairline frame, brightest along the top edge. */}
-      <div className="rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+      <div className="bezel rounded-2xl bg-linear-to-b from-white/22 via-white/8 to-white/4 p-px">
         <div className="aspect-video overflow-hidden rounded-[calc(1rem-1px)] bg-black">
           <video
             ref={ref}

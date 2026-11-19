@@ -113,7 +113,7 @@ function Hero() {
 function HeroShot() {
   return (
     <figure className="mx-auto max-w-[72rem]">
-      <div className="rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px shadow-[0_40px_120px_-40px_rgb(0_0_0/0.65)]">
+      <div className="bezel rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px">
         <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
           <img
             src="/shots/mongo.webp"
@@ -195,7 +195,7 @@ const AGENT_STEPS: { tool: string; arg: string; out: string; blocked?: boolean }
 
 function AgentCard() {
   return (
-    <div className="keep-dark dark rounded-xl bg-[#0d0d0d] p-5 text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_30px_80px_-30px_rgb(0_0_0/0.8)]">
+    <div className="keep-dark dark bezel rounded-xl bg-[#0d0d0d] p-5 text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1)]">
       <div className="flex items-center justify-between">
         <p className="text-[15px] font-semibold">Claude Code · prod</p>
         <span className="flex items-center gap-1.5 rounded-full bg-white/[0.07] px-2 py-0.5 text-[12px] text-[#c8c8c8]">
