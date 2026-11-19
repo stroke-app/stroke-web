@@ -471,7 +471,7 @@ const WHAT_YOU_GET = [
   },
   {
     title: "Yours for $9.99",
-    body: "Pay once and keep it, on every computer you sign in on, with every future update. No subscription.",
+    body: "Pay once and keep it, on up to 3 computers, with every future update. No subscription.",
   },
 ];
 

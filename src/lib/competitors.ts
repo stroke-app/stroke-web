@@ -23,7 +23,7 @@ export interface Competitor {
 export const STROKE_FACTS = {
   runtime: "Native app (Rust core, system webview)",
   platforms: "macOS, Windows, Linux",
-  pricing: "Free to try with every feature; $9.99 once for 3 devices, no subscription",
+  pricing: "Free to try with every feature; $9.99 once for 3 computers, no subscription",
   needs: "Nothing: paste a URL, open a file, or sign in to a provider",
 };
 

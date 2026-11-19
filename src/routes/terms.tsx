@@ -10,7 +10,7 @@ export const Route = createFileRoute("/terms")({
     seo({
       title: "Terms of Service · Stroke database client",
       description:
-        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 17-day free trial, a one-time $9.99 license for 3 devices, and a source-available app.",
+        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 17-day free trial, a one-time $9.99 license for 3 computers, and a source-available app.",
       path: "/terms",
       breadcrumbs: [{ name: "Terms of Service", path: "/terms" }],
     }),
@@ -30,8 +30,8 @@ const HIGHLIGHTS = [
   },
   {
     icon: LaptopIcon,
-    title: "Three devices",
-    body: "Each license runs on 3 devices at a time, and you can ask for more. Move it whenever you like.",
+    title: "Three computers",
+    body: "Each account runs Stroke on 3 computers at a time, and you can ask for more. Move it whenever you like.",
   },
   {
     icon: CodeIcon,
@@ -44,7 +44,7 @@ function TermsPage() {
   return (
     <LegalPage
       title="Terms of Service"
-      updated="October 6, 2026"
+      updated="November 19, 2026"
       intro="These terms cover the Stroke desktop app, the stroke.click website, and Stroke licenses. They're written to be read. The short version: try the app free, buy a license once and it's yours, and use both in good faith."
       highlights={HIGHLIGHTS}
     >
@@ -82,12 +82,13 @@ function TermsPage() {
       <LegalSection
         number="03"
         title="Free trial"
-        summary="17 days of every feature on each device, no account needed."
+        summary="17 days of every feature, once per account and once per computer."
       >
         <p>
-          The first time you open Stroke on a device, a 17-day trial starts with every feature
-          unlocked. No account or payment is needed. When the trial ends, the Pro features need a
-          license.
+          When you first sign in to Stroke, a 17-day trial starts with every feature unlocked. No
+          payment is needed. The trial belongs to your account and to the computer: a second account
+          on the same computer continues that computer's trial rather than starting a new one. When
+          the trial ends, the Pro features need a license.
         </p>
       </LegalSection>
 
@@ -97,18 +98,18 @@ function TermsPage() {
         summary="Sign in with GitHub or Google; one account per person."
       >
         <p>
-          An account is only needed to buy and manage a license, or to enter the giveaway. You can
-          sign in with GitHub or Google; if both use the same verified email, they share one
-          account. You're responsible for activity under your account and agree to give accurate
-          information. We may suspend accounts that abuse the service, for example by attempting to
-          defraud the licensing system or attack the website.
+          The app needs an account: it holds your trial and your license, and keeps track of the
+          computers you use Stroke on. You can sign in with GitHub or Google; if both use the same
+          verified email, they share one account. You're responsible for activity under your account
+          and agree to give accurate information. We may suspend accounts that abuse the service,
+          for example by attempting to defraud the licensing system or attack the website.
         </p>
       </LegalSection>
 
       <LegalSection
         number="05"
         title="Licenses"
-        summary="One payment, yours for good, on up to 3 devices."
+        summary="One payment, yours for good, on up to 3 computers."
       >
         <p>
           A personal license is a <strong>one-time purchase of $9.99</strong>. When you buy one:
@@ -120,9 +121,10 @@ function TermsPage() {
               never expires, and includes every future update.
             </>,
             <>
-              You get a <strong>license key</strong> tied to your account that can be active on up
-              to <strong>3 devices</strong> at a time. Deactivate it in the app on a device you no
-              longer use to free a slot, or email us if that device is gone.
+              Your license belongs to your <strong>account</strong> and runs on up to{" "}
+              <strong>3 computers</strong> at a time. To move it, sign out of Stroke on a computer
+              you no longer use, or remove that computer on your account page; email us if you need
+              more.
             </>,
             "The license is personal. Don't publish, resell, or share your key; we may revoke keys that are leaked or abused.",
           ]}

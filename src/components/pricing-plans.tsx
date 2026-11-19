@@ -63,7 +63,7 @@ const COMPARE: {
   { label: "End-to-end encrypted sync", trial: false, pro: true, team: true },
   { label: "Scheduled backups to your S3 or Stroke Cloud", trial: false, pro: true, team: true },
   { label: "How long", trial: `${TRIAL_DAYS} days`, pro: "Forever", team: "Forever" },
-  { label: "Computers", trial: "All yours", pro: "All yours", team: "Everyone at the company" },
+  { label: "Computers", trial: "Up to 3", pro: "Up to 3", team: "Everyone at the company" },
   { label: "Future updates", trial: true, pro: true, team: true },
   { label: "Priority support", trial: false, pro: true, team: true },
 ];
@@ -94,7 +94,7 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
       note: "Sign in with Google or GitHub in the app. No card.",
       perks: [
         "Every database and editor feature",
-        "On every computer you sign in on",
+        "On up to 3 computers",
         "No card, nothing to cancel",
       ],
     },

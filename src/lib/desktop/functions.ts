@@ -7,6 +7,8 @@ import { desktopCallbackUrl, desktopSignInParams } from "#/lib/desktop/params";
 import { overLimit } from "#/lib/desktop/rate-limit";
 import {
   accountPlan,
+  deviceLimitMessage,
+  deviceRoom,
   listAccountDevices,
   mintDesktopCode,
   removeAccountDevice,
@@ -26,9 +28,17 @@ export const $authorizeDesktop = createServerFn({ method: "POST" })
     if ((await overLimit(`desktop-code:user:${context.user.id}`, 20, 600)) !== null) {
       throw new Error("Too many sign-in attempts. Wait a few minutes and try again.");
     }
+    const room = await deviceRoom(context.user.id, data.device_id);
+    if (!room.ok) throw new Error(deviceLimitMessage(room));
     const code = await mintDesktopCode(context.user.id, data);
     return { code, url: desktopCallbackUrl(data.port, { code, state: data.state }) };
   });
+
+/** Whether the computer asking to sign in has a seat, and the account's computers if not. */
+export const $getDeviceRoom = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ deviceId: z.string().min(1).max(128) }))
+  .handler(async ({ context, data }) => deviceRoom(context.user.id, data.deviceId));
 
 /** Every computer on the account: signed in (v3) or holding the license key (2.x). */
 export const $getAccountDevices = createServerFn({ method: "GET" })
