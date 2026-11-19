@@ -4,6 +4,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
   BookOpenIcon,
+  CheckIcon,
+  CopyIcon,
+  DownloadIcon,
+  StarIcon,
   BotIcon,
   ChevronDownIcon,
   GitCompareArrowsIcon,
@@ -17,7 +21,6 @@ import {
   PaletteIcon,
   ScrollTextIcon,
   ShieldCheckIcon,
-  SparklesIcon,
   SunIcon,
   TerminalSquareIcon,
   XIcon,
@@ -95,10 +98,10 @@ const RESOURCES: MenuLink[] = [
     to: "/security",
   },
   {
-    label: "Sponsor",
-    body: "Fund signed app builds",
-    icon: HeartIcon,
-    to: "/sponsors",
+    label: "MCP for agents",
+    body: "Claude Code, Codex, Cursor",
+    icon: BotIcon,
+    to: "/docs/mcp",
   },
   {
     label: "GitHub",
@@ -172,7 +175,7 @@ function formatStars(n: number) {
 function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
   const inner = (
     <>
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-ink/[0.04] shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 group-hover:bg-ink/[0.08]">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-ink/[0.05] transition-colors duration-150 group-hover:bg-ink/[0.09]">
         <item.icon
           className="size-4 text-soft transition-colors group-hover:text-foreground"
           strokeWidth={1.6}
@@ -202,41 +205,72 @@ function MenuItem({ item, onPick }: { item: MenuLink; onPick: () => void }) {
   );
 }
 
-/** The big card on the left of a menu: one real screen and where it leads. */
-function Feature({
+/** The card on the left of a menu: one place worth going, said plainly. */
+function Spotlight({
   to,
-  img,
+  icon: Icon,
   eyebrow,
   title,
+  body,
   onPick,
 }: {
   to: React.ComponentProps<typeof Link>["to"];
-  img: string;
+  icon: IconType;
   eyebrow: string;
   title: string;
+  body: string;
   onPick: () => void;
 }) {
   return (
     <Link
       to={to}
       onClick={onPick}
-      className="group relative flex h-full min-h-[14rem] flex-col justify-end overflow-hidden rounded-lg bg-[#0a0a0a] p-4 shadow-[0_0_0_1px_var(--border)_inset]"
+      className="group relative isolate flex h-full flex-col overflow-hidden rounded-lg bg-ink/[0.03] p-4 shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.05]"
     >
-      <img
-        src={img}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover object-top-left opacity-70 transition-[opacity,scale] duration-300 group-hover:scale-[1.03] group-hover:opacity-90"
-      />
       <span
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"
+        className="absolute -top-16 -right-16 -z-10 size-48 rounded-full bg-[radial-gradient(closest-side,rgb(245_180_0/0.16),transparent)] transition-opacity duration-300 group-hover:opacity-80"
       />
-      <span className="relative text-[12px] font-medium text-[#f5b400]">{eyebrow}</span>
-      <span className="relative mt-1 flex items-center gap-1.5 text-[15px] font-medium text-white">
-        {title}
+      <span className="flex size-9 items-center justify-center rounded-lg bg-ink/[0.06] text-foreground">
+        <Icon className="size-[18px]" strokeWidth={1.6} />
+      </span>
+      <span className="mt-auto pt-8 text-[12px] font-medium text-[#d99a00] [.dark_&]:text-[#f5b400]">
+        {eyebrow}
+      </span>
+      <span className="mt-1 text-[15px] leading-snug font-medium text-foreground">{title}</span>
+      <span className="mt-1.5 text-[13px] leading-snug text-muted-foreground">{body}</span>
+      <span className="mt-3 flex items-center gap-1 text-[13px] font-medium text-foreground">
+        Open
         <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
       </span>
     </Link>
+  );
+}
+
+/** The install one-liner in the Resources menu. */
+function MenuInstall() {
+  const [copied, setCopied] = useState(false);
+  const command = "curl -fsSL https://stroke.click/install.sh | sh";
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        void navigator.clipboard?.writeText(command).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        })
+      }
+      className="group flex w-full items-center gap-2.5 rounded-lg bg-ink/[0.03] px-3 py-2.5 text-left font-mono text-[12.5px] shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.06]"
+      aria-label={copied ? "Copied" : `Copy ${command}`}
+    >
+      <span className="text-faint select-none">$</span>
+      <span className="min-w-0 flex-1 truncate text-soft">{command}</span>
+      {copied ? (
+        <CheckIcon className="size-3.5 shrink-0 text-foreground" />
+      ) : (
+        <CopyIcon className="size-3.5 shrink-0 text-muted-foreground group-hover:text-foreground" />
+      )}
+    </button>
   );
 }
 
@@ -302,31 +336,62 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
   }
   const product = id === "product";
   return (
-    <div className="grid grid-cols-[14rem_minmax(0,1fr)] gap-6 p-3">
-      {product ? (
-        <Feature
-          to="/features"
-          img="/shots/command-palette.webp"
-          eyebrow="Tour"
-          title="Every feature, screen by screen"
-          onPick={onPick}
-        />
-      ) : (
-        <Feature
-          to="/sponsors"
-          img="/shots/settings-sync.webp"
-          eyebrow="Sponsor"
-          title="Help sign Stroke for macOS and Windows"
-          onPick={onPick}
-        />
-      )}
-      <ul className="grid grid-cols-2 content-start gap-x-6 gap-y-1">
-        {(product ? PRODUCT : RESOURCES).map((item) => (
-          <li key={item.label}>
-            <MenuItem item={item} onPick={onPick} />
-          </li>
-        ))}
-      </ul>
+    <div>
+      <div className="grid grid-cols-[13rem_minmax(0,1fr)] gap-5 p-3">
+        {product ? (
+          <Spotlight
+            to="/features"
+            icon={LayersIcon}
+            eyebrow="Tour"
+            title="Every feature, screen by screen"
+            body="The grid, the editor, schema, charts, AI and admin."
+            onPick={onPick}
+          />
+        ) : (
+          <Spotlight
+            to="/docs"
+            icon={BookOpenIcon}
+            eyebrow="Start here"
+            title="From download to your first query"
+            body="Four steps, about a minute."
+            onPick={onPick}
+          />
+        )}
+        <ul className="grid grid-cols-2 content-start gap-x-4 gap-y-0.5">
+          {(product ? PRODUCT : RESOURCES).map((item) => (
+            <li key={item.label}>
+              <MenuItem item={item} onPick={onPick} />
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex items-center gap-4 rounded-b-xl border-t border-border bg-ink/[0.02] px-5 py-3">
+        {product ? (
+          <>
+            <p className="shrink-0 text-[13px] text-muted-foreground">
+              Or install it from a terminal
+            </p>
+            <div className="min-w-0 flex-1">
+              <MenuInstall />
+            </div>
+          </>
+        ) : (
+          <>
+            <HeartIcon className="size-4 shrink-0 text-[#e5484d]" strokeWidth={1.8} />
+            <p className="min-w-0 flex-1 text-[13px] text-muted-foreground">
+              Stroke is built by one developer. Sponsors pay for signed builds on macOS and Windows.
+            </p>
+            <Link
+              to="/sponsors"
+              onClick={onPick}
+              className="group flex shrink-0 items-center gap-1 text-[13px] font-medium text-foreground"
+            >
+              Sponsor
+              <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -345,6 +410,14 @@ export function SiteHeader() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelId = useId();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  // Transparent over the page's top, a solid bar once it scrolls.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 8);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
 
   // Any navigation closes the menus.
   useEffect(() => {
@@ -370,16 +443,21 @@ export function SiteHeader() {
 
   return (
     <header
-      className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl"
+      className={cn(
+        "sticky top-0 z-40 border-b transition-[background-color,border-color] duration-200",
+        scrolled || menu || mobile
+          ? "border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150"
+          : "border-transparent bg-transparent",
+      )}
       onMouseLeave={scheduleClose}
     >
-      <div className={cn(FRAME, GUTTER, "flex h-16 items-center gap-8")}>
+      <div className={cn(FRAME, GUTTER, "grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-6")}>
         <Link to="/" aria-label="Stroke home" className="flex shrink-0 items-center gap-2.5">
           <StrokeIcon className="size-[22px]" />
           <span className="text-[16px] font-semibold tracking-[-0.02em]">Stroke</span>
         </Link>
 
-        <nav className="hidden flex-1 items-center gap-1 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-0.5 rounded-full p-1 md:flex" aria-label="Main">
           {MENUS.map((m) => (
             <button
               key={m.id}
@@ -416,20 +494,25 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeSwitch className="hidden lg:flex" />
+        {/* Keeps the grid's middle column centered on phones, where the nav is hidden. */}
+        <span className="md:hidden" />
+        <div className="flex items-center justify-end gap-1.5">
           <a
             href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={stars ? `Stroke on GitHub, ${stars} stars` : "Stroke on GitHub"}
-            className={cn(
-              siteButton({ variant: "ghost", size: "sm" }),
-              "hidden gap-1.5 text-foreground sm:inline-flex",
-            )}
+            className="hidden h-8 items-center gap-1.5 rounded-full px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.04] hover:text-foreground lg:inline-flex"
           >
-            <SiGithub className="size-4" />
-            {stars ? <span className="tabular-nums">{formatStars(stars)}</span> : null}
+            <SiGithub className="size-3.5" />
+            {stars ? (
+              <>
+                <StarIcon className="size-3 fill-current opacity-70" />
+                <span className="text-foreground tabular-nums">{formatStars(stars)}</span>
+              </>
+            ) : (
+              "GitHub"
+            )}
           </a>
           <Link
             to={user ? "/app" : "/login"}
@@ -440,7 +523,11 @@ export function SiteHeader() {
           >
             {user ? "Dashboard" : "Sign in"}
           </Link>
-          <Link to="/download" className={siteButton({ size: "sm" })}>
+          <Link
+            to="/download"
+            className={cn(siteButton({ size: "sm" }), "rounded-full ps-3 pe-3.5")}
+          >
+            <DownloadIcon className="size-3.5" />
             Download
           </Link>
           <button
@@ -466,10 +553,10 @@ export function SiteHeader() {
         onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
         className="absolute inset-x-0 top-full hidden pt-2 md:block"
       >
-        <div className={cn(FRAME, "px-4 lg:px-10")}>
+        <div className={cn(FRAME, "flex justify-center px-4 lg:px-10")}>
           <div
             className={cn(
-              "animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] backdrop-blur-xl duration-150 fade-in-0 slide-in-from-top-1",
+              "w-full animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] backdrop-blur-xl duration-150 fade-in-0 slide-in-from-top-1",
               menu === "databases" ? "max-w-[52rem]" : "max-w-[48rem]",
             )}
           >
@@ -568,13 +655,41 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border">
       <div className={cn(FRAME, "border-border lg:border-x")}>
+        {/* The last call: download, or copy the install line. */}
         <div
           className={cn(
             GUTTER,
-            "grid grid-cols-2 gap-10 pt-16 pb-12 md:grid-cols-[1.6fr_repeat(4,1fr)]",
+            "relative isolate flex flex-col gap-6 overflow-hidden border-b border-border py-12 md:flex-row md:items-center md:justify-between md:py-14",
           )}
         >
-          <div className="col-span-2 md:col-span-1">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-40 left-1/4 -z-10 h-80 w-[40rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.07),transparent_70%)]"
+          />
+          <div>
+            <p className="text-[1.6rem] leading-tight font-semibold tracking-[-0.03em] text-balance md:text-[2rem]">
+              Every database you run, in one app.
+            </p>
+            <p className="mt-2 text-[15px] text-muted-foreground">
+              Free for 17 days with every feature. $9.99 once to keep it.
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-2.5 md:w-[23rem]">
+            <Link to="/download" className={cn(siteButton({ size: "lg" }), "w-full")}>
+              <DownloadIcon className="size-4" />
+              Download Stroke
+            </Link>
+            <MenuInstall />
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            GUTTER,
+            "grid grid-cols-2 gap-x-6 gap-y-10 pt-14 pb-12 sm:grid-cols-4 md:grid-cols-[1.5fr_repeat(4,1fr)]",
+          )}
+        >
+          <div className="col-span-2 sm:col-span-4 md:col-span-1">
             <Link to="/" aria-label="Stroke home" className="inline-flex items-center gap-2.5">
               <StrokeIcon className="size-[22px]" />
               <span className="text-[16px] font-semibold tracking-[-0.02em]">Stroke</span>
@@ -583,11 +698,30 @@ export function SiteFooter() {
               A native database client for every database you run. Made by one developer, in the
               open.
             </p>
-            <ThemeSwitch className="mt-6 inline-flex" />
+            <div className="mt-5 flex items-center gap-2">
+              <a
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Stroke on GitHub"
+                className="flex size-8 items-center justify-center rounded-full text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.05] hover:text-foreground"
+              >
+                <SiGithub className="size-3.5" />
+              </a>
+              <a
+                href="mailto:support@stroke.click"
+                aria-label="Email support"
+                className="flex h-8 items-center rounded-full px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.05] hover:text-foreground"
+              >
+                support@stroke.click
+              </a>
+            </div>
           </div>
           {FOOTER.map((col) => (
             <div key={col.title}>
-              <p className="text-[13px] font-medium text-foreground">{col.title}</p>
+              <p className="text-[12px] font-medium tracking-[0.04em] text-faint uppercase">
+                {col.title}
+              </p>
               <ul className="mt-4 space-y-2.5 text-[14px]">
                 {col.links.map((l) => (
                   <li key={l.label}>
@@ -614,14 +748,11 @@ export function SiteFooter() {
         <div
           className={cn(
             GUTTER,
-            "flex flex-wrap items-center justify-between gap-3 border-t border-border py-6 text-[13px] text-faint",
+            "flex flex-wrap items-center justify-between gap-4 border-t border-border py-5 text-[13px] text-faint",
           )}
         >
-          <span>© {new Date().getFullYear()} Stroke</span>
-          <span className="flex items-center gap-2">
-            <SparklesIcon className="size-3.5" strokeWidth={1.75} />
-            Free to try. $9.99 once to keep.
-          </span>
+          <span>© {new Date().getFullYear()} Stroke. Your credentials stay on your computer.</span>
+          <ThemeSwitch className="inline-flex" />
         </div>
       </div>
     </footer>

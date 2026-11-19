@@ -919,26 +919,6 @@ function FeaturesPage() {
           <FeatureGrid features={group.grid.filter((f) => !f.media)} className="mt-20 md:mt-28" />
         </Section>
       ))}
-
-      <Section inner="text-center">
-        <h2 className="mx-auto max-w-2xl text-[2.5rem] leading-[1.04] font-[560] tracking-[-0.035em] text-balance sm:text-5xl">
-          Try it on your own database
-        </h2>
-        <p className="mt-5 text-[17px] text-soft">
-          Free to download. $9.99 once, whenever you decide to keep it.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <SmartDownloadButton
-            size="lg"
-            variant="default"
-            alternates={false}
-            className={siteButton({ size: "lg" })}
-          />
-          <Link to="/pricing" className={siteButton({ variant: "secondary", size: "lg" })}>
-            See pricing
-          </Link>
-        </div>
-      </Section>
     </PageShell>
   );
 }
