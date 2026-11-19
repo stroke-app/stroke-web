@@ -26,8 +26,8 @@ import {
   TerminalIcon,
 } from "lucide-react";
 
-import { InstallCommand, SmartDownloadButton } from "#/components/download-button";
 import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
+import { HeroDownload } from "#/components/hero-download";
 import {
   ArrowLink,
   Cell,
@@ -62,7 +62,6 @@ export function LandingPage() {
       <PricingTeaser />
       <Faq />
       <SponsorBand />
-      <ClosingCta />
     </PageShell>
   );
 }
@@ -96,13 +95,10 @@ function Hero() {
           Browse, edit and query PostgreSQL, MySQL, SQLite, MongoDB, Redis and {others} more
           databases in one native app for macOS, Windows and Linux.
         </p>
-        <div className="mt-9 flex flex-wrap items-start justify-center gap-3">
-          <SmartDownloadButton size="lg" variant="default" align="center" />
-          <Link to="/download" className={siteButton({ variant: "secondary", size: "lg" })}>
-            All platforms
-          </Link>
+        <div className="mt-9 flex w-full justify-center">
+          <HeroDownload />
         </div>
-        <p className="mt-2 text-[13px] text-faint">
+        <p className="mt-4 text-[13px] text-faint">
           Free for {TRIAL_DAYS} days with every feature. Then {PRO_PRICE} once, no subscription.
         </p>
       </div>
@@ -161,13 +157,21 @@ const TRUST = [
 function TrustStrip() {
   return (
     <div className={cn(GUTTER, "mt-14 md:mt-20")}>
-      <ul className="mx-auto grid max-w-[72rem] grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-        {TRUST.map((t) => (
-          <li key={t.title} className="flex gap-3.5">
-            <t.icon
-              className="mt-0.5 size-[18px] shrink-0 text-muted-foreground"
-              strokeWidth={1.6}
-            />
+      <ul className="mx-auto grid max-w-[72rem] grid-cols-1 overflow-hidden rounded-xl border border-border sm:grid-cols-2 lg:grid-cols-4">
+        {TRUST.map((t, i) => (
+          <li
+            key={t.title}
+            className={cn(
+              "flex flex-col gap-3 p-5 md:p-6",
+              i > 0 && "border-border max-sm:border-t",
+              i % 2 === 1 && "sm:border-l",
+              i >= 2 && "sm:max-lg:border-t",
+              i === 2 && "lg:border-l",
+            )}
+          >
+            <span className="flex size-9 items-center justify-center rounded-lg bg-ink/[0.05] text-foreground">
+              <t.icon className="size-[17px]" strokeWidth={1.7} />
+            </span>
             <div>
               <p className="text-[15px] font-medium text-foreground">{t.title}</p>
               <p className="mt-1 text-[14px] leading-[1.55] text-pretty text-muted-foreground">
@@ -229,8 +233,17 @@ function AgentCard() {
 /** The newest thing, as one card: a word, a sentence, a button, a real visual. */
 function Introducing() {
   return (
-    <section className={cn(GUTTER, "py-20 md:py-28")}>
-      <div className="grid grid-cols-1 items-center gap-10 rounded-2xl bg-card p-8 shadow-[0_0_0_1px_var(--border)_inset] md:p-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+    <section
+      className={cn(
+        GUTTER,
+        "relative isolate overflow-hidden border-t border-border py-20 md:py-28",
+      )}
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-0 -z-10 h-[28rem] w-[40rem] -translate-y-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,rgb(196_107_255/0.08),transparent_70%)]"
+      />
+      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <p className="text-[19px] font-medium tracking-[-0.01em]">Built in</p>
           <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[3rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.5rem]">
@@ -240,6 +253,18 @@ function Introducing() {
             Claude Code, Codex and Cursor read your schema and run queries through Stroke, and every
             query is held to the access level you set for that connection.
           </p>
+          <ul className="mt-6 flex flex-col gap-2 text-[14.5px] text-soft">
+            {[
+              "Read only, read and write, or full access, per connection",
+              "Every call logged in the app as it happens",
+              "Nothing destructive without asking first",
+            ].map((x) => (
+              <li key={x} className="flex gap-2.5">
+                <CheckIcon className="mt-1 size-4 shrink-0 text-[#4cb782]" />
+                {x}
+              </li>
+            ))}
+          </ul>
           <div className="mt-8 flex flex-wrap gap-2.5">
             <CommandMenu label="Add to your agent" items={AGENT_COMMANDS} />
             <Link to="/docs/mcp" className={siteButton({ variant: "ghost", size: "lg" })}>
@@ -258,34 +283,45 @@ function Introducing() {
 
 function Engines() {
   return (
-    <section className="border-t border-border" aria-labelledby="engines-title">
-      <div
-        className={cn(GUTTER, "flex flex-col gap-6 py-10 md:flex-row md:items-center md:gap-10")}
-      >
-        <h2
-          id="engines-title"
-          className="shrink-0 text-[14px] font-medium tracking-normal text-muted-foreground"
-        >
-          {SHIPPED_ENGINES.length} databases
-        </h2>
-        <ul className="flex flex-1 flex-wrap items-center gap-x-7 gap-y-4">
+    <section className="mt-20 border-t border-border md:mt-28" aria-labelledby="engines-title">
+      <div className={cn(GUTTER, "py-16 md:py-20")}>
+        <div className="flex flex-col items-center text-center">
+          <h2
+            id="engines-title"
+            className="text-[1.75rem] leading-tight tracking-[-0.03em] text-balance md:text-[2.25rem]"
+          >
+            Works with the {SHIPPED_ENGINES.length} databases you already run
+          </h2>
+          <p className="mt-3 max-w-xl text-[15px] text-pretty text-muted-foreground">
+            SQL, documents, key-value, analytics and search. One app, one set of shortcuts.
+          </p>
+        </div>
+        <ul className="mx-auto mt-10 grid max-w-[64rem] grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
           {SHIPPED_ENGINES.map((e) => (
             <li key={e.slug}>
               <Link
                 to="/databases/$engine"
                 params={{ engine: e.slug }}
-                title={e.name}
-                aria-label={e.name}
-                className="block opacity-80 transition-[opacity,scale] duration-150 hover:scale-110 hover:opacity-100"
+                className="group flex h-full flex-col items-center gap-2.5 rounded-xl bg-ink/[0.02] px-2 py-4 text-center shadow-[0_0_0_1px_var(--border)_inset] transition-[background-color,box-shadow] duration-150 hover:bg-ink/[0.05] hover:shadow-[0_0_0_1px_color-mix(in_oklch,var(--foreground)_22%,transparent)_inset]"
               >
-                <e.Icon className="size-6" color={e.color} />
+                <span
+                  className="flex size-10 items-center justify-center rounded-lg transition-transform duration-150 group-hover:scale-105"
+                  style={{ background: `color-mix(in oklch, ${e.color} 14%, transparent)` }}
+                >
+                  <e.Icon className="size-5" color={e.color} />
+                </span>
+                <span className="w-full truncate text-[12.5px] text-soft group-hover:text-foreground">
+                  {e.name}
+                </span>
               </Link>
             </li>
           ))}
         </ul>
-        <ArrowLink to="/databases" className="shrink-0 text-[13px]">
-          All databases
-        </ArrowLink>
+        <div className="mt-8 flex justify-center">
+          <ArrowLink to="/databases" className="text-[14px]">
+            What Stroke does with each one
+          </ArrowLink>
+        </div>
       </div>
     </section>
   );
@@ -770,30 +806,5 @@ export function Faq() {
 
 // ── Closer ───────────────────────────────────────────────────────────────────
 
-function ClosingCta() {
-  return (
-    <section className="relative isolate overflow-hidden border-t border-border">
-      <div
-        aria-hidden="true"
-        className="dot-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(60%_80%_at_50%_100%,black,transparent)]"
-      />
-      <div className={cn(GUTTER, "flex flex-col items-center py-24 text-center md:py-32")}>
-        <h2 className="max-w-[18ch] text-[2.5rem] text-balance md:text-[3.5rem]">
-          Open your database in Stroke today.
-        </h2>
-        <p className="mt-5 text-[17px] text-muted-foreground">
-          {TRIAL_DAYS} days free with everything. {PRO_PRICE} once if you keep it.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <SmartDownloadButton size="lg" variant="default" align="center" alternates={false} />
-          <Link to="/docs" className={siteButton({ variant: "secondary", size: "lg" })}>
-            Read the docs
-          </Link>
-        </div>
-        <InstallCommand className="mt-6" />
-      </div>
-    </section>
-  );
-}
-
+// The pricing page reuses the plans block.
 export { Pricing } from "#/components/pricing-plans";
