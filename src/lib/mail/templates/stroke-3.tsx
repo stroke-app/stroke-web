@@ -99,7 +99,7 @@ function Tile({
           <tr>
             <td>
               <Img
-                src={`${IMG}/${img}.jpg`}
+                src={`${IMG}/${img}.jpg?v=2`}
                 alt={alt}
                 width="270"
                 height={PIC_H}
@@ -266,7 +266,7 @@ export function Stroke3Email() {
                     stays inside the access level you pick.
                   </Text>
                   <Img
-                    src={`${IMG}/hero.jpg`}
+                    src={`${IMG}/hero.jpg?v=2`}
                     alt="Stroke's AI chat in a tab: it created two tables and inserted 45 rows"
                     width="552"
                     style={{
