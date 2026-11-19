@@ -1,4 +1,3 @@
-import { SiGithub } from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
@@ -48,7 +47,6 @@ import { SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
-import { REPO_URL } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
 export function LandingPage() {
@@ -79,16 +77,16 @@ function Hero() {
         className="pointer-events-none absolute inset-x-0 top-[22rem] -z-10 h-[38rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.10),transparent_70%)]"
       />
       <div className={cn(GUTTER, "flex flex-col items-center pt-14 text-center md:pt-20")}>
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-8 items-center gap-2 rounded-full bg-ink/[0.04] px-3.5 text-[13px] text-soft shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.07] hover:text-foreground"
+        <Link
+          to="/stroke-3"
+          className="group inline-flex h-8 items-center gap-2.5 rounded-full bg-ink/[0.04] ps-1 pe-3.5 text-[13px] text-soft shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.07] hover:text-foreground"
         >
-          <SiGithub className="size-3.5" />
-          The source is on GitHub
-          <ArrowRightIcon className="size-3.5 opacity-60" />
-        </a>
+          <span className="inline-flex h-6 items-center rounded-full bg-primary px-2.5 text-[12px] font-medium text-primary-foreground">
+            New
+          </span>
+          Stroke 3 is out. See what's new
+          <ArrowRightIcon className="size-3.5 opacity-60 transition-transform duration-150 group-hover:translate-x-0.5" />
+        </Link>
         <h1 className="mt-6 max-w-[17ch] text-[2.5rem] leading-[1.04] tracking-[-0.045em] text-balance sm:text-[3.4rem] md:text-[4.1rem]">
           The database client for every database you run
         </h1>
