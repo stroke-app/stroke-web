@@ -21,7 +21,7 @@ const HIGHLIGHTS = [
   {
     icon: TimerIcon,
     title: "Free for 17 days",
-    body: "Every feature, no account or card, on each device.",
+    body: "Every feature, no card. Once per account and once per computer.",
   },
   {
     icon: ReceiptIcon,
@@ -53,8 +53,8 @@ function TermsPage() {
           Stroke is a desktop database client distributed from{" "}
           <a href="https://stroke.click">stroke.click</a>. "Stroke", "we", and "us" refer to its
           developer. By creating an account, buying a license, or using the website, you agree to
-          these terms. Using the desktop app alone needs no account; the software license in section
-          02 covers it.
+          these terms. The app asks you to sign in when you first open it; the software license in
+          section 02 covers building it yourself.
         </p>
       </LegalSection>
 
@@ -73,9 +73,9 @@ function TermsPage() {
           product, or offer it to others as a paid product or hosted service.
         </p>
         <p>
-          Pro features in official builds unlock with a license key. Removing or bypassing the
-          license checks in builds you distribute is not permitted. Where this section and the
-          license file differ, the license file governs the software.
+          Pro features in official builds unlock through the account you sign in with. Removing or
+          bypassing the license checks in builds you distribute is not permitted. Where this section
+          and the license file differ, the license file governs the software.
         </p>
       </LegalSection>
 
@@ -126,7 +126,12 @@ function TermsPage() {
               you no longer use, or remove that computer on your account page; email us if you need
               more.
             </>,
-            "The license is personal. Don't publish, resell, or share your key; we may revoke keys that are leaked or abused.",
+            "The license is personal. Don't resell it or share your account; we may revoke a license that is abused.",
+            <>
+              Stroke 3 has no license keys. A license belongs to the account that signs in with the
+              email it was bought with. A key bought for Stroke 2 moves to the account with that
+              same email; it can't be added to a different account.
+            </>,
           ]}
         />
         <p>

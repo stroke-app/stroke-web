@@ -90,7 +90,7 @@ export function softwareApplication({
       priceCurrency: "USD",
       url: `${SITE_URL}/pricing`,
       description:
-        "Free to try with every feature unlocked and no account. $9.99 once for up to 3 computers and every future update.",
+        "Free to try for 17 days with every feature unlocked. $9.99 once for up to 3 computers and every future update.",
     },
   };
 }

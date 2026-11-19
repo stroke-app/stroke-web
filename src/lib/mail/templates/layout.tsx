@@ -58,16 +58,23 @@ const styles = {
   hr: {
     borderColor: "#e4e4e7",
     margin: "0 40px",
+    width: "auto",
   },
 } as const;
 
 interface EmailLayoutProps {
   preview: string;
   children: ReactNode;
+  /** Why this person gets the email; transactional mail keeps the default. */
+  reason?: string;
 }
 
 /** Shared branded wrapper for every transactional email. */
-export function EmailLayout({ preview, children }: EmailLayoutProps) {
+export function EmailLayout({
+  preview,
+  children,
+  reason = "You received this email because of activity on your Stroke account.",
+}: EmailLayoutProps) {
   return (
     <Html>
       <Head />
@@ -80,9 +87,7 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
           <Section style={styles.content}>{children}</Section>
           <Hr style={styles.hr} />
           <Section style={styles.footer}>
-            <Text style={styles.footerText}>
-              You received this email because of activity on your Stroke account.
-            </Text>
+            <Text style={styles.footerText}>{reason}</Text>
             <Text style={styles.footerText}>
               <Link href={SITE_URL} style={styles.footerLink}>
                 stroke.click
