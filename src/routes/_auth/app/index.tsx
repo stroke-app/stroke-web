@@ -27,10 +27,15 @@ import { syncStatusQueryOptions } from "#/lib/sync/functions";
 import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/_auth/app/")({
-  loader: ({ context }) => {
-    context.queryClient.prefetchQuery(accountPlanQueryOptions());
-    context.queryClient.prefetchQuery(accountDevicesQueryOptions());
-    context.queryClient.prefetchQuery(syncStatusQueryOptions());
+  // Awaited, so the server sends the page with the plan, devices and sync
+  // already filled in, instead of the client asking for each one after it
+  // hydrates. Cached (2 min), so coming back to this tab doesn't wait.
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(accountPlanQueryOptions()),
+      context.queryClient.ensureQueryData(accountDevicesQueryOptions()),
+      context.queryClient.ensureQueryData(syncStatusQueryOptions()),
+    ]).catch(() => null);
   },
   component: Overview,
 });

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { createHash, randomBytes } from "node:crypto";
 
-import { and, asc, eq, isNull, lt } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, lt } from "drizzle-orm";
 
 import { db } from "#/lib/db";
 import {
@@ -394,16 +394,23 @@ export type AccountDevice = {
 };
 
 export async function listAccountDevices(userId: string): Promise<AccountDevice[]> {
-  const [sessions, license] = await Promise.all([
+  // One round of queries: the 2.x key's computers come through a subquery on
+  // the account's license instead of a second trip after the license lookup.
+  const [sessions, keyed] = await Promise.all([
     db
       .select()
       .from(desktopTokens)
       .where(and(eq(desktopTokens.userId, userId), isNull(desktopTokens.revokedAt))),
-    db.select({ id: licenses.id }).from(licenses).where(eq(licenses.userId, userId)).limit(1),
+    db
+      .select()
+      .from(activations)
+      .where(
+        inArray(
+          activations.licenseId,
+          db.select({ id: licenses.id }).from(licenses).where(eq(licenses.userId, userId)),
+        ),
+      ),
   ]);
-  const keyed = license[0]
-    ? await db.select().from(activations).where(eq(activations.licenseId, license[0].id))
-    : [];
 
   const byId = new Map<string, AccountDevice>();
   const merge = (
@@ -562,14 +569,17 @@ export const paidProRequired = (feature: string) =>
  */
 export async function accountPlan(userId: string, email: string) {
   const now = Date.now();
-  const license = await resolveLicense(userId, email);
+  // The license and the trial don't depend on each other: ask D1 for both at once.
+  const [license, [trial]] = await Promise.all([
+    resolveLicense(userId, email),
+    db
+      .select({ startedAt: accountTrials.startedAt })
+      .from(accountTrials)
+      .where(eq(accountTrials.userId, userId))
+      .limit(1),
+  ]);
   const licensed =
     !!license && !license.revokedAt && (!license.expiresAt || license.expiresAt.getTime() > now);
-  const [trial] = await db
-    .select({ startedAt: accountTrials.startedAt })
-    .from(accountTrials)
-    .where(eq(accountTrials.userId, userId))
-    .limit(1);
   const trialEndsAt = trial ? trial.startedAt.getTime() + TRIAL_DAYS * DAY_SEC * 1000 : null;
   const status: "pro" | "trial" | "ended" | "not-started" = licensed
     ? "pro"
