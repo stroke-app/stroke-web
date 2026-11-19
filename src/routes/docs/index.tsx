@@ -22,6 +22,33 @@ export const Route = createFileRoute("/docs/")({
         "Download and install the Stroke database client, connect your first database, get Stroke Pro, and let your AI agents query it through the built-in MCP server.",
       path: "/docs",
       breadcrumbs: [{ name: "Docs", path: "/docs" }],
+      schema: [
+        {
+          "@type": "HowTo",
+          name: "Get started with Stroke",
+          description:
+            "Install the Stroke database client, connect a database, keep it with Stroke Pro, and let AI agents query it over MCP.",
+          totalTime: "PT2M",
+          step: [
+            {
+              name: "Download and install",
+              text: "Download Stroke for macOS, Windows or Linux from stroke.click/download, or run curl -fsSL https://stroke.click/install.sh | sh (irm https://stroke.click/install.ps1 | iex on Windows). Open it and sign in with Google or GitHub; every feature is free for 17 days.",
+            },
+            {
+              name: "Connect your first database",
+              text: "Choose New connection, pick an engine, and paste a connection string or fill in the host, port and credentials. Stroke connects straight from your computer.",
+            },
+            {
+              name: "Keep it with Stroke Pro",
+              text: "Buy Pro for $9.99 once. It lands on your account and unlocks Stroke on up to 3 computers you sign in on.",
+            },
+            {
+              name: "Let your agents in",
+              text: "Turn on Stroke's MCP server and add it to Claude Code, Codex, Cursor or any MCP client, with the access level you choose per connection.",
+            },
+          ].map((st, i) => ({ "@type": "HowToStep", position: i + 1, ...st })),
+        },
+      ],
     }),
   component: DocsPage,
 });

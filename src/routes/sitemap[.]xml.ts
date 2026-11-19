@@ -11,7 +11,14 @@ import { SITE_URL } from "#/lib/seo";
  * marks pages whose content changes with each release, so their lastmod is
  * the latest release date; the rest carry no lastmod rather than a guess.
  */
-const PAGES: { path: string; priority: string; changefreq: string; release?: boolean }[] = [
+const PAGES: {
+  path: string;
+  priority: string;
+  changefreq: string;
+  release?: boolean;
+  /** A known date (YYYY-MM-DD), e.g. a blog post's. */
+  lastmod?: string;
+}[] = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/download", priority: "0.9", changefreq: "weekly", release: true },
   { path: "/download/macos", priority: "0.9", changefreq: "weekly", release: true },
@@ -34,7 +41,12 @@ const PAGES: { path: string; priority: string; changefreq: string; release?: boo
     changefreq: "monthly",
   })),
   { path: "/blog", priority: "0.6", changefreq: "weekly" },
-  ...POSTS.map((p) => ({ path: `/blog/${p.slug}`, priority: "0.6", changefreq: "yearly" })),
+  ...POSTS.map((p) => ({
+    path: `/blog/${p.slug}`,
+    priority: "0.6",
+    changefreq: "yearly",
+    lastmod: /^\d{4}-\d{2}-\d{2}/.test(p.date) ? p.date.slice(0, 10) : undefined,
+  })),
   { path: "/legal", priority: "0.2", changefreq: "yearly" },
   { path: "/terms", priority: "0.2", changefreq: "yearly" },
   { path: "/privacy", priority: "0.2", changefreq: "yearly" },
@@ -49,7 +61,8 @@ export const Route = createFileRoute("/sitemap.xml")({
         const released = release?.published_at.slice(0, 10);
 
         const urls = PAGES.map((p) => {
-          const lastmod = p.release && released ? `\n    <lastmod>${released}</lastmod>` : "";
+          const date = p.lastmod ?? (p.release ? released : undefined);
+          const lastmod = date ? `\n    <lastmod>${date}</lastmod>` : "";
           return `  <url>
     <loc>${SITE_URL}${p.path === "/" ? "" : p.path}</loc>${lastmod}
     <changefreq>${p.changefreq}</changefreq>

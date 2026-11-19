@@ -1,4 +1,4 @@
-# Everything public is open to search engines and AI crawlers alike.
+# Everything public is open to search engines and AI assistants alike.
 User-agent: *
 Allow: /
 # /app$ and /app/ rather than /app, which would also block /app-screenshot.png.
@@ -10,8 +10,33 @@ Disallow: /signup
 Disallow: /api/
 Disallow: /ingest/
 Disallow: /commit/
+Disallow: /desktop/
 
-# A plain-text map of the site for language models lives at /llms.txt
-# (full text at /llms-full.txt).
+# AI search and assistants, named so no default policy shuts them out.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+User-agent: CCBot
+Allow: /
+Disallow: /app$
+Disallow: /app/
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+Disallow: /api/
+Disallow: /ingest/
+Disallow: /commit/
+Disallow: /desktop/
+
+# A plain-text guide to Stroke for language models: /llms.txt
+# (the full text: /llms-full.txt).
 
 Sitemap: https://stroke.click/sitemap.xml

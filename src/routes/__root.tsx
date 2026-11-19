@@ -9,7 +9,9 @@ import { PostHogProvider } from "#/components/posthog-provider";
 import { TAGLINE } from "#/components/site-chrome";
 import { ThemeProvider } from "#/components/theme-provider";
 import { Toaster } from "#/components/ui/sonner";
-import type { AuthQueryResult } from "#/lib/auth/queries";
+import { authQueryOptions, type AuthQueryResult } from "#/lib/auth/queries";
+import { latestReleaseQueryOptions } from "#/lib/latest-release";
+import { platformQueryOptions } from "#/lib/platform-hint";
 import { seo } from "#/lib/seo";
 
 import appCss from "#/styles.css?url";
@@ -20,11 +22,18 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  // Typically we don't need the user immediately in landing pages.
-  // For protected routes with loader data, see /_auth/route.tsx
-  // beforeLoad: ({ context }) => {
-  //   context.queryClient.prefetchQuery(authQueryOptions());
-  // },
+  // Whatever the header and the download buttons show is known before the
+  // first render, so the server's HTML is already right: "Dashboard" for a
+  // signed-in visitor (not "Sign in" that changes after load), and the build
+  // for this computer with its version. None of them fail the page: a miss
+  // just renders the neutral state.
+  beforeLoad: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(authQueryOptions()).catch(() => null),
+      context.queryClient.ensureQueryData(platformQueryOptions()).catch(() => null),
+      context.queryClient.ensureQueryData(latestReleaseQueryOptions()).catch(() => null),
+    ]);
+  },
   head: () => {
     // Default social/meta tags; every public route overrides them via seo().
     // Canonical links are per-route only, so they aren't emitted here.

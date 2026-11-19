@@ -18,6 +18,8 @@ import { Route as SecurityRouteImport } from './routes/security'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GiveawayRouteImport } from './routes/giveaway'
 import { Route as FeaturesRouteImport } from './routes/features'
@@ -135,6 +137,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalRoute = LegalRouteImport.update({
@@ -510,6 +522,8 @@ export interface FileRoutesByFullPath {
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
   '/legal': typeof LegalRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
@@ -592,6 +606,8 @@ export interface FileRoutesByTo {
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
   '/legal': typeof LegalRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
@@ -676,6 +692,8 @@ export interface FileRoutesById {
   '/features': typeof FeaturesRoute
   '/giveaway': typeof GiveawayRoute
   '/legal': typeof LegalRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/roadmap': typeof RoadmapRoute
@@ -760,6 +778,8 @@ export interface FileRouteTypes {
     | '/features'
     | '/giveaway'
     | '/legal'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
@@ -842,6 +862,8 @@ export interface FileRouteTypes {
     | '/features'
     | '/giveaway'
     | '/legal'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
@@ -925,6 +947,8 @@ export interface FileRouteTypes {
     | '/features'
     | '/giveaway'
     | '/legal'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/pricing'
     | '/privacy'
     | '/roadmap'
@@ -1010,6 +1034,8 @@ export interface RootRouteChildren {
   FeaturesRoute: typeof FeaturesRoute
   GiveawayRoute: typeof GiveawayRoute
   LegalRoute: typeof LegalRoute
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RoadmapRoute: typeof RoadmapRoute
@@ -1135,6 +1161,20 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal': {
@@ -1757,6 +1797,8 @@ const rootRouteChildren: RootRouteChildren = {
   FeaturesRoute: FeaturesRoute,
   GiveawayRoute: GiveawayRoute,
   LegalRoute: LegalRoute,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RoadmapRoute: RoadmapRoute,

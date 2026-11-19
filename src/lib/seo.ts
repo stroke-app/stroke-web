@@ -95,6 +95,18 @@ export function softwareApplication({
   };
 }
 
+/** A FAQPage node: questions and answers search engines and assistants can quote. */
+export function faqPage(items: { q: string; a: string }[]) {
+  return {
+    "@type": "FAQPage",
+    mainEntity: items.map((it) => ({
+      "@type": "Question",
+      name: it.q,
+      acceptedAnswer: { "@type": "Answer", text: it.a },
+    })),
+  };
+}
+
 /** One JSON-LD script tag holding every node in `graph`. */
 export function jsonLd(graph: Record<string, unknown>[]) {
   return {
