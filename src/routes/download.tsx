@@ -189,7 +189,7 @@ function DownloadPage() {
 /** What an unsigned build asks on first launch, and how to get past it. */
 function FirstLaunch() {
   return (
-    <div className="mt-12 flex flex-col gap-4 rounded-xl border border-border bg-ink/[0.02] p-5 md:flex-row md:gap-10 md:p-6">
+    <div className="mt-12 flex flex-col gap-4 rounded-[24px] bg-card p-5 md:flex-row md:gap-10 md:p-6">
       <h3 className="flex shrink-0 items-start gap-2.5 text-[15px] font-[560] md:w-72">
         <TriangleAlertIcon className="mt-0.5 size-4 shrink-0 text-copper" />
         The direct downloads aren't code-signed yet
@@ -218,7 +218,7 @@ function NightlyDownloads() {
     <section
       id="nightly"
       aria-labelledby="nightly-title"
-      className="mt-20 scroll-mt-24 rounded-2xl border border-border bg-ink/[0.02] p-6 md:p-8"
+      className="mt-20 scroll-mt-24 rounded-[24px] bg-card p-6 md:p-8"
     >
       <p className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
         <span aria-hidden="true" className="size-1.5 rounded-full bg-amber-400" />
@@ -250,7 +250,7 @@ function NightlyDownloads() {
           <li key={a.file}>
             <a
               href={nightlyUrl(a.file)}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-[14px] transition-[background-color,scale] duration-150 hover:bg-ink/[0.04] active:scale-[0.99]"
+              className="flex items-center justify-between gap-3 rounded-[24px] bg-card px-4 py-3 text-[14px] transition-[background-color,scale] duration-150 hover:bg-ink/[0.04] active:scale-[0.99]"
             >
               <span>
                 <span className="font-medium text-foreground">{a.os}</span>

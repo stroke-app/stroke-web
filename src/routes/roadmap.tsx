@@ -321,7 +321,7 @@ function RoadmapPage() {
         {/* The page index: one cell per status, split by hairlines. */}
         <nav
           aria-label="Roadmap sections"
-          className="grid grid-cols-1 overflow-hidden rounded-xl border border-border sm:grid-cols-3"
+          className="grid grid-cols-1 overflow-hidden rounded-[24px] bg-card sm:grid-cols-3"
         >
           {GROUPS.map((group) => (
             <a

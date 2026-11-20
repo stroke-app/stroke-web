@@ -162,96 +162,117 @@
   --raised: oklch(0.12 0 0);
 }
 
-/* The marketing site (v3). Dark first: a true-black page, one surface step,
-   white-alpha hairlines that draw the page's frame, and text in four steps
-   (foreground, soft, muted, faint). Monochrome, with white as the action
-   color; the amber accent is kept for small live-state marks only. Applied
-   by the `site` class on the marketing shell, so the signed-in app keeps its
-   own themes. Contrast on #000: foreground 21:1, soft 13:1, muted 6.6:1,
-   faint 3.4:1 (faint is for non-essential meta only). */
+/* The marketing site (v4). Light first, after Apple's product pages: a white
+   page, warm-gray cards with no borders, black headlines whose second line
+   steps down to gray, and one accent: Stroke's amber, as pill buttons with
+   black text. Dark follows the system (or the theme switch). Applied by the
+   `site` class on the marketing shell, so the signed-in app keeps its own
+   themes. Contrast on #fff: foreground 16.8:1, muted 5.7:1, faint 3.5:1
+   (meta only); --link 4.9:1. */
 .site {
-  --ink: #ffffff;
-  --edge: rgb(255 255 255 / 0.06);
-  --background: #000000;
-  --foreground: #fafafa;
-  --soft: #c8c8c8;
-  --muted-foreground: #8f8f8f;
-  --faint: #5c5c5c;
-  --card: #0a0a0a;
-  --card-foreground: #fafafa;
-  --raised: #111111;
-  --popover: #0a0a0a;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #000000;
-  --secondary: #141414;
-  --secondary-foreground: #fafafa;
-  --muted: #111111;
-  --accent: #161616;
-  --accent-foreground: #fafafa;
-  --border: rgb(255 255 255 / 0.09);
-  --input: rgb(255 255 255 / 0.12);
-  --ring: rgb(255 255 255 / 0.4);
-  --copper: oklch(0.844 0.172 84.9);
-  color-scheme: dark;
+  --ink: #000000;
+  --edge: rgb(0 0 0 / 0.05);
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+  --soft: #424245;
+  --muted-foreground: #6e6e73;
+  --faint: #86868b;
+  /* The cards: a warm gray a breath off white. */
+  --card: #f6f5f3;
+  --card-foreground: #1d1d1f;
+  --raised: #ffffff;
+  --band: #f6f5f3;
+  --popover: #ffffff;
+  --popover-foreground: #1d1d1f;
+  --primary: #1d1d1f;
+  --primary-foreground: #ffffff;
+  --secondary: #f6f5f3;
+  --secondary-foreground: #1d1d1f;
+  --muted: #f6f5f3;
+  --accent: #efeee9;
+  --accent-foreground: #1d1d1f;
+  --border: rgb(0 0 0 / 0.08);
+  --input: rgb(0 0 0 / 0.12);
+  --ring: #d99a00;
+  /* Stroke amber: the button fill, and its text-safe shade for links. */
+  --amber: #ffc107;
+  --amber-hover: #ffcd38;
+  --amber-ink: #1d1d1f;
+  --link: #9a6700;
+  --copper: #9a6700;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.12);
+  --shadow-float: 0 1px 2px rgb(0 0 0 / 0.05), 0 24px 60px -20px rgb(0 0 0 / 0.25);
+  color-scheme: light;
   background-color: var(--background);
   color: var(--foreground);
   font-family:
     "Inter Variable",
-    system-ui,
     -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
     sans-serif;
   font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
 }
 .site h1,
 .site h2,
 .site h3 {
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
 }
 .site h1,
 .site h2 {
-  line-height: 1.08;
+  line-height: 1.06;
+}
+/* The second line of a headline, in the step-down gray. */
+.site .title-sub {
+  color: var(--faint);
 }
 html:has(.site),
 body:has(.site) {
-  background-color: #000;
-  color-scheme: dark;
-}
-
-html.light .site {
-  --ink: #000000;
-  --edge: rgb(0 0 0 / 0.06);
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --soft: #333333;
-  --muted-foreground: #6b6b6b;
-  --faint: #9a9a9a;
-  --card: #fafafa;
-  --card-foreground: #0a0a0a;
-  --raised: #f4f4f4;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f4;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f4f4f4;
-  --accent: #efefef;
-  --accent-foreground: #0a0a0a;
-  --border: rgb(0 0 0 / 0.08);
-  --input: rgb(0 0 0 / 0.12);
-  --ring: rgb(0 0 0 / 0.35);
-  color-scheme: light;
-}
-html.light:has(.site),
-html.light body:has(.site) {
   background-color: #fff;
   color-scheme: light;
 }
+
+html.dark .site {
+  --ink: #ffffff;
+  --edge: rgb(255 255 255 / 0.06);
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --soft: #d2d2d7;
+  --muted-foreground: #a1a1a6;
+  --faint: #6e6e73;
+  --card: #141414;
+  --card-foreground: #f5f5f7;
+  --raised: #1d1d1f;
+  --band: #0b0b0b;
+  --popover: #161616;
+  --popover-foreground: #f5f5f7;
+  --primary: #f5f5f7;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #f5f5f7;
+  --muted: #141414;
+  --accent: #1f1f1f;
+  --accent-foreground: #f5f5f7;
+  --border: rgb(255 255 255 / 0.1);
+  --input: rgb(255 255 255 / 0.14);
+  --ring: #ffc107;
+  --link: #ffc107;
+  --copper: #ffc107;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-float: 0 0 0 1px rgb(255 255 255 / 0.08), 0 24px 60px -20px rgb(0 0 0 / 0.8);
+  color-scheme: dark;
+}
+html.dark:has(.site),
+html.dark body:has(.site) {
+  background-color: #000;
+  color-scheme: dark;
+}
 /* Product screens stay dark in both themes: they show the app as it ships. */
-html.light .site .keep-dark,
-html.light .site.keep-dark {
+.site .keep-dark,
+.site.keep-dark {
   --ink: #ffffff;
   --background: #000000;
   --foreground: #fafafa;
@@ -271,6 +292,28 @@ html.light .site.keep-dark {
   --input: rgb(255 255 255 / 0.12);
   color-scheme: dark;
   color: var(--foreground);
+}
+
+/* A device around the product: an aluminium lid with a thin black bezel,
+   the way Apple shows a Mac. */
+.site .device {
+  border-radius: 22px;
+  padding: 10px;
+  background: linear-gradient(180deg, #2c2c2e, #0d0d0e);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.5),
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 40px 80px -30px rgb(0 0 0 / 0.45);
+}
+.site .device-base {
+  height: 14px;
+  margin: 0 -3.5%;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(180deg, #d9d9dc, #a7a7ab 60%, #8d8d91);
+  box-shadow: 0 18px 30px -12px rgb(0 0 0 / 0.35);
+}
+html.dark .site .device-base {
+  background: linear-gradient(180deg, #4a4a4d, #2a2a2c 60%, #1d1d1f);
 }
 
 /* Dotted grid behind the hero and the closing call to action. */
@@ -525,10 +568,10 @@ html.light .studio {
  * around it. Drop shadows are for things that float (menus, popovers).
  */
 .site {
-  --bezel: rgb(255 255 255 / 0.07);
+  --bezel: rgb(0 0 0 / 0.05);
 }
-html.light .site {
-  --bezel: rgb(0 0 0 / 0.06);
+html.dark .site {
+  --bezel: rgb(255 255 255 / 0.07);
 }
 .site .bezel {
   outline: 6px solid var(--bezel);

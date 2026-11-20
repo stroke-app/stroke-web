@@ -68,7 +68,7 @@ function VsPage() {
         }
       />
       <PageBody aside={<CompareNav current={c.slug} />}>
-        <div className="overflow-hidden rounded-xl border border-border">
+        <div className="overflow-hidden rounded-[24px] bg-card">
           <table className="w-full border-collapse text-left text-[14px]">
             <thead>
               <tr className="border-b border-border bg-ink/[0.02]">

@@ -76,7 +76,7 @@ function EnginePage() {
             All databases
           </Link>
           <div className="mt-8 flex items-center gap-4">
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-ink/[0.06] shadow-[0_0_0_1px_var(--border)_inset]">
+            <span className="flex size-14 items-center justify-center rounded-[24px] bg-card bg-ink/[0.06]">
               <e.Icon className="size-7" color={e.color} aria-hidden="true" />
             </span>
             <span className="text-[14px] text-muted-foreground">
@@ -114,11 +114,11 @@ function EnginePage() {
             What you can do with {e.name}
           </h2>
         </div>
-        <ul className="grid grid-cols-1 gap-px border-t border-border bg-border md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
           {highlights.map((h) => (
             <li
               key={h}
-              className="flex gap-3.5 bg-background p-6 text-[15px] leading-relaxed text-pretty text-soft md:p-8"
+              className="flex gap-3.5 rounded-[24px] bg-card p-6 text-[15px] leading-relaxed text-pretty text-soft md:p-8"
             >
               <CheckIcon
                 className="mt-1 size-4 shrink-0 text-muted-foreground"
@@ -174,9 +174,9 @@ function EnginePage() {
           >
             Also in Stroke
           </h2>
-          <ul className="grid grid-cols-2 gap-px border-t border-border bg-border md:grid-cols-3 lg:grid-cols-6">
+          <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
             {others.map((o) => (
-              <li key={o.slug} className="bg-background">
+              <li key={o.slug} className="rounded-[24px] bg-card">
                 <Link
                   to="/databases/$engine"
                   params={{ engine: o.slug }}

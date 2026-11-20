@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
+  ArrowUpRightIcon,
   BookOpenIcon,
   CheckIcon,
   CopyIcon,
@@ -10,6 +11,7 @@ import {
   StarIcon,
   BotIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   GitCompareArrowsIcon,
   HeartIcon,
   LayersIcon,
@@ -154,6 +156,35 @@ function ThemeSwitch({ className }: { className?: string }) {
   );
 }
 
+/** One button that flips light and dark, for the top strip. */
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    // The resolved theme lives on <html>; read it after the provider applies it.
+    const read = () => setDark(document.documentElement.classList.contains("dark"));
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, [theme]);
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme" : "Dark theme"}
+      className="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+    >
+      {dark ? (
+        <SunIcon className="size-3.5" strokeWidth={1.9} />
+      ) : (
+        <MoonIcon className="size-3.5" strokeWidth={1.9} />
+      )}
+    </button>
+  );
+}
+
 /** GitHub stars, cached for an hour; the count hides until it loads. */
 function useStars() {
   return useQuery({
@@ -225,7 +256,7 @@ function Spotlight({
     <Link
       to={to}
       onClick={onPick}
-      className="group relative isolate flex h-full flex-col overflow-hidden rounded-lg bg-ink/[0.03] p-4 shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.05]"
+      className="group relative isolate flex h-full flex-col overflow-hidden rounded-2xl bg-card p-4 transition-colors duration-150 hover:bg-accent"
     >
       <span
         aria-hidden="true"
@@ -234,9 +265,7 @@ function Spotlight({
       <span className="flex size-9 items-center justify-center rounded-lg bg-ink/[0.06] text-foreground">
         <Icon className="size-[18px]" strokeWidth={1.6} />
       </span>
-      <span className="mt-auto pt-8 text-[12px] font-medium text-[#d99a00] [.dark_&]:text-[#f5b400]">
-        {eyebrow}
-      </span>
+      <span className="mt-auto pt-8 text-[12px] font-medium text-[var(--link)]">{eyebrow}</span>
       <span className="mt-1 text-[15px] leading-snug font-medium text-foreground">{title}</span>
       <span className="mt-1.5 text-[13px] leading-snug text-muted-foreground">{body}</span>
       <span className="mt-3 flex items-center gap-1 text-[13px] font-medium text-foreground">
@@ -260,7 +289,7 @@ function MenuInstall() {
           setTimeout(() => setCopied(false), 1500);
         })
       }
-      className="group flex w-full items-center gap-2.5 rounded-lg bg-ink/[0.03] px-3 py-2.5 text-left font-mono text-[12.5px] shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.06]"
+      className="group flex w-full items-center gap-2.5 rounded-full bg-card px-4 py-2.5 text-left font-mono text-[12.5px] transition-colors hover:bg-accent"
       aria-label={copied ? "Copied" : `Copy ${command}`}
     >
       <span className="text-faint select-none">$</span>
@@ -318,7 +347,7 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
             </div>
           ))}
         </div>
-        <div className="flex items-center justify-between gap-6 rounded-b-xl border-t border-border bg-ink/[0.02] px-5 py-3">
+        <div className="flex items-center justify-between gap-6 rounded-b-[22px] border-t border-border bg-[var(--band)] px-5 py-3">
           <p className="text-[13px] text-muted-foreground">
             Connect in one click from Neon, Supabase, PlanetScale, Turso and more.
           </p>
@@ -365,7 +394,7 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
           ))}
         </ul>
       </div>
-      <div className="flex items-center gap-4 rounded-b-xl border-t border-border bg-ink/[0.02] px-5 py-3">
+      <div className="flex items-center gap-4 rounded-b-[22px] border-t border-border bg-[var(--band)] px-5 py-3">
         {product ? (
           <>
             <p className="shrink-0 text-[13px] text-muted-foreground">
@@ -442,172 +471,181 @@ export function SiteHeader() {
   };
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 border-b transition-[background-color,border-color] duration-200",
-        scrolled || menu || mobile
-          ? "border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150"
-          : "border-transparent bg-transparent",
-      )}
-      onMouseLeave={scheduleClose}
-    >
-      <div className={cn(FRAME, GUTTER, "grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-6")}>
-        <Link to="/" aria-label="Stroke home" className="flex shrink-0 items-center gap-2.5">
-          <StrokeIcon className="size-[22px]" />
-          <span className="text-[16px] font-semibold tracking-[-0.02em]">Stroke</span>
-        </Link>
-
-        <nav className="hidden items-center gap-0.5 rounded-full p-1 md:flex" aria-label="Main">
-          {MENUS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              aria-expanded={menu === m.id}
-              aria-controls={panelId}
-              onMouseEnter={() => open(m.id)}
-              onClick={() => setMenu(menu === m.id ? null : m.id)}
-              className={cn(
-                "flex h-8 items-center gap-1 rounded-full px-3 text-[14px] transition-colors duration-150",
-                menu === m.id
-                  ? "bg-ink/[0.08] text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {m.label}
-              <ChevronDownIcon
-                className={cn(
-                  "size-3.5 transition-transform duration-200",
-                  menu === m.id && "rotate-180",
-                )}
-                strokeWidth={2}
-              />
-            </button>
-          ))}
+    <>
+      {/* The thin strip over the bar, as Apple-style sites carry: news on the
+        left, GitHub and the theme on the right. It scrolls away. */}
+      <div className="relative z-50 border-b border-border bg-[var(--band)]">
+        <div
+          className={cn(FRAME, GUTTER, "flex h-9 items-center justify-between gap-4 text-[12.5px]")}
+        >
           <Link
-            to="/pricing"
-            onMouseEnter={scheduleClose}
-            className="flex h-8 items-center rounded-full px-3 text-[14px] transition-colors duration-150"
-            activeProps={{ className: "text-foreground" }}
-            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+            to="/changelog"
+            className="group flex min-w-0 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           >
-            Pricing
+            <span className="size-1.5 shrink-0 rounded-full bg-[var(--amber)]" aria-hidden="true" />
+            <span className="truncate">See what's new in Stroke</span>
+            <ArrowUpRightIcon className="size-3 shrink-0 opacity-60 transition-transform duration-150 group-hover:translate-x-px group-hover:-translate-y-px" />
           </Link>
-        </nav>
-
-        {/* Keeps the grid's middle column centered on phones, where the nav is hidden. */}
-        <span className="md:hidden" />
-        <div className="flex items-center justify-end gap-1.5">
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={
-              stars && stars >= 1000 ? `Stroke on GitHub, ${stars} stars` : "Stroke on GitHub"
-            }
-            className="hidden h-8 items-center gap-1.5 rounded-full px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.04] hover:text-foreground lg:inline-flex"
-          >
-            <SiGithub className="size-3.5" />
-            GitHub
-            {/* The count earns its place once it says something: 1k and up. */}
-            {stars && stars >= 1000 ? (
-              <>
-                <span aria-hidden="true" className="mx-1 h-3.5 w-px bg-border" />
-                <StarIcon className="size-3 fill-[#f5b400] text-[#f5b400]" />
-                <span className="font-medium text-foreground tabular-nums">
+          <div className="flex items-center gap-3">
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={
+                stars && stars >= 1000 ? `Stroke on GitHub, ${stars} stars` : "Stroke on GitHub"
+              }
+              className="hidden items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+            >
+              <SiGithub className="size-3.5" />
+              GitHub
+              {stars && stars >= 1000 ? (
+                <span className="flex items-center gap-1 font-medium text-foreground tabular-nums">
+                  <StarIcon className="size-3 fill-[var(--amber)] text-[var(--amber)]" />
                   {formatStars(stars)}
                 </span>
-              </>
-            ) : null}
-          </a>
-          <Link
-            to={user ? "/app" : "/login"}
-            className={cn(
-              siteButton({ variant: "ghost", size: "sm" }),
-              "hidden text-foreground sm:inline-flex",
-            )}
-          >
-            {user ? "Dashboard" : "Sign in"}
-          </Link>
-          <Link
-            to="/download"
-            className={cn(siteButton({ size: "sm" }), "rounded-full ps-3 pe-3.5")}
-          >
-            <DownloadIcon className="size-3.5" />
-            Download
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMobile((v) => !v)}
-            aria-expanded={mobile}
-            aria-controls="mobile-nav"
-            aria-label={mobile ? "Close menu" : "Open menu"}
-            className={cn(
-              siteButton({ variant: "ghost", size: "sm" }),
-              "w-8 px-0 text-foreground md:hidden",
-            )}
-          >
-            {mobile ? <XIcon className="size-4" /> : <MenuIcon className="size-4" />}
-          </button>
+              ) : null}
+            </a>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
+      <header
+        className={cn(
+          "sticky top-0 z-40 border-b transition-[background-color,border-color] duration-200",
+          scrolled || menu || mobile
+            ? "border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150"
+            : "border-transparent bg-background",
+        )}
+        onMouseLeave={scheduleClose}
+      >
+        <div className={cn(FRAME, GUTTER, "flex h-[60px] items-center gap-6")}>
+          <Link to="/" aria-label="Stroke home" className="flex shrink-0 items-center gap-2.5">
+            <StrokeIcon className="size-[26px]" />
+            <span className="text-[21px] font-semibold tracking-[-0.03em]">Stroke</span>
+          </Link>
 
-      {/* Mega menu: one panel under the bar, its content swapped per menu.
+          <nav className="ml-auto hidden items-center gap-1 md:flex" aria-label="Main">
+            {MENUS.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                aria-expanded={menu === m.id}
+                aria-controls={panelId}
+                onMouseEnter={() => open(m.id)}
+                onClick={() => setMenu(menu === m.id ? null : m.id)}
+                className={cn(
+                  "flex h-9 items-center gap-1 rounded-full px-3 text-[15px] transition-colors duration-150",
+                  menu === m.id ? "text-foreground" : "text-soft hover:text-foreground",
+                )}
+              >
+                {m.label}
+                <ChevronDownIcon
+                  className={cn(
+                    "size-3.5 opacity-60 transition-transform duration-200",
+                    menu === m.id && "rotate-180",
+                  )}
+                  strokeWidth={2}
+                />
+              </button>
+            ))}
+            <Link
+              to="/pricing"
+              onMouseEnter={scheduleClose}
+              className="flex h-9 items-center rounded-full px-3 text-[15px] transition-colors duration-150"
+              activeProps={{ className: "text-foreground" }}
+              inactiveProps={{ className: "text-soft hover:text-foreground" }}
+            >
+              Pricing
+            </Link>
+            <Link
+              to={user ? "/app" : "/login"}
+              onMouseEnter={scheduleClose}
+              className="flex h-9 items-center rounded-full px-3 text-[15px] text-soft transition-colors duration-150 hover:text-foreground"
+            >
+              {user ? "Dashboard" : "Sign in"}
+            </Link>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-1.5 md:ml-2">
+            <Link to="/download" className={cn(siteButton({ size: "md" }), "h-10 px-5")}>
+              <DownloadIcon className="size-4" strokeWidth={2.2} />
+              Download
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobile((v) => !v)}
+              aria-expanded={mobile}
+              aria-controls="mobile-nav"
+              aria-label={mobile ? "Close menu" : "Open menu"}
+              className={cn(
+                siteButton({ variant: "ghost", size: "sm" }),
+                "size-10 px-0 text-foreground md:hidden",
+              )}
+            >
+              {mobile ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mega menu: one panel under the bar, its content swapped per menu.
           Mounted only while open, so nothing invisible sits over the page,
           one width for every menu so switching never jumps, and no backdrop
           blur: the panel is opaque, and blurring the page under it made each
           switch repaint the whole viewport. */}
-      {menu && (
-        <div
-          id={panelId}
-          onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
-          className="absolute inset-x-0 top-full hidden pt-2 md:block"
-        >
-          <div className={cn(FRAME, "flex justify-center px-4 lg:px-10")}>
-            <div className="w-full max-w-[52rem] animate-in rounded-xl bg-popover shadow-[0_0_0_1px_var(--border),0_24px_64px_-24px_rgb(0_0_0/0.55)] duration-150 fade-in-0 slide-in-from-top-1">
-              <div key={menu} className="animate-in duration-150 fade-in-0">
-                <MenuPanel id={menu} onPick={() => setMenu(null)} />
+        {menu && (
+          <div
+            id={panelId}
+            onMouseEnter={() => closeTimer.current && clearTimeout(closeTimer.current)}
+            className="absolute inset-x-0 top-full hidden pt-2 md:block"
+          >
+            <div className={cn(FRAME, "flex justify-center px-4 lg:px-10")}>
+              <div className="w-full max-w-[52rem] animate-in rounded-[22px] bg-popover shadow-[var(--shadow-float)] duration-200 fade-in-0 slide-in-from-top-1">
+                <div key={menu} className="animate-in duration-150 fade-in-0">
+                  <MenuPanel id={menu} onPick={() => setMenu(null)} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {mobile && (
-        <nav
-          id="mobile-nav"
-          aria-label="Main"
-          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background px-6 pt-4 pb-8 md:hidden"
-        >
-          {[
-            { title: "Product", items: PRODUCT },
-            { title: "Resources", items: RESOURCES },
-          ].map((group) => (
-            <div key={group.title} className="mb-6">
-              <p className="mb-2 text-[12px] font-medium text-faint">{group.title}</p>
-              {group.items.map((item) => (
-                <MenuItem key={item.label} item={item} onPick={() => setMobile(false)} />
-              ))}
+        {mobile && (
+          <nav
+            id="mobile-nav"
+            aria-label="Main"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background px-6 pt-4 pb-8 md:hidden"
+          >
+            {[
+              { title: "Product", items: PRODUCT },
+              { title: "Resources", items: RESOURCES },
+            ].map((group) => (
+              <div key={group.title} className="mb-6">
+                <p className="mb-2 text-[12px] font-medium text-faint">{group.title}</p>
+                {group.items.map((item) => (
+                  <MenuItem key={item.label} item={item} onPick={() => setMobile(false)} />
+                ))}
+              </div>
+            ))}
+            <div className="flex flex-col gap-2 border-t border-border pt-6">
+              <Link to="/databases" className={siteButton({ variant: "secondary" })}>
+                Databases
+              </Link>
+              <Link to="/pricing" className={siteButton({ variant: "secondary" })}>
+                Pricing
+              </Link>
+              <Link to={user ? "/app" : "/login"} className={siteButton({ variant: "secondary" })}>
+                {user ? "Dashboard" : "Sign in"}
+              </Link>
+              <ThemeSwitch className="mt-2 self-start" />
             </div>
-          ))}
-          <div className="flex flex-col gap-2 border-t border-border pt-6">
-            <Link to="/databases" className={siteButton({ variant: "secondary" })}>
-              Databases
-            </Link>
-            <Link to="/pricing" className={siteButton({ variant: "secondary" })}>
-              Pricing
-            </Link>
-            <Link to={user ? "/app" : "/login"} className={siteButton({ variant: "secondary" })}>
-              {user ? "Dashboard" : "Sign in"}
-            </Link>
-            <ThemeSwitch className="mt-2 self-start" />
-          </div>
-        </nav>
-      )}
-    </header>
+          </nav>
+        )}
+      </header>
+    </>
   );
 }
 
-const FOOTER_LINK = "text-muted-foreground transition-colors duration-150 hover:text-foreground";
+const FOOTER_LINK =
+  "text-muted-foreground transition-colors duration-150 hover:text-foreground hover:underline hover:underline-offset-4";
 
 type FooterLink = { label: string } & (
   | { to: React.ComponentProps<typeof Link>["to"]; params?: Record<string, string>; href?: never }
@@ -660,65 +698,69 @@ const FOOTER: { title: string; links: FooterLink[] }[] = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border">
-      <div className={cn(FRAME, "border-border lg:border-x")}>
-        {/* The last call: download, or copy the install line. */}
-        <div
-          className={cn(
-            GUTTER,
-            "relative isolate flex flex-col gap-6 overflow-hidden border-b border-border py-12 md:flex-row md:items-center md:justify-between md:py-14",
-          )}
-        >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-40 left-1/4 -z-10 h-80 w-[40rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.07),transparent_70%)]"
-          />
-          <div>
-            <p className="text-[1.6rem] leading-tight font-semibold tracking-[-0.03em] text-balance md:text-[2rem]">
-              Every database you run, in one app.
-            </p>
-            <p className="mt-2 text-[15px] text-muted-foreground">
-              Free for 17 days with every feature. $9.99 once to keep it.
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-2.5 md:w-[23rem]">
-            <Link to="/download" className={cn(siteButton({ size: "lg" }), "w-full")}>
-              <DownloadIcon className="size-4" />
-              Download Stroke
-            </Link>
-            <MenuInstall />
-          </div>
+    <footer>
+      {/* The last call: one centered headline, the button, the install line. */}
+      <div className={cn(FRAME, GUTTER, "flex flex-col items-center py-24 text-center md:py-32")}>
+        <StrokeIcon className="size-14" />
+        <p className="mt-7 text-[2.25rem] leading-[1.05] font-semibold tracking-[-0.04em] text-balance md:text-[3.25rem]">
+          Every database you run.
+          <span className="title-sub block">In one app.</span>
+        </p>
+        <p className="mt-5 text-[17px] text-muted-foreground md:text-[19px]">
+          Free for 17 days with every feature. $9.99 once to keep it.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+          <Link to="/download" className={siteButton({ size: "lg" })}>
+            <DownloadIcon className="size-[18px]" strokeWidth={2.2} />
+            Download Stroke
+          </Link>
+          <Link
+            to="/features"
+            className="group inline-flex items-center gap-1 text-[17px] font-medium text-[var(--link)] hover:underline hover:underline-offset-4"
+          >
+            Explore every feature
+            <ChevronRightIcon
+              className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+              strokeWidth={2}
+            />
+          </Link>
         </div>
+        <div className="mt-8 w-full max-w-[23rem]">
+          <MenuInstall />
+        </div>
+      </div>
 
+      <div className="border-t border-border bg-[var(--band)]">
         <div
           className={cn(
+            FRAME,
             GUTTER,
-            "grid grid-cols-2 gap-x-6 gap-y-10 pt-14 pb-12 sm:grid-cols-4 md:grid-cols-[1.5fr_repeat(4,1fr)]",
+            "grid grid-cols-2 gap-x-6 gap-y-10 pt-12 pb-10 sm:grid-cols-4 md:grid-cols-[1.6fr_repeat(4,1fr)]",
           )}
         >
           <div className="col-span-2 sm:col-span-4 md:col-span-1">
             <Link to="/" aria-label="Stroke home" className="inline-flex items-center gap-2.5">
               <StrokeIcon className="size-[22px]" />
-              <span className="text-[16px] font-semibold tracking-[-0.02em]">Stroke</span>
+              <span className="text-[17px] font-semibold tracking-[-0.03em]">Stroke</span>
             </Link>
-            <p className="mt-4 max-w-[17rem] text-[14px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-[17rem] text-[13px] leading-relaxed text-muted-foreground">
               A native database client for every database you run. Made by one developer, in the
               open.
             </p>
-            <div className="mt-5 flex items-center gap-2">
+            <div className="mt-4 flex items-center gap-2">
               <a
                 href={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Stroke on GitHub"
-                className="flex size-8 items-center justify-center rounded-full text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.05] hover:text-foreground"
+                className="flex size-8 items-center justify-center rounded-full bg-background text-muted-foreground transition-colors hover:text-foreground"
               >
                 <SiGithub className="size-3.5" />
               </a>
               <a
                 href="mailto:support@stroke.click"
                 aria-label="Email support"
-                className="flex h-8 items-center rounded-full px-3 text-[13px] text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] transition-colors hover:bg-ink/[0.05] hover:text-foreground"
+                className="flex h-8 items-center rounded-full bg-background px-3 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
               >
                 support@stroke.click
               </a>
@@ -726,10 +768,8 @@ export function SiteFooter() {
           </div>
           {FOOTER.map((col) => (
             <div key={col.title}>
-              <p className="text-[12px] font-medium tracking-[0.04em] text-faint uppercase">
-                {col.title}
-              </p>
-              <ul className="mt-4 space-y-2.5 text-[14px]">
+              <p className="text-[12px] font-semibold text-foreground">{col.title}</p>
+              <ul className="mt-3 space-y-2 text-[12.5px]">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     {l.href ? (
@@ -754,12 +794,13 @@ export function SiteFooter() {
         </div>
         <div
           className={cn(
+            FRAME,
             GUTTER,
-            "flex flex-wrap items-center justify-between gap-4 border-t border-border py-5 text-[13px] text-faint",
+            "flex flex-wrap items-center justify-between gap-4 border-t border-border py-5 text-[12px] text-faint",
           )}
         >
           <span>© {new Date().getFullYear()} Stroke. Your credentials stay on your computer.</span>
-          <ThemeSwitch className="inline-flex" />
+          <ThemeSwitch className="inline-flex bg-background" />
         </div>
       </div>
     </footer>

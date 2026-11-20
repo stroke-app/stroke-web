@@ -95,7 +95,7 @@ function DatabasesPage() {
                 "h-8 rounded-full px-3.5 text-[13px] transition-colors duration-150",
                 cat === c
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] hover:text-foreground",
+                  : "bg-card text-muted-foreground hover:text-foreground",
               )}
             >
               {c === "all" ? "All" : CATEGORY_LABEL[c]}
@@ -110,7 +110,7 @@ function DatabasesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search databases"
-            className="h-9 w-full rounded-lg bg-secondary pr-3 pl-9 text-[14px] shadow-[0_0_0_1px_var(--border)_inset] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-9 w-full rounded-[24px] bg-card pr-3 pl-9 text-[14px] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
           />
         </label>
       </div>
@@ -140,9 +140,9 @@ function DatabasesPage() {
               </h2>
               <span className="text-[13px] text-muted-foreground tabular-nums">{list.length}</span>
             </div>
-            <ul className="grid grid-cols-1 gap-px border-t border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
               {list.map((e) => (
-                <li key={e.slug} className="bg-background">
+                <li key={e.slug} className="rounded-[24px] bg-card">
                   <Link
                     to="/databases/$engine"
                     params={{ engine: e.slug }}

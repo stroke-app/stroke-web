@@ -143,7 +143,7 @@ function SponsorsPage() {
         {thanks && (
           <p
             role="status"
-            className="mt-8 max-w-xl rounded-xl bg-ink/[0.05] px-5 py-4 text-[15px] text-soft shadow-[0_0_0_1px_var(--border)_inset]"
+            className="mt-8 max-w-xl rounded-[24px] bg-card bg-ink/[0.05] px-5 py-4 text-[15px] text-soft"
           >
             <span className="font-medium text-foreground">Thank you.</span> Your sponsorship is on
             its way to the goal below. It can take a minute to show.
@@ -152,17 +152,17 @@ function SponsorsPage() {
       </PageHeader>
 
       <section aria-label="Progress" className="border-t border-border">
-        <div className="grid grid-cols-1 gap-px bg-border lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          <div className="bg-background px-6 py-12 md:px-10 lg:px-14">
+        <div className="grid grid-cols-1 gap-3 md:gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="rounded-[24px] bg-card px-6 py-12 md:px-10 lg:px-14">
             <SponsorProgress />
             <p className="mt-6 text-[14px] leading-relaxed text-pretty text-muted-foreground">
               Counted over the last 12 months, since both certificates renew yearly. Anything above
               the goal pays for build machines and new database engines.
             </p>
           </div>
-          <ul className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
             {SIGNING_GOALS.map((g) => (
-              <li key={g.id} className="bg-background p-6 md:p-8">
+              <li key={g.id} className="rounded-[24px] bg-card p-6 md:p-8">
                 <p className="text-[13px] text-muted-foreground tabular-nums">${g.usd} a year</p>
                 <p className="mt-3 text-[16px] font-medium">{g.title}</p>
                 <p className="mt-2 text-[14px] leading-relaxed text-pretty text-muted-foreground">
@@ -175,7 +175,7 @@ function SponsorsPage() {
       </section>
 
       <section aria-label="How it works" className="border-t border-border">
-        <div className="grid grid-cols-1 gap-px bg-border md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
           {[
             {
               t: "Pick the amount.",
@@ -190,7 +190,7 @@ function SponsorsPage() {
               b: "Sponsoring as a team? Email me and your logo goes on this page.",
             },
           ].map((x) => (
-            <div key={x.t} className="bg-background p-6 md:p-8">
+            <div key={x.t} className="rounded-[24px] bg-card p-6 md:p-8">
               <p className="text-[15px] leading-[1.55] text-pretty text-muted-foreground">
                 <span className="font-medium text-foreground">{x.t}</span> {x.b}
               </p>

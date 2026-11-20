@@ -301,7 +301,7 @@ export function PlatformCards({
                         "group flex items-center gap-3 rounded-lg px-3.5 py-3 transition-[background-color,scale] duration-150 active:scale-[0.99]",
                         detected
                           ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                          : "bg-ink/[0.03] shadow-[0_0_0_1px_var(--border)_inset] hover:bg-ink/[0.06]",
+                          : "bg-card hover:bg-ink/[0.06]",
                         !asset && "pointer-events-none",
                       )}
                     >

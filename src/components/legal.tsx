@@ -116,16 +116,15 @@ export function LegalPage({ title, updated, intro, highlights, children }: Legal
         />
         <div className={cn(WRAP, "relative pt-16 pb-14 md:pt-24 md:pb-20")}>
           {/* Privacy and Terms are a pair; switch between them in place. */}
-          <nav
-            aria-label="Legal documents"
-            className="inline-flex rounded-lg border border-border bg-ink/[0.02] p-1"
-          >
+          <nav aria-label="Legal documents" className="inline-flex rounded-full bg-card p-1">
             {LEGAL_DOCS.map((doc) => (
               <Link
                 key={doc.to}
                 to={doc.to}
-                className="rounded-md px-3 py-1.5 text-[13px] transition-colors"
-                activeProps={{ className: "bg-ink/[0.08] text-foreground" }}
+                className="rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+                activeProps={{
+                  className: "bg-background text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)]",
+                }}
                 inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               >
                 {doc.label}
@@ -144,10 +143,10 @@ export function LegalPage({ title, updated, intro, highlights, children }: Legal
           </p>
 
           {highlights && (
-            <ul className="mt-14 grid grid-cols-1 border-t border-l border-border sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
               {highlights.map((h) => (
-                <li key={h.title} className="border-r border-b border-border p-6">
-                  <h.icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+                <li key={h.title} className="rounded-[24px] bg-card p-6">
+                  <h.icon className="size-[18px] text-[var(--link)]" strokeWidth={1.8} />
                   <p className="mt-4 text-[15px] font-medium">{h.title}</p>
                   <p className="mt-1.5 text-[14px] leading-relaxed text-pretty text-muted-foreground">
                     {h.body}
@@ -162,7 +161,7 @@ export function LegalPage({ title, updated, intro, highlights, children }: Legal
       <div
         className={cn(
           WRAP,
-          "grid grid-cols-1 gap-10 border-t border-border py-14 md:py-20 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-20",
+          "grid grid-cols-1 gap-10 py-14 md:py-20 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-20",
         )}
       >
         <aside className="hidden lg:block">
