@@ -207,8 +207,12 @@ const PLANNED: RoadmapItem[] = [
   },
   { title: "Data warehouses", body: "Snowflake, BigQuery, Redshift and Databricks." },
   {
+    title: "ODBC bridge",
+    body: "Connect to any database that has an ODBC driver: IBM Db2, SAP HANA, SAP ASE (Sybase), Informix, Teradata, Vertica, Exasol, Firebird, Apache Hive, Trino, Presto, Dremio, InterSystems IRIS, Microsoft Access and more. Install the vendor's driver and Stroke does the rest, with browsing, queries, Stop, exports and SSH tunnels where the driver's host and port are known.",
+  },
+  {
     title: "More engines",
-    body: "Neo4j, InfluxDB, ScyllaDB, YugabyteDB, AlloyDB and Cloud Spanner, in the order people ask for them.",
+    body: "Neo4j, InfluxDB, YugabyteDB, AlloyDB and Cloud Spanner, in the order people ask for them.",
   },
   {
     title: "Shared workspaces",
