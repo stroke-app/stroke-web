@@ -18,7 +18,14 @@ export const Route = createFileRoute("/databases/")({
   component: DatabasesPage,
 });
 
-const ORDER: EngineCategory[] = ["relational", "document", "key-value", "analytics", "search"];
+const ORDER: EngineCategory[] = [
+  "relational",
+  "document",
+  "key-value",
+  "analytics",
+  "search",
+  "odbc",
+];
 
 export function DatabasesNav({ current }: { current?: string }) {
   return (
@@ -43,8 +50,10 @@ export function DatabasesNav({ current }: { current?: string }) {
                 aria-hidden="true"
               />
               {e.name}
-              {e.status === "soon" && (
-                <span className="ms-auto pe-2 text-[11px] text-faint">Soon</span>
+              {e.status !== "stable" && (
+                <span className="ms-auto pe-2 text-[11px] text-faint">
+                  {e.status === "beta" ? "Beta" : "Soon"}
+                </span>
               )}
             </Link>
           </li>

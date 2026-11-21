@@ -14,7 +14,7 @@ import { ArrowRightIcon } from "lucide-react";
 
 import { NextLinks, PageBody, PageHeader, PageShell, siteButton } from "#/components/page";
 import { REPO_URL } from "#/components/site-chrome";
-import { SHIPPED_ENGINES } from "#/lib/engines";
+import { engineBySlug, ODBC_ENGINES, SHIPPED_ENGINES } from "#/lib/engines";
 import { seo } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
@@ -55,23 +55,42 @@ const PROVIDERS = [
 ];
 
 // Completed items are drawn from the changelog (stroke.click/changelog).
+/** A row of engine chips, as under the engine count. */
+function EngineChips({ engines }: { engines: typeof SHIPPED_ENGINES }) {
+  return (
+    <ul className="mt-3.5 flex flex-wrap items-center gap-1.5">
+      {engines.map((e) => (
+        <li
+          key={e.slug}
+          className="flex h-6 items-center gap-1.5 rounded-md bg-ink/[0.04] px-2 text-[12px] text-muted-foreground"
+        >
+          <e.Icon className="size-3" color={e.color} />
+          {e.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const GOOGLE_ENGINES = ["spanner", "bigquery"].flatMap((s) => engineBySlug(s) ?? []);
+
 const SHIPPED: RoadmapItem[] = [
   {
     title: `${SHIPPED_ENGINES.length} database engines`,
     body: SHIPPED_ENGINES.map((e) => e.name).join(", ") + ".",
-    extra: (
-      <ul className="mt-3.5 flex flex-wrap items-center gap-1.5">
-        {SHIPPED_ENGINES.map((e) => (
-          <li
-            key={e.slug}
-            className="flex h-6 items-center gap-1.5 rounded-md bg-ink/[0.04] px-2 text-[12px] text-muted-foreground"
-          >
-            <e.Icon className="size-3" color={e.color} />
-            {e.name}
-          </li>
-        ))}
-      </ul>
-    ),
+    extra: <EngineChips engines={SHIPPED_ENGINES} />,
+  },
+  {
+    title: "Google Spanner and BigQuery",
+    tag: "Beta, in Nightly",
+    body: "Spanner in either dialect and BigQuery, signed in with a service account key, the gcloud login or an emulator. BigQuery pages through tables without running a query, shows a dry run's bytes as its plan, and Stop cancels the job on Google's side.",
+    extra: <EngineChips engines={GOOGLE_ENGINES} />,
+  },
+  {
+    title: "ODBC bridge",
+    tag: "Beta, in Nightly",
+    body: "Any database with an ODBC driver, through a data source, a connection string or a preset that writes the string for you. The driver manager is built in, so only the database's own driver needs installing. Browsing, editing by primary key, streamed results and a Stop that cancels on the server.",
+    extra: <EngineChips engines={ODBC_ENGINES.filter((e) => e.slug !== "odbc")} />,
   },
   {
     title: "Provider sign-in and create",
@@ -205,14 +224,17 @@ const PLANNED: RoadmapItem[] = [
     title: "Test data generator",
     body: "Fill a table with realistic rows that respect its foreign keys.",
   },
-  { title: "Data warehouses", body: "Snowflake, BigQuery, Redshift and Databricks." },
   {
-    title: "ODBC bridge",
-    body: "Connect to any database that has an ODBC driver: IBM Db2, SAP HANA, SAP ASE (Sybase), Informix, Teradata, Vertica, Exasol, Firebird, Apache Hive, Trino, Presto, Dremio, InterSystems IRIS, Microsoft Access and more. Install the vendor's driver and Stroke does the rest, with browsing, queries, Stop, exports and SSH tunnels where the driver's host and port are known.",
+    title: "Snowflake",
+    body: "A built-in Snowflake connection. Redshift and Databricks already connect through their ODBC presets.",
+  },
+  {
+    title: "ODBC presets out of beta",
+    body: "Each preset run against its real database, starting with Db2, SAP HANA and Teradata, and SSH tunnels for the ones with a host and port.",
   },
   {
     title: "More engines",
-    body: "Neo4j, InfluxDB, YugabyteDB, AlloyDB and Cloud Spanner, in the order people ask for them.",
+    body: "Neo4j, InfluxDB, YugabyteDB and AlloyDB, in the order people ask for them.",
   },
   {
     title: "Shared workspaces",
