@@ -10,6 +10,10 @@ import {
   SiDatabricks,
   SiFirebase,
   SiGooglebigquery,
+  SiGooglecloud,
+  SiInfluxdb,
+  SiNeo4j,
+  SiSnowflake,
   SiGooglecloudspanner,
   SiMariadb,
   SiMongodb,
@@ -39,6 +43,8 @@ export type EngineCategory =
   | "key-value"
   | "analytics"
   | "search"
+  | "graph"
+  | "time-series"
   | "odbc";
 export type EngineStatus = "stable" | "beta" | "soon";
 
@@ -67,6 +73,8 @@ export const CATEGORY_LABEL: Record<EngineCategory, string> = {
   "key-value": "Key-value",
   analytics: "Analytics",
   search: "Search",
+  graph: "Graph",
+  "time-series": "Time series",
   odbc: "Through ODBC",
 };
 
@@ -638,6 +646,94 @@ export const ENGINES: Engine[] = [
     connect: [
       "A project ID, with an optional default dataset and location",
       "Sign in with a service account key, your gcloud login, or point at an emulator",
+    ],
+  },
+  {
+    slug: "snowflake",
+    name: "Snowflake",
+    Icon: SiSnowflake,
+    color: "#29b5e8",
+    category: "analytics",
+    status: "beta",
+    searchTitle: "Snowflake GUI client and SQL editor",
+    summary:
+      "Databases, schemas and Snowflake SQL in a native window, through Snowflake's SQL API.",
+    highlights: [
+      "Signs in with a key pair or a programmatic access token, no browser round trip",
+      "Schemas, tables and views with keys, columns and GET_DDL, and row counts from table metadata",
+      "Results stream partition by partition, and Stop cancels the statement on Snowflake's side",
+      "Query plans from EXPLAIN, drawn as a tree",
+    ],
+    connect: [
+      "The account identifier, user, and an optional warehouse, database, schema and role",
+      "A private key file (.p8) or an access token, kept in your OS keychain",
+    ],
+  },
+  {
+    slug: "yugabytedb",
+    name: "YugabyteDB",
+    Icon: DatabaseIcon,
+    color: "#ff6e42",
+    category: "relational",
+    status: "beta",
+    searchTitle: "YugabyteDB GUI client",
+    summary: "YugabyteDB over its PostgreSQL API (YSQL), with the full editor and grid.",
+    highlights: RELATIONAL_BASE,
+    connect: ["Paste a postgresql:// URL with port 5433", "SSH tunnels and TLS like PostgreSQL"],
+  },
+  {
+    slug: "alloydb",
+    name: "AlloyDB",
+    Icon: SiGooglecloud,
+    color: "#4285f4",
+    category: "relational",
+    status: "beta",
+    searchTitle: "AlloyDB for PostgreSQL GUI client",
+    summary:
+      "Google Cloud's AlloyDB for PostgreSQL and AlloyDB Omni, with the full editor and grid.",
+    highlights: RELATIONAL_BASE,
+    connect: [
+      "The instance's private IP, or the AlloyDB Auth Proxy on localhost",
+      "Paste a postgresql:// URL; SSH tunnels through a bastion work like PostgreSQL",
+    ],
+  },
+  {
+    slug: "neo4j",
+    name: "Neo4j",
+    Icon: SiNeo4j,
+    color: "#4581c3",
+    category: "graph",
+    status: "beta",
+    searchTitle: "Neo4j GUI client with a Cypher console",
+    summary: "Browse nodes by label, edit their properties, and run Cypher.",
+    highlights: [
+      "Labels are the sidebar's collections, with node counts; nodes open as documents",
+      "Filter with a Cypher WHERE condition, edit properties, add and delete nodes",
+      "A Cypher console with write counts, and EXPLAIN plans drawn as a tree",
+      "Agents get access levels that read the Cypher: reads, writes, schema and administration",
+    ],
+    connect: [
+      "The HTTP address (port 7474), or an Aura https:// address",
+      "Database, user and password",
+    ],
+  },
+  {
+    slug: "influxdb",
+    name: "InfluxDB",
+    Icon: SiInfluxdb,
+    color: "#9394ff",
+    category: "time-series",
+    status: "beta",
+    searchTitle: "InfluxDB GUI client for SQL, InfluxQL and Flux",
+    summary: "Measurements and points from InfluxDB 1.x, 2.x and 3.x, read-only for now.",
+    highlights: [
+      "Measurements in the sidebar, points newest first with tags and fields as columns",
+      "SQL on InfluxDB 3, Flux or InfluxQL on 2.x, InfluxQL on 1.x",
+      "Read-only: statements that write, and Flux that writes or calls out, are refused",
+    ],
+    connect: [
+      "The server URL and the version",
+      "A token and bucket and organization (2.x), a token and database (3.x), or a user and password (1.x)",
     ],
   },
   {

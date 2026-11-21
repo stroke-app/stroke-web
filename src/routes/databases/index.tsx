@@ -24,6 +24,8 @@ const ORDER: EngineCategory[] = [
   "key-value",
   "analytics",
   "search",
+  "graph",
+  "time-series",
   "odbc",
 ];
 

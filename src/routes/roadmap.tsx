@@ -73,6 +73,9 @@ function EngineChips({ engines }: { engines: typeof SHIPPED_ENGINES }) {
 }
 
 const GOOGLE_ENGINES = ["spanner", "bigquery"].flatMap((s) => engineBySlug(s) ?? []);
+const NEW_ENGINES = ["snowflake", "yugabytedb", "alloydb", "neo4j", "influxdb"].flatMap(
+  (s) => engineBySlug(s) ?? [],
+);
 
 const SHIPPED: RoadmapItem[] = [
   {
@@ -85,6 +88,12 @@ const SHIPPED: RoadmapItem[] = [
     tag: "Beta, in Nightly",
     body: "Spanner in either dialect and BigQuery, signed in with a service account key, the gcloud login or an emulator. BigQuery pages through tables without running a query, shows a dry run's bytes as its plan, and Stop cancels the job on Google's side.",
     extra: <EngineChips engines={GOOGLE_ENGINES} />,
+  },
+  {
+    title: "Snowflake, YugabyteDB, AlloyDB, Neo4j and InfluxDB",
+    tag: "Beta, in Nightly",
+    body: "Snowflake through its SQL API with key pair or token sign-in. YugabyteDB and AlloyDB with everything PostgreSQL has. Neo4j's nodes by label with a Cypher console. InfluxDB 1.x, 2.x and 3.x, read-only, in SQL, InfluxQL or Flux. Spanner, BigQuery, Snowflake and ODBC also gained backup, import, transactions and plans.",
+    extra: <EngineChips engines={NEW_ENGINES} />,
   },
   {
     title: "ODBC bridge",
@@ -225,16 +234,12 @@ const PLANNED: RoadmapItem[] = [
     body: "Fill a table with realistic rows that respect its foreign keys.",
   },
   {
-    title: "Snowflake",
-    body: "A built-in Snowflake connection. Redshift and Databricks already connect through their ODBC presets.",
-  },
-  {
     title: "ODBC presets out of beta",
     body: "Each preset run against its real database, starting with Db2, SAP HANA and Teradata, and SSH tunnels for the ones with a host and port.",
   },
   {
-    title: "More engines",
-    body: "Neo4j, InfluxDB, YugabyteDB and AlloyDB, in the order people ask for them.",
+    title: "Writes for InfluxDB",
+    body: "Adding points with line protocol and deleting by time range, once the read-only beta has settled.",
   },
   {
     title: "Shared workspaces",
