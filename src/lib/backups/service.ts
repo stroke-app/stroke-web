@@ -15,8 +15,8 @@ import { accountHasPaidPro, authenticateDesktop, paidProRequired } from "#/lib/d
  */
 
 export const MAX_JOBS = 10;
-/** Stroke Cloud storage per account. */
-export const QUOTA_BYTES = 5 * 1024 ** 3;
+/** Stroke Cloud storage per account: 1 GB. */
+export const QUOTA_BYTES = 1024 ** 3;
 export const MAX_KEEP = 30;
 /** A run still "running" after this is treated as failed (the app was closed). */
 const STALE_MS = 6 * 60 * 60 * 1000;
@@ -327,7 +327,7 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
     return apiError(
       409,
       "quota",
-      "Stroke Cloud backup storage is full (5 GB). Keep fewer backups, delete some, or use your own S3 bucket.",
+      "Stroke Cloud backup storage is full (1 GB). Keep fewer backups, delete some, or use your own S3 bucket.",
     );
   }
 
