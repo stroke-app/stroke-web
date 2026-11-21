@@ -60,7 +60,14 @@ function useOutside(open: boolean, close: () => void) {
   return ref;
 }
 
-export function HeroDownload({ install = true }: { install?: boolean } = {}) {
+export function HeroDownload({
+  install = true,
+  compact = false,
+}: {
+  install?: boolean;
+  /** One plain pill: no version inside it and no menu of other builds. */
+  compact?: boolean;
+} = {}) {
   const platform = usePlatform();
   const { data: release } = useQuery(latestReleaseQueryOptions());
   const [open, setOpen] = useState(false);
@@ -89,33 +96,38 @@ export function HeroDownload({ install = true }: { install?: boolean } = {}) {
                 asset: asset.name,
               })
             }
-            className={cn(half, "rounded-l-full ps-7 pe-5")}
+            className={cn(half, compact ? "rounded-full px-8" : "rounded-l-full ps-7 pe-5")}
           >
-            <DownloadIcon className="size-[18px]" />
+            <DownloadIcon className="size-[18px]" strokeWidth={2.2} />
             {label}
-            {release && (
+            {release && !compact && (
               <span className="ms-1 font-mono text-[12px] opacity-60">{release.tag_name}</span>
             )}
           </a>
         ) : (
-          <Link to="/download" className={cn(half, "rounded-l-full ps-7 pe-5")}>
-            <DownloadIcon className="size-[18px]" />
+          <Link
+            to="/download"
+            className={cn(half, compact ? "rounded-full px-8" : "rounded-l-full ps-7 pe-5")}
+          >
+            <DownloadIcon className="size-[18px]" strokeWidth={2.2} />
             {label}
           </Link>
         )}
-        <span aria-hidden="true" className="w-px bg-black/15" />
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={menuId}
-          aria-label="Other downloads"
-          onClick={() => setOpen((v) => !v)}
-          className={cn(half, "rounded-r-full ps-3 pe-4")}
-        >
-          <ChevronDownIcon
-            className={cn("size-4 transition-transform duration-200", open && "rotate-180")}
-          />
-        </button>
+        {!compact && <span aria-hidden="true" className="w-px bg-black/15" />}
+        {!compact && (
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={menuId}
+            aria-label="Other downloads"
+            onClick={() => setOpen((v) => !v)}
+            className={cn(half, "rounded-r-full ps-3 pe-4")}
+          >
+            <ChevronDownIcon
+              className={cn("size-4 transition-transform duration-200", open && "rotate-180")}
+            />
+          </button>
+        )}
         {open && (
           <div
             id={menuId}
@@ -237,6 +249,100 @@ export function TerminalInstall({
           <CheckIcon className="size-4 shrink-0 text-foreground" />
         ) : (
           <CopyIcon className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+        )}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * The install one-liner as one slim pill: a Mac and Linux / Windows switch on
+ * the left, the command, and a round copy button. Opens on the visitor's own
+ * system; a click on the command copies it too.
+ */
+export function InstallPill({ initial = "unix" }: { initial?: "unix" | "windows" }) {
+  const [tab, setTab] = useState<"unix" | "windows">(initial);
+  const [copied, setCopied] = useState(false);
+  const picked = useRef(false);
+  useEffect(() => {
+    if (!picked.current) setTab(initial);
+  }, [initial]);
+  const command = tab === "unix" ? UNIX : WINDOWS;
+  const copy = () => {
+    void navigator.clipboard?.writeText(command).then(() => {
+      setCopied(true);
+      posthog.capture("install_copied", { shell: tab });
+      setTimeout(() => setCopied(false), 1600);
+    });
+  };
+  const seg = (on: boolean) =>
+    cn(
+      "flex h-8 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-medium transition-[background-color,color,box-shadow] duration-200",
+      on
+        ? "bg-background text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.14)]"
+        : "text-muted-foreground hover:text-foreground",
+    );
+  return (
+    <div className="flex max-w-full items-center gap-2 rounded-full bg-card p-1.5 ring-1 ring-black/[0.04] dark:ring-white/[0.06]">
+      <div
+        role="radiogroup"
+        aria-label="Your system"
+        className="flex shrink-0 items-center rounded-full bg-black/[0.04] p-0.5 dark:bg-white/[0.06]"
+      >
+        <button
+          type="button"
+          role="radio"
+          aria-checked={tab === "unix"}
+          onClick={() => {
+            picked.current = true;
+            setTab("unix");
+          }}
+          className={seg(tab === "unix")}
+          title="macOS and Linux"
+        >
+          <SiApple className="size-3.5" />
+          <SiLinux className="size-3.5" />
+          <span className="sr-only">macOS and Linux</span>
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={tab === "windows"}
+          onClick={() => {
+            picked.current = true;
+            setTab("windows");
+          }}
+          className={seg(tab === "windows")}
+          title="Windows"
+        >
+          <WindowsLogo className="size-3.5" />
+          <span className="sr-only">Windows</span>
+        </button>
+      </div>
+      <button
+        type="button"
+        onClick={copy}
+        title="Copy"
+        className="min-w-0 truncate pe-2 text-left font-mono text-[13.5px] text-soft"
+      >
+        <span className="me-2 text-faint select-none">{tab === "unix" ? "$" : ">"}</span>
+        {command}
+      </button>
+      <button
+        type="button"
+        onClick={copy}
+        aria-label={copied ? "Copied" : "Copy the install command"}
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-full transition-colors duration-200",
+          copied
+            ? "bg-[#30d158] text-white"
+            : "bg-background text-muted-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)] hover:text-foreground",
+        )}
+      >
+        {copied ? (
+          <CheckIcon className="size-4" strokeWidth={2.6} />
+        ) : (
+          <CopyIcon className="size-4" />
         )}
       </button>
     </div>
