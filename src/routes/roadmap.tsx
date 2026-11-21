@@ -186,7 +186,7 @@ const IN_PROGRESS: RoadmapItem[] = [
   },
   {
     title: "Extension API",
-    tag: "Beta, in Nightly",
+    tag: "Beta",
     body: "Community-built panels and dialect plugins on top of the Extensions panel. Available to try now while the API settles.",
   },
 ];
