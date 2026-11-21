@@ -3,14 +3,10 @@ import { env } from "cloudflare:workers";
 import { Cron } from "croner";
 import { and, desc, eq, inArray, lt, sql } from "drizzle-orm";
 
-import { env as serverEnv } from "#/env/server";
 import { auth } from "#/lib/auth/auth";
-import { STORAGE_ADDON_GB, STORAGE_INCLUDED_GB, STORAGE_PRICE_USD } from "#/lib/billing/plans";
 import { db } from "#/lib/db";
 import { backupJobs, backupRuns } from "#/lib/db/schema";
 import { accountHasPaidPro, authenticateDesktop, paidProRequired } from "#/lib/desktop/service";
-
-import { hasStorageAddon, storageQuotaBytes } from "./storage";
 
 /**
  * Scheduled backups. The desktop app runs every job (it holds the database
@@ -19,6 +15,8 @@ import { hasStorageAddon, storageQuotaBytes } from "./storage";
  */
 
 export const MAX_JOBS = 10;
+/** Stroke Cloud storage per account: 1 GB. */
+export const QUOTA_BYTES = 1024 ** 3;
 export const MAX_KEEP = 30;
 /** A run still "running" after this is treated as failed (the app was closed). */
 const STALE_MS = 6 * 60 * 60 * 1000;
@@ -169,9 +167,7 @@ export async function listJobs(c: Caller): Promise<Response> {
     jobs: jobs.map((j) => publicJob(j, byJob.get(j.id) ?? [])),
     max_jobs: MAX_JOBS,
     used_bytes: await storedBytes(c.userId),
-    quota_bytes: await storageQuotaBytes(c.userId),
-    storage_addon: await hasStorageAddon(c.userId),
-    storage_offer: Boolean(serverEnv.DODO_STORAGE_PRODUCT_ID),
+    quota_bytes: QUOTA_BYTES,
     pro: await accountHasPaidPro(c.userId, c.email),
   });
 }
@@ -327,18 +323,12 @@ export async function startRun(c: Caller, body: Record<string, unknown>): Promis
     );
   }
 
-  if (job.destination === "stroke") {
-    const addon = await hasStorageAddon(c.userId);
-    const quotaGb = addon ? STORAGE_ADDON_GB : STORAGE_INCLUDED_GB;
-    if ((await storedBytes(c.userId)) >= quotaGb * 1024 ** 3) {
-      return apiError(
-        409,
-        "quota",
-        addon
-          ? `Stroke Cloud backup storage is full (${quotaGb} GB). Keep fewer backups, delete some, or use your own S3 bucket.`
-          : `Stroke Cloud backup storage is full (${quotaGb} GB). Add ${STORAGE_ADDON_GB} GB for $${STORAGE_PRICE_USD} a month at stroke.click/app/backups, keep fewer backups, or use your own S3 bucket.`,
-      );
-    }
+  if (job.destination === "stroke" && (await storedBytes(c.userId)) >= QUOTA_BYTES) {
+    return apiError(
+      409,
+      "quota",
+      "Stroke Cloud backup storage is full (1 GB). Keep fewer backups, delete some, or use your own S3 bucket.",
+    );
   }
 
   const id = crypto.randomUUID();

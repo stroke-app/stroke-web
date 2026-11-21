@@ -102,7 +102,7 @@ Support: support@stroke.click
 - Free trial: every feature for ${TRIAL_DAYS} days, after signing in with Google or GitHub. The trial belongs to the account and to the computer.
 - Pro: ${PRO_PRICE} once. No subscription and no renewal. Every future update. Up to 3 computers per account; a computer frees its seat when it signs out or is removed on the account page.
 - Team: Pro for everyone signing in with the company's email domain. Contact support@stroke.click.
-- Pro adds end-to-end encrypted sync of connections and settings, and scheduled backups to S3 or Stroke Cloud (1 GB included; a 10 GB storage add-on is a monthly subscription).
+- Pro adds end-to-end encrypted sync of connections and settings, and scheduled backups to S3 or Stroke Cloud.
 
 ## Install
 
