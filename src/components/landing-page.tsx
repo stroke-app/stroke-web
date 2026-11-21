@@ -90,7 +90,7 @@ function Hero() {
       <FadeUp className="max-w-[60rem]">
         <h1 className="text-[2.6rem] leading-[1.03] tracking-[-0.05em] text-balance sm:text-[3.5rem] md:text-[4.5rem]">
           The database client for every database.
-          <span className="title-sub block">{PRO_PRICE} once. No subscription.</span>
+          <span className="title-sub block">Fast, native and easy to use.</span>
         </h1>
       </FadeUp>
       <FadeUp delay={0.08}>
