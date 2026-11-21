@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRightIcon, HeartIcon, PlusIcon } from "lucide-react";
 
 import { FRAME, GUTTER } from "#/components/page";
-import { SponsorButton } from "#/components/sponsor-goal";
-import { SPONSOR_MAILTO, sponsorsIn, type Sponsor } from "#/lib/sponsors";
+import { SponsorButton, useSponsorLink } from "#/components/sponsor-goal";
+import { sponsorsIn, type Sponsor } from "#/lib/sponsors";
 import { cn } from "#/lib/utils";
 
 /**
@@ -29,9 +29,13 @@ function Logo({ s, large }: { s: Sponsor; large?: boolean }) {
 }
 
 function OpenSlot({ label, className }: { label: string; className?: string }) {
+  const link = useSponsorLink();
   return (
     <a
-      href={SPONSOR_MAILTO}
+      href={link.href}
+      target={link.external ? "_blank" : undefined}
+      rel="noopener noreferrer"
+      aria-label={`${label}: sponsor Stroke`}
       className={cn(
         "group flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-ink/15 text-muted-foreground transition-[border-color,background-color,color] duration-200 hover:border-[var(--amber)] hover:bg-[var(--amber)]/[0.06] hover:text-foreground",
         className,
@@ -46,6 +50,7 @@ function OpenSlot({ label, className }: { label: string; className?: string }) {
 }
 
 export function SponsorsWall() {
+  const link = useSponsorLink();
   const partner = sponsorsIn("platinum")[0];
   const gold = sponsorsIn("gold").slice(0, GOLD_SLOTS);
   const backers = sponsorsIn("backers");
@@ -81,7 +86,10 @@ export function SponsorsWall() {
               </a>
             ) : (
               <a
-                href={SPONSOR_MAILTO}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                aria-label="Become the signing partner: sponsor Stroke"
                 className="group relative flex min-h-[15rem] flex-1 flex-col items-center justify-center overflow-hidden rounded-[28px] bg-background text-center shadow-[var(--shadow-card)]"
               >
                 {/* Fine diagonal rain, Stroke amber, over the card. */}

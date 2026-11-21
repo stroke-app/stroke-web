@@ -158,6 +158,20 @@ function ThemeSwitch({ className }: { className?: string }) {
   );
 }
 
+/**
+ * The logo goes home; already home, it goes to the top. A link to the page
+ * you are on does nothing by itself, so a click on the logo at the bottom of
+ * the home page left you there.
+ */
+function toTopOnHome(e: React.MouseEvent<HTMLAnchorElement>) {
+  if (window.location.pathname !== "/" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0)
+    return;
+  e.preventDefault();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  if (window.location.hash) history.replaceState(null, "", "/");
+}
+
 /** One button that flips light and dark, for the top strip. */
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -520,7 +534,12 @@ export function SiteHeader() {
         onMouseLeave={scheduleClose}
       >
         <div className={cn(FRAME, GUTTER, "flex h-[60px] items-center gap-6")}>
-          <Link to="/" aria-label="Stroke home" className="flex shrink-0 items-center gap-2.5">
+          <Link
+            to="/"
+            aria-label="Stroke home"
+            onClick={toTopOnHome}
+            className="flex shrink-0 items-center gap-2.5"
+          >
             <StrokeIcon className="size-[26px]" />
             <span className="text-[21px] font-semibold tracking-[-0.03em]">Stroke</span>
           </Link>
@@ -794,7 +813,12 @@ export function SiteFooter() {
           )}
         >
           <div className="col-span-2 sm:col-span-4 md:col-span-1">
-            <Link to="/" aria-label="Stroke home" className="inline-flex items-center gap-2.5">
+            <Link
+              to="/"
+              aria-label="Stroke home"
+              onClick={toTopOnHome}
+              className="inline-flex items-center gap-2.5"
+            >
               <StrokeIcon className="size-[22px]" />
               <span className="text-[17px] font-semibold tracking-[-0.03em]">Stroke</span>
             </Link>
