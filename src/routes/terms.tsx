@@ -135,10 +135,10 @@ function TermsPage() {
           ]}
         />
         <p>
-          A <strong>Team license</strong> is a one-time purchase of $99 that covers everyone who
-          signs in with an email on your company's domain, each with their own key. It needs a
-          company domain; public email providers don't qualify. Team licenses are currently arranged
-          by email at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+          A <strong>Team license</strong> is a one-time purchase, priced on request, that covers
+          everyone who signs in with an email on your company's domain, each with their own key. It
+          needs a company domain; public email providers don't qualify. Team licenses are currently
+          arranged by email at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
         </p>
       </LegalSection>
 

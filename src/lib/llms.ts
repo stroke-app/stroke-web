@@ -11,7 +11,7 @@ import { REPO_URL, SITE_URL } from "#/lib/seo";
  * always what the site says now. Plain facts, no marketing.
  */
 
-const SUMMARY = `Stroke is a native desktop database client for macOS, Windows and Linux. It connects to ${SHIPPED_ENGINES.length} databases (${SHIPPED_ENGINES.map((e) => e.name).join(", ")}) in one app, with a data grid, a SQL editor, schema diagrams, charts, an AI agent and a built-in MCP server so AI agents such as Claude Code, Codex and Cursor can query the same databases at an access level the user sets. Connections run directly from the user's computer; credentials stay in the OS keychain and query results never pass through Stroke's servers. Every feature is free for ${TRIAL_DAYS} days after signing in with Google or GitHub; a license costs ${PRO_PRICE} once (no subscription) and covers up to 3 computers per account, with every future update. A Team license costs $99 once for everyone on a company email domain. The source is public on GitHub.`;
+const SUMMARY = `Stroke is a native desktop database client for macOS, Windows and Linux. It connects to ${SHIPPED_ENGINES.length} databases (${SHIPPED_ENGINES.map((e) => e.name).join(", ")}) in one app, with a data grid, a SQL editor, schema diagrams, charts, an AI agent and a built-in MCP server so AI agents such as Claude Code, Codex and Cursor can query the same databases at an access level the user sets. Connections run directly from the user's computer; credentials stay in the OS keychain and query results never pass through Stroke's servers. Every feature is free for ${TRIAL_DAYS} days after signing in with Google or GitHub; a license costs ${PRO_PRICE} once (no subscription) and covers up to 3 computers per account, with every future update. A Team license for everyone on a company email domain is arranged by contacting support@stroke.click.The source is public on GitHub.`;
 
 const INSTALL = `- macOS and Linux: \`curl -fsSL ${SITE_URL}/install.sh | sh\` (uses Homebrew on macOS and the AUR, apt or dnf on Linux when present)
 - Windows (PowerShell): \`irm ${SITE_URL}/install.ps1 | iex\` (uses Scoop when present)
@@ -37,7 +37,7 @@ export function llmsTxt() {
 
 - [Home](${link("/")}): overview, supported databases, pricing, FAQ
 - [Features](${link("/features")}): data grid, inline editing, SQL editor, notebooks, schema explorer and ER diagrams, charts and dashboards, migrations (Prisma, Drizzle, Cloudflare D1), local database servers, backups, AI chat, MCP server, command palette
-- [Pricing](${link("/pricing")}): ${TRIAL_DAYS}-day free trial, ${PRO_PRICE} once for up to 3 computers, $99 Team license
+- [Pricing](${link("/pricing")}): ${TRIAL_DAYS}-day free trial, ${PRO_PRICE} once for up to 3 computers, Team licenses on request
 - [Download](${link("/download")}): macOS, Windows and Linux builds, Homebrew, Scoop, AUR
 - [Changelog](${link("/changelog")}): every release
 - [Roadmap](${link("/roadmap")})
@@ -101,7 +101,7 @@ Support: support@stroke.click
 
 - Free trial: every feature for ${TRIAL_DAYS} days, after signing in with Google or GitHub. The trial belongs to the account and to the computer.
 - Pro: ${PRO_PRICE} once. No subscription and no renewal. Every future update. Up to 3 computers per account; a computer frees its seat when it signs out or is removed on the account page.
-- Team: $99 once, Pro for everyone signing in with the company's email domain.
+- Team: Pro for everyone signing in with the company's email domain. Contact support@stroke.click.
 - Pro adds end-to-end encrypted sync of connections and settings, and scheduled backups to S3 or Stroke Cloud.
 
 ## Install
