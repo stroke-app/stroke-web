@@ -300,7 +300,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           <style>{`.site [style*="opacity:0"],.site [style*="opacity: 0"]{opacity:1!important;transform:none!important;filter:none!important}`}</style>
         </noscript>
         <SiteHeader />
-        <main className={cn(FRAME, "flex-1")}>{children}</main>
+        <main className={cn(FRAME, "flex-1 pb-28 md:pb-36")}>{children}</main>
         <SiteFooter />
       </div>
     </MotionConfig>

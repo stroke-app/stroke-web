@@ -1,3 +1,17 @@
+import {
+  SiClaude,
+  SiCloudflare,
+  SiCursor,
+  SiGooglegemini,
+  SiPlanetscale,
+  SiPrisma,
+  SiRailway,
+  SiSinglestore,
+  SiSupabase,
+  SiTidb,
+  SiTurso,
+  SiUpstash,
+} from "@icons-pack/react-simple-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
@@ -23,9 +37,9 @@ import { FadeUp } from "#/components/amicro/fade-up";
 import { ScrollReveal } from "#/components/amicro/scroll-reveal";
 import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
 import { HeroDownload } from "#/components/hero-download";
+import { NeonGlyph } from "#/components/landing-mockups";
 import { ArrowLink, GUTTER, LINK, PageShell, Panel, Section, Title } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
-import { SponsorBand } from "#/components/sponsor-goal";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
@@ -43,6 +57,7 @@ export function LandingPage() {
       <HardCases />
       <SafeChanges />
       <Engines />
+      <Providers />
       <Comparison />
       <Features />
       <Shortcuts />
@@ -51,7 +66,6 @@ export function LandingPage() {
       <Reviews />
       <PricingTeaser />
       <Faq />
-      <SponsorBand />
     </PageShell>
   );
 }
@@ -293,15 +307,23 @@ function Card({
   body,
   children,
   className,
+  tint,
 }: {
   title: string;
   body: string;
   children?: React.ReactNode;
   className?: string;
+  /** A color washed into the card's top corner. */
+  tint?: string;
 }) {
   return (
     <div
-      className={cn("flex flex-col overflow-hidden rounded-[28px] bg-card p-7 md:p-9", className)}
+      className={cn(
+        "flex flex-col overflow-hidden rounded-[28px] bg-card p-7 md:p-9",
+        tint && "tinted",
+        className,
+      )}
+      style={tint ? ({ "--tint": tint } as React.CSSProperties) : undefined}
     >
       <h3 className="text-[1.375rem] leading-tight tracking-[-0.025em] md:text-[1.5rem]">
         {title}
@@ -511,6 +533,7 @@ function HardCases() {
         <Reveal className="md:col-span-2">
           <Card
             className="h-full"
+            tint="#ffc107"
             title="Nothing changes by accident."
             body="Edits are staged and marked in the grid until you press Apply. Read-only connections refuse every write."
           >
@@ -520,6 +543,7 @@ function HardCases() {
         <Reveal>
           <Card
             className="h-full"
+            tint="#ff3b30"
             title="Stop means stopped."
             body="Stop cancels the query on the server, on every engine that can, and leaves the connection ready for the next one."
           >
@@ -529,6 +553,7 @@ function HardCases() {
         <Reveal>
           <Card
             className="h-full"
+            tint="#0a84ff"
             title="A 2 GB result, no freeze."
             body="Rows stream to disk as they arrive, so the grid fills at once and memory stays flat."
           >
@@ -538,6 +563,7 @@ function HardCases() {
         <Reveal>
           <Card
             className="h-full"
+            tint="#ff9500"
             title="Plans you can read."
             body="EXPLAIN as steps with their time, the slow one marked, for SQL and document engines."
           >
@@ -547,6 +573,7 @@ function HardCases() {
         <Reveal>
           <Card
             className="h-full"
+            tint="#30d158"
             title="Tunnels come back."
             body="If SSH drops, Stroke reconnects it on the same port and tells you it happened."
           >
@@ -673,20 +700,183 @@ function Engines() {
   );
 }
 
-// ── Comparison ───────────────────────────────────────────────────────────────
+// ── Providers: connect in one click ──────────────────────────────────────────
 
-const COMPARE = [
-  { lead: "SQL and NoSQL in one window", note: "Postgres, MongoDB and Redis side by side." },
-  { lead: "One set of shortcuts", note: "Learn it once, use it on every engine." },
-  { lead: "One license for every engine", note: `${PRO_PRICE} once, on up to 3 computers.` },
-  {
-    lead: "One MCP server for your agents",
-    note: "Claude, Cursor and Codex reach every engine through it.",
-  },
-  { lead: "One place for history and saved queries", note: "Whatever you're connected to." },
+type Provider = {
+  name: string;
+  Icon?: React.ComponentType<{ className?: string; color?: string }>;
+  color: string;
+  /** How Stroke connects: signing in to the provider, or an API token. */
+  via: "sign-in" | "token";
+};
+
+const PROVIDERS: Provider[] = [
+  { name: "Neon", Icon: NeonGlyph, color: "#00c781", via: "sign-in" },
+  { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e", via: "sign-in" },
+  { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor", via: "sign-in" },
+  { name: "Prisma Postgres", Icon: SiPrisma, color: "currentColor", via: "sign-in" },
+  { name: "Turso", Icon: SiTurso, color: "#1fb89a", via: "sign-in" },
+  { name: "TiDB Cloud", Icon: SiTidb, color: "#e60c0c", via: "sign-in" },
+  { name: "Railway", Icon: SiRailway, color: "currentColor", via: "sign-in" },
+  { name: "Cloudflare D1", Icon: SiCloudflare, color: "#f38020", via: "sign-in" },
+  { name: "Nile", color: "#6d5dfc", via: "sign-in" },
+  { name: "Upstash", Icon: SiUpstash, color: "#00c98d", via: "token" },
+  { name: "Xata", color: "#c25bf2", via: "token" },
+  { name: "SingleStore", Icon: SiSinglestore, color: "#aa00ff", via: "token" },
+];
+
+/** Stroke in the middle, wired to the databases around it; the wires run. */
+function WiresArt() {
+  const nodes = [
+    { x: 56, y: 60, shape: "circle" },
+    { x: 304, y: 52, shape: "hex" },
+    { x: 40, y: 208, shape: "tri" },
+    { x: 318, y: 214, shape: "square" },
+    { x: 180, y: 262, shape: "circle" },
+  ];
+  return (
+    <svg viewBox="0 0 360 300" className="w-full max-w-[22rem]" aria-hidden="true">
+      {nodes.map((n, i) => (
+        <path
+          key={i}
+          d={`M180 150 C ${180 + (n.x - 180) * 0.2} ${150 + (n.y - 150) * 0.9}, ${n.x + (180 - n.x) * 0.2} ${n.y}, ${n.x} ${n.y}`}
+          fill="none"
+          stroke="var(--amber)"
+          strokeWidth="1.6"
+          strokeDasharray="4 6"
+          className="animate-[wire_1.6s_linear_infinite] motion-reduce:animate-none"
+          style={{ animationDelay: `${i * -0.3}s` }}
+        />
+      ))}
+      {nodes.map((n, i) => (
+        <g key={i} transform={`translate(${n.x} ${n.y})`}>
+          <circle r="22" fill="var(--raised)" stroke="var(--border)" />
+          {n.shape === "circle" && (
+            <circle r="8" fill="none" stroke="currentColor" strokeWidth="1.8" />
+          )}
+          {n.shape === "hex" && (
+            <path
+              d="M0 -9 L8 -4.5 L8 4.5 L0 9 L-8 4.5 L-8 -4.5 Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            />
+          )}
+          {n.shape === "tri" && (
+            <path d="M0 -8 L8 7 L-8 7 Z" fill="none" stroke="currentColor" strokeWidth="1.8" />
+          )}
+          {n.shape === "square" && (
+            <rect
+              x="-7"
+              y="-7"
+              width="14"
+              height="14"
+              rx="3"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            />
+          )}
+        </g>
+      ))}
+      <g transform="translate(180 150)">
+        <circle r="54" fill="color-mix(in oklab, var(--amber) 18%, transparent)" />
+        <image href="/icon.png" x="-34" y="-34" width="68" height="68" />
+      </g>
+    </svg>
+  );
+}
+
+function Providers() {
+  return (
+    <Section band className="mt-32 md:mt-44" inner="py-24 md:py-32">
+      <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <Reveal className="flex flex-col">
+          <Title
+            sub="From where your databases live."
+            className="text-[2.25rem] sm:text-[2.6rem] md:text-[2.75rem]"
+          >
+            Connect in one click.
+          </Title>
+          <p className="mt-6 max-w-md text-[17px] leading-[1.55] text-pretty text-muted-foreground">
+            Sign in to your provider and pick a database. Stroke makes the credentials, keeps them
+            in your keychain, and connects. Or paste any connection string.
+          </p>
+          <div className="mt-10 text-foreground/80">
+            <WiresArt />
+          </div>
+        </Reveal>
+        <Reveal>
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {PROVIDERS.map((p) => (
+              <li key={p.name}>
+                <div className="group relative flex h-[76px] items-center gap-3.5 overflow-hidden rounded-2xl bg-raised px-5 shadow-[var(--shadow-card)] transition-transform duration-200 hover:-translate-y-0.5">
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+                    style={{
+                      background: `color-mix(in oklab, ${p.color === "currentColor" ? "var(--foreground)" : p.color} 12%, transparent)`,
+                    }}
+                  >
+                    {p.Icon ? (
+                      <p.Icon
+                        className="size-5"
+                        color={p.color === "currentColor" ? undefined : p.color}
+                      />
+                    ) : (
+                      <span className="text-[16px] font-bold" style={{ color: p.color }}>
+                        {p.name[0]}
+                      </span>
+                    )}
+                  </span>
+                  <span className="min-w-0 truncate text-[17px] font-semibold tracking-[-0.02em]">
+                    {p.name}
+                  </span>
+                  <span
+                    className={cn(
+                      "absolute top-2.5 right-2.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase",
+                      p.via === "sign-in"
+                        ? "bg-[var(--amber)]/20 text-[var(--link)]"
+                        : "bg-ink/[0.06] text-muted-foreground",
+                    )}
+                  >
+                    {p.via === "sign-in" ? "Sign in" : "API token"}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-[13px] text-faint">
+            Sign in: Stroke creates the credentials for you. API token: paste one key and pick a
+            database.
+          </p>
+        </Reveal>
+      </div>
+    </Section>
+  );
+}
+
+// ── Comparison// ── Comparison: two cards, the stack and Stroke ──────────────────────────────
+
+const STACK_ROWS = [
+  "An app per engine to keep updated",
+  "A different set of shortcuts in each",
+  "Agents set up again in every tool",
+  "History and saved queries split apart",
+  "Connections stored several ways",
+];
+
+const STROKE_ROWS = [
+  "SQL and NoSQL in one window",
+  "One set of shortcuts on every engine",
+  "One MCP server for Claude, Cursor and Codex",
+  "One history and one place for saved queries",
+  `${PRO_PRICE} once, on up to 3 computers`,
 ];
 
 function Comparison() {
+  const stack = ["postgresql", "mongodb", "redis"]
+    .map((slug) => SHIPPED_ENGINES.find((e) => e.slug === slug))
+    .filter((e): e is (typeof SHIPPED_ENGINES)[number] => !!e);
   return (
     <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="compare-title">
       <Reveal className="flex flex-col items-center text-center">
@@ -697,49 +887,80 @@ function Comparison() {
           Most teams run a Postgres tool, a Mongo tool and a Redis tool. Stroke replaces the stack.
         </p>
       </Reveal>
-      <Reveal>
-        <div className="mx-auto mt-14 max-w-[52rem] rounded-[28px] bg-card p-3 md:p-4">
-          <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem] items-end gap-2 px-4 pt-3 pb-2 md:grid-cols-[minmax(0,1fr)_9rem_9rem] md:px-6">
-            <span />
-            <span className="flex flex-col items-center gap-1.5 rounded-t-2xl bg-background pt-4 pb-2 text-center">
-              <img src="/icon.png" alt="" className="size-9 rounded-[9px]" />
-              <span className="text-[13px] font-semibold">Stroke</span>
-            </span>
-            <span className="pb-2 text-center text-[12px] leading-tight text-muted-foreground">
-              A client per database
-            </span>
+      <div className="mx-auto mt-14 grid max-w-[60rem] grid-cols-1 items-stretch gap-4 md:grid-cols-2 md:gap-5">
+        <Reveal>
+          <div className="flex h-full flex-col rounded-[28px] bg-card p-7 md:p-9">
+            <div className="flex items-center gap-4">
+              <span className="flex -space-x-3">
+                {stack.map((e, i) => (
+                  <span
+                    key={e.slug}
+                    className="flex size-12 items-center justify-center rounded-[14px] bg-raised shadow-[var(--shadow-card)] ring-2 ring-card"
+                    style={{ zIndex: 3 - i, transform: `rotate(${(i - 1) * 6}deg)` }}
+                  >
+                    <e.Icon className="size-6" color={e.color} />
+                  </span>
+                ))}
+              </span>
+              <span>
+                <span className="block text-[17px] font-semibold tracking-[-0.02em]">
+                  A client per database
+                </span>
+                <span className="block text-[13px] text-muted-foreground">
+                  Three apps, and counting
+                </span>
+              </span>
+            </div>
+            <ul className="mt-8 space-y-3.5">
+              {STACK_ROWS.map((r) => (
+                <li key={r} className="flex items-start gap-3 text-[15px] text-muted-foreground">
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-ink/[0.07]">
+                    <MinusIcon className="size-3 text-faint" strokeWidth={2.6} />
+                  </span>
+                  {r}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="px-4 md:px-6">
-            {COMPARE.map((r, i) => (
-              <li
-                key={r.lead}
-                className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem] items-center gap-2 md:grid-cols-[minmax(0,1fr)_9rem_9rem]"
-              >
-                <span className={cn("py-4", i > 0 && "border-t border-border")}>
-                  <span className="block text-[14.5px] font-medium">{r.lead}</span>
-                  <span className="block text-[12.5px] text-muted-foreground">{r.note}</span>
+        </Reveal>
+        <Reveal>
+          <div
+            className="tinted relative flex h-full flex-col rounded-[28px] bg-raised p-7 shadow-[0_0_0_1.5px_color-mix(in_oklab,var(--amber)_70%,transparent),0_24px_60px_-28px_rgb(255_170_0/0.55)] md:p-9"
+            style={{ "--tint": "#ffc107" } as React.CSSProperties}
+          >
+            <span className="absolute -top-3 right-7 rounded-full bg-[var(--amber)] px-3 py-1 text-[11px] font-semibold tracking-[0.06em] text-[var(--amber-ink)] uppercase">
+              One app
+            </span>
+            <div className="flex items-center gap-4">
+              <img
+                src="/icon.png"
+                alt=""
+                className="size-12 rounded-[14px] shadow-[var(--shadow-card)]"
+              />
+              <span>
+                <span className="block text-[17px] font-semibold tracking-[-0.02em]">Stroke</span>
+                <span className="block text-[13px] text-muted-foreground">
+                  {SHIPPED_ENGINES.length} databases in one window
                 </span>
-                <span
-                  className={cn(
-                    "flex h-full items-center justify-center bg-background",
-                    i === COMPARE.length - 1 && "rounded-b-2xl",
-                  )}
+              </span>
+            </div>
+            <ul className="mt-8 space-y-3.5">
+              {STROKE_ROWS.map((r) => (
+                <li
+                  key={r}
+                  className="flex items-start gap-3 text-[15px] font-medium text-foreground"
                 >
-                  <span className="flex size-6 items-center justify-center rounded-full bg-[var(--amber)]">
-                    <CheckIcon className="size-3.5 text-[var(--amber-ink)]" strokeWidth={3} />
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--amber)]">
+                    <CheckIcon className="size-3 text-[var(--amber-ink)]" strokeWidth={3} />
                   </span>
-                </span>
-                <span className="flex items-center justify-center">
-                  <span className="flex size-6 items-center justify-center rounded-full bg-black/[0.06] dark:bg-white/[0.08]">
-                    <MinusIcon className="size-3.5 text-faint" strokeWidth={2.5} />
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Reveal>
-      <p className="mt-5 text-center text-[13px] text-faint">
+                  {r}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+      </div>
+      <p className="mt-6 text-center text-[13px] text-faint">
         How Stroke compares to TablePlus, DBeaver and others, feature by feature:{" "}
         <Link to="/compare" className="text-[var(--link)] hover:underline hover:underline-offset-4">
           Compare
@@ -1012,58 +1233,115 @@ function Shortcuts() {
 
 // ── Agents ───────────────────────────────────────────────────────────────────
 
-const AGENT_STEPS: { tool: string; arg: string; out: string; blocked?: boolean }[] = [
-  { tool: "list_tables", arg: "public", out: "21 tables" },
-  { tool: "describe_table", arg: "orders", out: "9 columns" },
-  { tool: "query", arg: "SELECT status, count(*) FROM orders GROUP BY 1", out: "4 rows · 6 ms" },
-  { tool: "query", arg: "DROP TABLE orders", out: "Blocked", blocked: true },
+const AGENT_STEPS: { at: string; tool: string; arg: string; out: string; blocked?: boolean }[] = [
+  { at: "14:02:11", tool: "list_tables", arg: "public", out: "21 tables" },
+  { at: "14:02:12", tool: "describe_table", arg: "orders", out: "9 columns" },
+  {
+    at: "14:02:14",
+    tool: "query",
+    arg: "SELECT status, count(*) FROM orders GROUP BY 1",
+    out: "4 rows",
+  },
+  { at: "14:02:19", tool: "query", arg: "DROP TABLE orders", out: "Blocked", blocked: true },
 ];
 
 function AgentLog() {
   return (
-    <div className="keep-dark w-full rounded-2xl bg-[#0d0d0d] p-5 text-left text-[#e8e8e8] shadow-[var(--shadow-float)]">
-      <div className="flex items-center justify-between">
-        <p className="text-[14px] font-semibold">Claude Code · prod</p>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/[0.08] px-2 py-0.5 text-[11.5px] text-[#c8c8c8]">
+    <div className="keep-dark w-full overflow-hidden rounded-2xl bg-[#111113] text-left text-[#e8e8e8] shadow-[0_18px_40px_-24px_rgb(0_0_0/0.6)] ring-1 ring-white/[0.08]">
+      <div className="flex items-center gap-2 border-b border-white/[0.07] px-4 py-2.5">
+        <span className="flex gap-1.5" aria-hidden="true">
+          <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="size-2.5 rounded-full bg-[#febc2e]" />
+          <span className="size-2.5 rounded-full bg-[#28c840]" />
+        </span>
+        <p className="ms-2 text-[12.5px] font-medium text-[#c8c8c8]">Claude Code · prod</p>
+        <span className="ms-auto flex items-center gap-1.5 rounded-full bg-white/[0.07] px-2 py-0.5 text-[11px] text-[#c8c8c8]">
           <span className="size-1.5 rounded-full bg-[var(--amber)]" />
           Read and write
         </span>
       </div>
-      <ul className="mt-4 space-y-2.5 font-mono text-[12px]">
+      <ul className="divide-y divide-white/[0.05] font-mono text-[12px]">
         {AGENT_STEPS.map((s, i) => (
-          <li key={i} className="flex items-start gap-3">
+          <li
+            key={i}
+            className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5"
+          >
+            <span className="text-[#5f5f66] tabular-nums">{s.at}</span>
+            <span className={cn("shrink-0", s.blocked ? "text-[#ff8a80]" : "text-[#8ab8ff]")}>
+              {s.tool}
+            </span>
+            <span className="truncate text-[#a8a8b0]" title={s.arg}>
+              {s.arg}
+            </span>
             <span
               className={cn(
-                "mt-[5px] size-1.5 shrink-0 rounded-full",
-                s.blocked ? "bg-[#ff5f57]" : "bg-[#28c840]",
+                "shrink-0 rounded-md px-1.5 py-0.5 text-[11px]",
+                s.blocked ? "bg-[#ff5f57]/15 text-[#ff8a80]" : "text-[#7c7c85]",
               )}
-            />
-            <span className="flex min-w-0 flex-1 gap-2">
-              <span className="shrink-0 text-[#8ab8ff]">{s.tool}</span>
-              <span className="truncate text-[#a8a8a8]" title={s.arg}>
-                {s.arg}
-              </span>
-            </span>
-            <span className={cn("shrink-0", s.blocked ? "text-[#ff8a80]" : "text-[#6b6b6b]")}>
+            >
               {s.out}
             </span>
           </li>
         ))}
       </ul>
+      <p className="border-t border-white/[0.07] px-4 py-2.5 text-[11.5px] text-[#7c7c85]">
+        DROP needs Full access on this connection. Nothing ran.
+      </p>
     </div>
   );
 }
 
-const CLIENTS = [
-  { name: "Claude Code", note: "In your terminal" },
-  { name: "Codex", note: "OpenAI's agent" },
-  { name: "Gemini CLI", note: "Google's agent" },
-  { name: "Cursor, Claude Desktop", note: "And other MCP clients" },
+const CLIENTS: {
+  name: string;
+  note: string;
+  Icon?: React.ComponentType<{ className?: string; color?: string }>;
+  color: string;
+}[] = [
+  { name: "Claude Code", note: "Anthropic, in your terminal", Icon: SiClaude, color: "#d97757" },
+  { name: "Codex", note: "OpenAI's coding agent", color: "#10a37f" },
+  { name: "Gemini CLI", note: "Google, in your terminal", Icon: SiGooglegemini, color: "#8e75b2" },
+  { name: "Cursor", note: "And Claude Desktop, VS Code…", Icon: SiCursor, color: "currentColor" },
 ];
+
+function ClientList() {
+  return (
+    <Float className="p-1.5">
+      <ul className="divide-y divide-border">
+        {CLIENTS.map((c) => (
+          <li key={c.name} className="flex items-center gap-3 px-3 py-3">
+            <span
+              className="flex size-9 shrink-0 items-center justify-center rounded-xl"
+              style={{
+                background: `color-mix(in oklab, ${c.color === "currentColor" ? "var(--foreground)" : c.color} 12%, transparent)`,
+              }}
+            >
+              {c.Icon ? (
+                <c.Icon
+                  className="size-[18px]"
+                  color={c.color === "currentColor" ? undefined : c.color}
+                />
+              ) : (
+                <TerminalIcon className="size-[18px]" style={{ color: c.color }} />
+              )}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[14px] font-semibold">{c.name}</span>
+              <span className="block truncate text-[12px] text-muted-foreground">{c.note}</span>
+            </span>
+            <span className="flex items-center gap-1 rounded-full bg-[#30d158]/12 px-2 py-0.5 text-[11px] font-medium text-[#1f8a3a] dark:text-[#30d158]">
+              <CheckIcon className="size-3" strokeWidth={3} />
+              Works
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Float>
+  );
+}
 
 function Agents() {
   return (
-    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="agents-title">
+    <Section band className="mt-32 md:mt-44" inner="py-24 md:py-32">
       <Reveal className="flex flex-col items-center text-center">
         <Title id="agents-title" sub="In your AI assistant.">
           Your databases.
@@ -1076,7 +1354,8 @@ function Agents() {
       <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:gap-5">
         <Reveal>
           <Card
-            className="h-full"
+            className="h-full bg-raised"
+            tint="#bf5af2"
             title="Every call, as it happens."
             body="Each query an agent runs is logged in the app. Anything destructive waits for you."
           >
@@ -1085,28 +1364,17 @@ function Agents() {
         </Reveal>
         <Reveal>
           <Card
-            className="h-full"
+            className="h-full bg-raised"
+            tint="#0a84ff"
             title="Works with your agent."
             body="Add Stroke to any MCP client in one step."
           >
-            <Float className="p-2">
-              <ul>
-                {CLIENTS.map((c) => (
-                  <li
-                    key={c.name}
-                    className="flex items-center justify-between rounded-xl px-3 py-2.5"
-                  >
-                    <span className="text-[13.5px] font-semibold">{c.name}</span>
-                    <span className="text-[12px] text-faint">{c.note}</span>
-                  </li>
-                ))}
-              </ul>
-            </Float>
+            <ClientList />
           </Card>
         </Reveal>
       </div>
       <Reveal>
-        <div className="mt-4 flex flex-col items-start gap-5 rounded-[28px] bg-card p-7 md:mt-5 md:flex-row md:items-center md:justify-between md:p-9">
+        <div className="mt-4 flex flex-col items-start gap-5 rounded-[28px] bg-raised p-7 md:mt-5 md:flex-row md:items-center md:justify-between md:p-9">
           <div>
             <h3 className="text-[1.375rem] tracking-[-0.025em]">Connect in one line.</h3>
             <p className="mt-2 max-w-md text-[15px] text-muted-foreground">
@@ -1123,7 +1391,7 @@ function Agents() {
           <CommandMenu label="Add to your agent" items={AGENT_COMMANDS} />
         </div>
       </Reveal>
-    </section>
+    </Section>
   );
 }
 

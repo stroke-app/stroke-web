@@ -69,6 +69,18 @@ export type SharePayload =
       rows: unknown[][];
       totalRows?: number;
       masked?: string[];
+    }
+  | {
+      v: 1;
+      kind: "json";
+      title: string;
+      createdAt: number;
+      source?: string;
+      by?: string;
+      value: unknown;
+      /** Items before the plan's cap, when the value is an array. */
+      totalItems?: number;
+      masked?: string[];
     };
 
 export type ErdTable = {

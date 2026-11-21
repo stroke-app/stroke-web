@@ -282,6 +282,7 @@ const KIND_LABEL: Record<string, string> = {
   erd: "Schema diagram",
   mermaid: "Diagram",
   chart: "Chart",
+  json: "JSON",
 };
 
 /** The (i): who shared what, from where, when, and how the link is limited. */

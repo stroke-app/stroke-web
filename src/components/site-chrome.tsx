@@ -30,10 +30,12 @@ import {
 import { useEffect, useId, useRef, useState } from "react";
 
 import { FRAME, GUTTER, siteButton } from "#/components/page";
+import { SponsorsWall } from "#/components/sponsors-wall";
 import { StrokeIcon } from "#/components/stroke-icon";
 import { useTheme } from "#/components/theme-provider";
 import { useAuth } from "#/lib/auth/hooks";
 import { ENGINES } from "#/lib/engines";
+import { latestReleaseQueryOptions } from "#/lib/latest-release";
 import { REPO_URL } from "#/lib/seo";
 import { cn } from "#/lib/utils";
 
@@ -427,7 +429,6 @@ function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
 
 const MENUS: { id: MenuId; label: string }[] = [
   { id: "product", label: "Product" },
-  { id: "databases", label: "Databases" },
   { id: "resources", label: "Resources" },
 ];
 
@@ -696,38 +697,92 @@ const FOOTER: { title: string; links: FooterLink[] }[] = [
   },
 ];
 
+const FACTS = [
+  { label: "Payment", value: "One time", note: "No subscription" },
+  { label: "Runs on", value: "3 systems", note: "macOS, Windows, Linux" },
+  { label: "Trial", value: "17 days", note: "Every feature, no card" },
+  { label: "Credentials", value: "Local", note: "In your OS keychain" },
+];
+
+/** The version and platforms under the closing button, from the latest release. */
+function ClosingVersion() {
+  const { data: release } = useQuery(latestReleaseQueryOptions());
+  return (
+    <p className="mt-6 text-[15px] text-muted-foreground">
+      {release ? `Version ${release.tag_name.replace(/^v/, "")} · ` : ""}Apple Silicon and Intel ·
+      Windows · Linux
+    </p>
+  );
+}
+
 export function SiteFooter() {
   return (
     <footer>
-      {/* The last call: one centered headline, the button, the install line. */}
-      <div className={cn(FRAME, GUTTER, "flex flex-col items-center py-24 text-center md:py-32")}>
-        <StrokeIcon className="size-14" />
-        <p className="mt-7 text-[2.25rem] leading-[1.05] font-semibold tracking-[-0.04em] text-balance md:text-[3.25rem]">
-          Every database you run.
-          <span className="title-sub block">In one app.</span>
+      <SponsorsWall />
+
+      {/* The last call, Apple style: the icon, a two-line headline, the
+          button, the version, then four facts in a row. */}
+      <div
+        className={cn(FRAME, GUTTER, "flex flex-col items-center pt-28 pb-20 text-center md:pt-36")}
+      >
+        <span className="relative">
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 scale-150 rounded-full bg-[radial-gradient(closest-side,rgb(255_193_7/0.35),transparent)] blur-2xl"
+          />
+          <img
+            src="/icon.png"
+            alt=""
+            width={112}
+            height={112}
+            className="size-24 rounded-[24px] shadow-[0_18px_40px_-14px_rgb(0_0_0/0.45)] md:size-28 md:rounded-[28px]"
+          />
+        </span>
+        <p className="mt-10 text-[2.5rem] leading-[1.04] font-semibold tracking-[-0.045em] text-balance md:text-[4rem]">
+          Open your first database.
+          <span className="title-sub block">Keep it on your machine.</span>
         </p>
-        <p className="mt-5 text-[17px] text-muted-foreground md:text-[19px]">
-          Free for 17 days with every feature. $9.99 once to keep it.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
-          <Link to="/download" className={siteButton({ size: "lg" })}>
-            <DownloadIcon className="size-[18px]" strokeWidth={2.2} />
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+          <Link to="/download" className={cn(siteButton({ size: "lg" }), "h-14 px-8 text-[18px]")}>
+            <DownloadIcon className="size-5" strokeWidth={2.2} />
             Download Stroke
           </Link>
           <Link
             to="/features"
-            className="group inline-flex items-center gap-1 text-[17px] font-medium text-[var(--link)] hover:underline hover:underline-offset-4"
+            className="group inline-flex items-center gap-1 text-[18px] font-medium text-[var(--link)] hover:underline hover:underline-offset-4"
           >
             Explore every feature
             <ChevronRightIcon
-              className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+              className="size-[18px] transition-transform duration-150 group-hover:translate-x-0.5"
               strokeWidth={2}
             />
           </Link>
         </div>
-        <div className="mt-8 w-full max-w-[23rem]">
+        <ClosingVersion />
+        <div className="mt-6 w-full max-w-[23rem]">
           <MenuInstall />
         </div>
+
+        <dl className="mt-20 grid w-full grid-cols-2 border-y border-border md:grid-cols-4">
+          {FACTS.map((f, i) => (
+            <div
+              key={f.label}
+              className={cn(
+                "flex flex-col items-center px-4 py-8",
+                i % 2 === 1 && "border-l border-border",
+                i >= 2 && "max-md:border-t md:border-l",
+              )}
+            >
+              <dt className="text-[12px] font-medium tracking-[0.12em] text-faint uppercase">
+                {f.label}
+              </dt>
+              <dd className="mt-2 text-[1.6rem] leading-tight font-semibold tracking-[-0.03em]">
+                {f.value}
+              </dd>
+              <dd className="mt-1 text-[14px] text-muted-foreground">{f.note}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       <div className="border-t border-border bg-[var(--band)]">
