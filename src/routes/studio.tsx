@@ -51,7 +51,7 @@ const STEPS = [
   {
     icon: GlobeIcon,
     title: "No app? It opens here",
-    body: "You get tables, rows, sorting and a SQL console in the browser, for PostgreSQL, MySQL and SQLite.",
+    body: "You get tables, rows, sorting and a SQL console in the browser, for PostgreSQL, MySQL and SQLite. Shared from the Stroke app, it opens any SQL database the app does, from SQL Server and Oracle to Snowflake and BigQuery.",
   },
   {
     icon: LockIcon,

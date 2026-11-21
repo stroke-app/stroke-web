@@ -246,7 +246,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
         </Link>
         <span className="truncate font-mono text-[13px] font-medium">{info.database}</span>
         <span className="hidden truncate text-[12px] text-muted-foreground sm:inline">
-          {ENGINE_LABEL[info.engine] ?? info.engine} · {info.host}
+          {info.label ?? ENGINE_LABEL[info.engine] ?? info.engine} · {info.host}
         </span>
         {info.shared && (
           <span
@@ -434,6 +434,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                   client={client}
                   table={t.table}
                   engine={info.engine}
+                  quote={info.quote}
                   features={features}
                   onOpenTable={openTableByName}
                   onChanged={() => void loadTables()}
@@ -470,7 +471,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
       <footer className="flex h-7 shrink-0 items-center gap-3 border-t border-border px-3 text-[11.5px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-emerald-500" />
-          {ENGINE_LABEL[info.engine] ?? info.engine}
+          {info.label ?? ENGINE_LABEL[info.engine] ?? info.engine}
         </span>
         <span className="truncate font-mono">{info.database}</span>
         <span className="hidden truncate sm:inline">{info.version}</span>

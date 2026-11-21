@@ -1,6 +1,15 @@
 import { autocompletion, closeBrackets, completionKeymap } from "@codemirror/autocomplete";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
-import { MySQL, PostgreSQL, SQLite, sql } from "@codemirror/lang-sql";
+import {
+  MSSQL,
+  MySQL,
+  PLSQL,
+  PostgreSQL,
+  SQLite,
+  StandardSQL,
+  sql,
+  type SQLDialect,
+} from "@codemirror/lang-sql";
 import { bracketMatching, HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { Compartment, EditorState } from "@codemirror/state";
@@ -59,7 +68,19 @@ const theme = EditorView.theme({
   },
 });
 
-const DIALECT = { postgres: PostgreSQL, mysql: MySQL, sqlite: SQLite } as const;
+/** Highlighting per engine; anything else reads as standard SQL. GoogleSQL
+ *  (Spanner, BigQuery) quotes with backticks, as MySQL does. */
+const DIALECTS: Record<string, SQLDialect> = {
+  postgres: PostgreSQL,
+  duckdb: PostgreSQL,
+  mysql: MySQL,
+  spanner: MySQL,
+  bigquery: MySQL,
+  sqlite: SQLite,
+  mssql: MSSQL,
+  oracle: PLSQL,
+};
+const dialectOf = (engine: string) => DIALECTS[engine] ?? StandardSQL;
 
 export interface SqlEditorHandle {
   /** The selection if there is one, else the whole text. */
@@ -117,7 +138,7 @@ export function SqlEditor({
           syntaxHighlighting(highlight),
           theme,
           placeholderExt(placeholder),
-          lang.current.of(sql({ dialect: DIALECT[engine], schema, upperCaseKeywords: true })),
+          lang.current.of(sql({ dialect: dialectOf(engine), schema, upperCaseKeywords: true })),
           keymap.of([
             {
               key: "Mod-Enter",
@@ -153,7 +174,7 @@ export function SqlEditor({
   useEffect(() => {
     view.current?.dispatch({
       effects: lang.current.reconfigure(
-        sql({ dialect: DIALECT[engine], schema, upperCaseKeywords: true }),
+        sql({ dialect: dialectOf(engine), schema, upperCaseKeywords: true }),
       ),
     });
   }, [engine, schema]);
