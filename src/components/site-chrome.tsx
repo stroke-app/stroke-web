@@ -31,7 +31,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { FRAME, GUTTER, siteButton } from "#/components/page";
 import { SponsorsWall } from "#/components/sponsors-wall";
-import { StrokeIcon } from "#/components/stroke-icon";
+import { StrokeAppTile, StrokeIcon } from "#/components/stroke-icon";
 import { useTheme } from "#/components/theme-provider";
 import { useAuth } from "#/lib/auth/hooks";
 import { ENGINES } from "#/lib/engines";
@@ -156,6 +156,20 @@ function ThemeSwitch({ className }: { className?: string }) {
       ))}
     </div>
   );
+}
+
+/**
+ * The logo goes home; already home, it goes to the top. A link to the page
+ * you are on does nothing by itself, so a click on the logo at the bottom of
+ * the home page left you there.
+ */
+function toTopOnHome(e: React.MouseEvent<HTMLAnchorElement>) {
+  if (window.location.pathname !== "/" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0)
+    return;
+  e.preventDefault();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  if (window.location.hash) history.replaceState(null, "", "/");
 }
 
 /** One button that flips light and dark, for the top strip. */
@@ -520,7 +534,12 @@ export function SiteHeader() {
         onMouseLeave={scheduleClose}
       >
         <div className={cn(FRAME, GUTTER, "flex h-[60px] items-center gap-6")}>
-          <Link to="/" aria-label="Stroke home" className="flex shrink-0 items-center gap-2.5">
+          <Link
+            to="/"
+            aria-label="Stroke home"
+            onClick={toTopOnHome}
+            className="flex shrink-0 items-center gap-2.5"
+          >
             <StrokeIcon className="size-[26px]" />
             <span className="text-[21px] font-semibold tracking-[-0.03em]">Stroke</span>
           </Link>
@@ -730,13 +749,7 @@ export function SiteFooter() {
             aria-hidden="true"
             className="absolute inset-0 -z-10 scale-150 rounded-full bg-[radial-gradient(closest-side,rgb(255_193_7/0.35),transparent)] blur-2xl"
           />
-          <img
-            src="/icon.png"
-            alt=""
-            width={112}
-            height={112}
-            className="size-24 rounded-[24px] shadow-[0_18px_40px_-14px_rgb(0_0_0/0.45)] md:size-28 md:rounded-[28px]"
-          />
+          <StrokeAppTile className="size-24 rounded-[24px] shadow-[0_18px_40px_-14px_rgb(0_0_0/0.45)] md:size-28 md:rounded-[28px]" />
         </span>
         <p className="mt-10 text-[2.5rem] leading-[1.04] font-semibold tracking-[-0.045em] text-balance md:text-[4rem]">
           Open your first database.
@@ -794,7 +807,12 @@ export function SiteFooter() {
           )}
         >
           <div className="col-span-2 sm:col-span-4 md:col-span-1">
-            <Link to="/" aria-label="Stroke home" className="inline-flex items-center gap-2.5">
+            <Link
+              to="/"
+              aria-label="Stroke home"
+              onClick={toTopOnHome}
+              className="inline-flex items-center gap-2.5"
+            >
               <StrokeIcon className="size-[22px]" />
               <span className="text-[17px] font-semibold tracking-[-0.03em]">Stroke</span>
             </Link>

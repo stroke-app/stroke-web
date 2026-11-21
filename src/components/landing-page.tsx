@@ -31,7 +31,7 @@ import {
   TableIcon,
   TerminalIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FadeUp } from "#/components/amicro/fade-up";
 import { ScrollReveal } from "#/components/amicro/scroll-reveal";
@@ -40,6 +40,7 @@ import { HeroDownload } from "#/components/hero-download";
 import { NeonGlyph } from "#/components/landing-mockups";
 import { ArrowLink, GUTTER, LINK, PageShell, Panel, Section, Title } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
+import { StrokeAppTile } from "#/components/stroke-icon";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
@@ -710,8 +711,17 @@ type Provider = {
   via: "sign-in" | "token";
 };
 
+/** Neon's glyph in Neon's green (the glyph itself draws in currentColor). */
+function NeonMark({ className, color }: { className?: string; color?: string }) {
+  return (
+    <span className="inline-flex" style={{ color }}>
+      <NeonGlyph className={className} />
+    </span>
+  );
+}
+
 const PROVIDERS: Provider[] = [
-  { name: "Neon", Icon: NeonGlyph, color: "#00c781", via: "sign-in" },
+  { name: "Neon", Icon: NeonMark, color: "#00c781", via: "sign-in" },
   { name: "Supabase", Icon: SiSupabase, color: "#3ecf8e", via: "sign-in" },
   { name: "PlanetScale", Icon: SiPlanetscale, color: "currentColor", via: "sign-in" },
   { name: "Prisma Postgres", Icon: SiPrisma, color: "currentColor", via: "sign-in" },
@@ -725,66 +735,124 @@ const PROVIDERS: Provider[] = [
   { name: "SingleStore", Icon: SiSinglestore, color: "#aa00ff", via: "token" },
 ];
 
-/** Stroke in the middle, wired to the databases around it; the wires run. */
+/**
+ * Stroke in the middle, wired to providers on a ring around it. Light runs
+ * along each wire toward Stroke; the orbit turns slowly. Both stand still
+ * under reduced motion.
+ */
 function WiresArt() {
-  const nodes = [
-    { x: 56, y: 60, shape: "circle" },
-    { x: 304, y: 52, shape: "hex" },
-    { x: 40, y: 208, shape: "tri" },
-    { x: 318, y: 214, shape: "square" },
-    { x: 180, y: 262, shape: "circle" },
-  ];
-  return (
-    <svg viewBox="0 0 360 300" className="w-full max-w-[22rem]" aria-hidden="true">
-      {nodes.map((n, i) => (
-        <path
-          key={i}
-          d={`M180 150 C ${180 + (n.x - 180) * 0.2} ${150 + (n.y - 150) * 0.9}, ${n.x + (180 - n.x) * 0.2} ${n.y}, ${n.x} ${n.y}`}
-          fill="none"
-          stroke="var(--amber)"
-          strokeWidth="1.6"
-          strokeDasharray="4 6"
-          className="animate-[wire_1.6s_linear_infinite] motion-reduce:animate-none"
-          style={{ animationDelay: `${i * -0.3}s` }}
-        />
-      ))}
-      {nodes.map((n, i) => (
-        <g key={i} transform={`translate(${n.x} ${n.y})`}>
-          <circle r="22" fill="var(--raised)" stroke="var(--border)" />
-          {n.shape === "circle" && (
-            <circle r="8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-          )}
-          {n.shape === "hex" && (
-            <path
-              d="M0 -9 L8 -4.5 L8 4.5 L0 9 L-8 4.5 L-8 -4.5 Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            />
-          )}
-          {n.shape === "tri" && (
-            <path d="M0 -8 L8 7 L-8 7 Z" fill="none" stroke="currentColor" strokeWidth="1.8" />
-          )}
-          {n.shape === "square" && (
-            <rect
-              x="-7"
-              y="-7"
-              width="14"
-              height="14"
-              rx="3"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            />
-          )}
-        </g>
-      ))}
-      <g transform="translate(180 150)">
-        <circle r="54" fill="color-mix(in oklab, var(--amber) 18%, transparent)" />
-        <image href="/icon.png" x="-34" y="-34" width="68" height="68" />
-      </g>
-    </svg>
+  const still = useReducedMotion();
+  // Six providers around the ring, clockwise from the top left.
+  const ring = PROVIDERS.filter((p) =>
+    ["Neon", "Supabase", "PlanetScale", "Turso", "Cloudflare D1", "Upstash"].includes(p.name),
   );
+  const C = 200;
+  const R = 150;
+  const nodes = ring.map((p, i) => {
+    const a = (-120 + i * 60) * (Math.PI / 180);
+    return { p, x: C + R * Math.cos(a), y: C + R * Math.sin(a) };
+  });
+  const wire = (x: number, y: number) => {
+    // A soft curve: out of the node, bending toward the centre.
+    const mx = (x + C) / 2 + (y - C) * 0.18;
+    const my = (y + C) / 2 - (x - C) * 0.18;
+    return `M${x} ${y} Q${mx} ${my} ${C} ${C}`;
+  };
+  return (
+    <div className="relative mx-auto aspect-square w-full max-w-[24rem]" aria-hidden="true">
+      <svg viewBox="0 0 400 400" className="absolute inset-0 size-full overflow-visible">
+        <defs>
+          <linearGradient id="wire-fade" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="var(--amber)" stopOpacity="0.15" />
+            <stop offset="1" stopColor="var(--amber)" stopOpacity="0.7" />
+          </linearGradient>
+          <radialGradient id="core-glow">
+            <stop offset="0" stopColor="var(--amber)" stopOpacity="0.38" />
+            <stop offset="1" stopColor="var(--amber)" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx={C} cy={C} r="120" fill="url(#core-glow)" />
+        <circle cx={C} cy={C} r={R} fill="none" stroke="var(--border)" strokeWidth="1" />
+        <g
+          style={{ transformOrigin: "200px 200px" }}
+          className={still ? undefined : "animate-[spin_60s_linear_infinite]"}
+        >
+          <circle
+            cx={C}
+            cy={C}
+            r="92"
+            fill="none"
+            stroke="color-mix(in oklab, var(--amber) 45%, transparent)"
+            strokeWidth="1.2"
+            strokeDasharray="2 7"
+          />
+        </g>
+        {nodes.map((n, i) => (
+          <g key={n.p.name}>
+            <path
+              d={wire(n.x, n.y)}
+              fill="none"
+              stroke="color-mix(in oklab, var(--foreground) 12%, transparent)"
+              strokeWidth="1.4"
+            />
+            {!still && (
+              <circle r="3" fill="var(--amber)">
+                <animateMotion
+                  dur="2.4s"
+                  begin={`${i * -0.4}s`}
+                  repeatCount="indefinite"
+                  path={wire(n.x, n.y)}
+                />
+                <animate
+                  attributeName="opacity"
+                  values="0;1;1;0"
+                  keyTimes="0;0.15;0.8;1"
+                  dur="2.4s"
+                  begin={`${i * -0.4}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            )}
+          </g>
+        ))}
+      </svg>
+      {nodes.map((n) => (
+        <span
+          key={n.p.name}
+          title={n.p.name}
+          className="absolute flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl bg-raised shadow-[var(--shadow-card)] ring-1 ring-black/[0.05] dark:ring-white/[0.08]"
+          style={{ left: `${(n.x / 400) * 100}%`, top: `${(n.y / 400) * 100}%` }}
+        >
+          {n.p.Icon ? (
+            <n.p.Icon
+              className="size-6"
+              color={n.p.color === "currentColor" ? undefined : n.p.color}
+            />
+          ) : (
+            <span className="text-[18px] font-bold" style={{ color: n.p.color }}>
+              {n.p.name[0]}
+            </span>
+          )}
+        </span>
+      ))}
+      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <StrokeAppTile className="size-[88px] rounded-[24px]" />
+      </span>
+    </div>
+  );
+}
+
+/** The visitor's reduced-motion setting, live. */
+function useReducedMotion() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const on = () => setReduce(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return reduce;
 }
 
 function Providers() {
@@ -802,7 +870,7 @@ function Providers() {
             Sign in to your provider and pick a database. Stroke makes the credentials, keeps them
             in your keychain, and connects. Or paste any connection string.
           </p>
-          <div className="mt-10 text-foreground/80">
+          <div className="mt-12 lg:mt-14">
             <WiresArt />
           </div>
         </Reveal>
@@ -932,11 +1000,7 @@ function Comparison() {
               One app
             </span>
             <div className="flex items-center gap-4">
-              <img
-                src="/icon.png"
-                alt=""
-                className="size-12 rounded-[14px] shadow-[var(--shadow-card)]"
-              />
+              <StrokeAppTile />
               <span>
                 <span className="block text-[17px] font-semibold tracking-[-0.02em]">Stroke</span>
                 <span className="block text-[13px] text-muted-foreground">

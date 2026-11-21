@@ -63,6 +63,15 @@ export function SponsorProgress({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Where sponsoring happens: the Dodo checkout when the product exists, GitHub
+ * Sponsors otherwise. `external` says to open it in a new tab.
+ */
+export function useSponsorLink() {
+  const { data } = useQuery(sponsorStatusQueryOptions());
+  return { href: data?.checkoutUrl ?? SPONSOR_URL, external: !data?.checkoutUrl };
+}
+
 /** The sponsor button: Dodo checkout when the product exists, GitHub Sponsors otherwise. */
 export function SponsorButton({
   size = "lg",
