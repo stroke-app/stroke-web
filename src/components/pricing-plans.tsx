@@ -4,7 +4,6 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import { SmartDownloadButton } from "#/components/download-button";
 import { Cell, CellGrid, Eyebrow, GUTTER, SectionIntro, siteButton } from "#/components/page";
 import { useAuth } from "#/lib/auth/hooks";
-import { TEAM_PRICE_USD } from "#/lib/billing/plans";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { cn } from "#/lib/utils";
@@ -119,15 +118,15 @@ export function Pricing({ as = "h2" }: { as?: "h1" | "h2" }) {
     },
     {
       name: "Team",
-      price: `$${TEAM_PRICE_USD}`,
-      suffix: "once",
-      pitch: "One purchase, the whole company.",
+      price: "Custom",
+      suffix: "",
+      pitch: "One license for the whole company.",
       cta: (
         <a
           href="mailto:support@stroke.click?subject=Stroke%20Team"
           className={cn(siteButton({ variant: "secondary", size: "lg" }), "w-full")}
         >
-          Email to buy Team
+          Contact us
         </a>
       ),
       note: "Covers everyone signing in with your company's email domain.",

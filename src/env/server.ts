@@ -52,7 +52,7 @@ export const env = createEnv({
     DODO_PAYMENTS_API_KEY: z.string().min(1),
     DODO_WEBHOOK_KEY: z.string().min(1),
     DODO_PRODUCT_ID: z.string().min(1),
-    // Team/Enterprise product ($99, covers a whole email domain). Optional.
+    // Team/Enterprise product (covers a whole email domain). Optional.
     // the Team plan is only offered when this is set.
     DODO_TEAM_PRODUCT_ID: z.string().optional(),
     /** Pay-what-you-want "Sponsor Stroke" product. Unset hides the sponsor button. */
