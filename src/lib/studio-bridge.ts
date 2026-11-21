@@ -7,7 +7,10 @@
 
 import { importKey, openSealed, seal, type Sealed } from "#/lib/relay/relay-crypto";
 
-export type Engine = "postgres" | "mysql" | "sqlite";
+/** The engine behind the studio. The desktop app shares any SQL engine
+ *  (mssql, oracle, duckdb, clickhouse, spanner, bigquery, snowflake, odbc, ...);
+ *  strokedb speaks the first three. */
+export type Engine = "postgres" | "mysql" | "sqlite" | (string & {});
 
 export interface BridgeInfo {
   engine: Engine;
@@ -23,6 +26,10 @@ export interface BridgeInfo {
   shared?: boolean;
   /** Edits and writing SQL are off for this session (a shared link's default). */
   readonly?: boolean;
+  /** How the engine quotes a name: `"`, `` ` `` or `[`. Absent before the app sent it. */
+  quote?: string;
+  /** The engine's name to show, e.g. "IBM Db2" for an ODBC connection. */
+  label?: string;
 }
 
 export interface TableRef {

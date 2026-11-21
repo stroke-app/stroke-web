@@ -38,14 +38,21 @@ import { StructureView } from "./structure-view";
 
 const PAGE_SIZES = [50, 100, 250, 500, 1000];
 
-/** Quote a name the way this engine reads it. */
-function ident(engine: Engine, name: string) {
-  return engine === "mysql" ? `\`${name.replace(/`/g, "``")}\`` : `"${name.replace(/"/g, '""')}"`;
+/** Quote a name the way this engine reads it: by the quote the app reports,
+ *  else by the engine (a bridge from before the app sent one). */
+function ident(engine: Engine, name: string, quote?: string) {
+  const q =
+    quote ||
+    (["mysql", "spanner", "bigquery"].includes(engine) ? "`" : engine === "mssql" ? "[" : '"');
+  if (q === "[") return `[${name.replace(/]/g, "]]")}]`;
+  return `${q}${name.split(q).join(q + q)}${q}`;
 }
 /** A value as a SQL literal for a filter. */
-function literal(v: unknown) {
+function literal(v: unknown, engine: Engine) {
   if (typeof v === "number" || typeof v === "bigint") return String(v);
-  if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
+  // SQL Server and Oracle (before 23) have no TRUE / FALSE literals.
+  if (typeof v === "boolean")
+    return engine === "mssql" || engine === "oracle" ? (v ? "1" : "0") : v ? "TRUE" : "FALSE";
   return `'${cellText(v).replace(/'/g, "''")}'`;
 }
 
@@ -56,6 +63,7 @@ export function TableTab({
   client,
   table,
   engine,
+  quote,
   features,
   onOpenTable,
   onChanged,
@@ -63,6 +71,8 @@ export function TableTab({
   client: BridgeClient;
   table: TableRef;
   engine: Engine;
+  /** The engine's identifier quote, from the app. */
+  quote?: string;
   features: string[];
   onOpenTable: (schema: string, name: string) => void;
   /** Rows were added or removed: the sidebar's counts are stale. */
@@ -181,11 +191,11 @@ export function TableTab({
     if (!col || !row) return;
     const v = row[a.col];
     if (a.kind === "filter" || a.kind === "filterNot") {
-      const q = ident(engine, col);
+      const q = ident(engine, col, quote);
       const clause =
         v == null
           ? `${q} IS ${a.kind === "filter" ? "" : "NOT "}NULL`
-          : `${q} ${a.kind === "filter" ? "=" : "<>"} ${literal(v)}`;
+          : `${q} ${a.kind === "filter" ? "=" : "<>"} ${literal(v, engine)}`;
       const next = where ? `(${where}) AND ${clause}` : clause;
       setWhereDraft(next);
       setWhere(next);
