@@ -321,8 +321,8 @@ function MenuInstall() {
 
 const MENU_GROUPS: { label: string; cats: string[] }[] = [
   { label: "Relational", cats: ["relational"] },
-  { label: "Documents and keys", cats: ["document", "key-value"] },
-  { label: "Analytics and search", cats: ["analytics", "search"] },
+  { label: "Documents, keys, graphs", cats: ["document", "key-value", "graph"] },
+  { label: "Analytics, search, time", cats: ["analytics", "search", "time-series"] },
 ];
 
 function MenuPanel({ id, onPick }: { id: MenuId; onPick: () => void }) {
