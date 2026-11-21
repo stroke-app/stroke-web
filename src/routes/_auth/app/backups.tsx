@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { appButton, Badge, Card, CardHeader, PageHeader, ROW_LIST } from "#/components/app-ui";
 import { BackupDownload } from "#/components/backup-download";
 import { timeAgo, useNow } from "#/components/license-panel";
+import { authClient } from "#/lib/auth/auth-client";
+import { STORAGE_ADDON_GB, STORAGE_PRICE_USD, STROKE_STORAGE_SLUG } from "#/lib/billing/plans";
 import { cn } from "#/lib/utils";
 
 export const Route = createFileRoute("/_auth/app/backups")({
@@ -59,6 +61,8 @@ type Overview = {
   max_jobs: number;
   used_bytes: number;
   quota_bytes: number;
+  storage_addon?: boolean;
+  storage_offer?: boolean;
   pro: boolean;
 };
 
@@ -161,6 +165,54 @@ function BackupsPage() {
   );
 }
 
+/** Start the add-on's checkout, or open the billing portal to manage it. */
+function StorageAction({ data }: { data: Overview }) {
+  const [busy, setBusy] = useState(false);
+  if (data.storage_addon) {
+    return (
+      <button
+        type="button"
+        disabled={busy}
+        className="mt-2 text-[13px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        onClick={async () => {
+          setBusy(true);
+          const { data: res, error } = await authClient.dodopayments.customer.portal();
+          setBusy(false);
+          if (error || !res?.url) {
+            toast.error(error?.message ?? "Couldn't open the billing portal. Try again.");
+            return;
+          }
+          window.location.href = res.url;
+        }}
+      >
+        {STORAGE_ADDON_GB} GB add-on · Manage
+      </button>
+    );
+  }
+  if (!data.storage_offer || !data.pro) return null;
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      className={cn(appButton({ variant: "secondary", size: "sm" }), "mt-3")}
+      onClick={async () => {
+        setBusy(true);
+        const { data: res, error } = await authClient.dodopayments.checkoutSession({
+          slug: STROKE_STORAGE_SLUG,
+        });
+        if (error || !res?.url) {
+          toast.error(error?.message ?? "Couldn't start checkout. Try again.");
+          setBusy(false);
+          return;
+        }
+        window.location.href = res.url;
+      }}
+    >
+      {busy ? "Opening checkout…" : `Get ${STORAGE_ADDON_GB} GB · $${STORAGE_PRICE_USD}/month`}
+    </button>
+  );
+}
+
 function Usage({ data }: { data: Overview }) {
   const pct = Math.min(100, (data.used_bytes / data.quota_bytes) * 100);
   return (
@@ -189,6 +241,7 @@ function Usage({ data }: { data: Overview }) {
             style={{ width: `${pct}%` }}
           />
         </div>
+        <StorageAction data={data} />
       </div>
     </dl>
   );

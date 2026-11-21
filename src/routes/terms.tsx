@@ -3,6 +3,7 @@ import { CodeIcon, LaptopIcon, ReceiptIcon, TimerIcon } from "lucide-react";
 
 import { LegalList, LegalPage, LegalSection, SUPPORT_EMAIL } from "#/components/legal";
 import { REPO_URL } from "#/components/site-chrome";
+import { STORAGE_ADDON_GB, STORAGE_INCLUDED_GB, STORAGE_PRICE_USD } from "#/lib/billing/plans";
 import { seo } from "#/lib/seo";
 
 export const Route = createFileRoute("/terms")({
@@ -145,7 +146,7 @@ function TermsPage() {
       <LegalSection
         number="06"
         title="Payments and refunds"
-        summary="No recurring charges; problems fixed within 14 days."
+        summary="Licenses are one-time; the optional storage add-on is monthly; problems fixed within 14 days."
       >
         <p>
           Payments are processed by <strong>Dodo Payments</strong>, our payment provider and
@@ -157,6 +158,14 @@ function TermsPage() {
           duplicate charge, a mistake at checkout, or a license that won't activate), email{" "}
           <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> within 14 days and we'll make it
           right.
+        </p>
+        <p>
+          Pro includes {STORAGE_INCLUDED_GB} GB of Stroke Cloud backup storage. The optional{" "}
+          <strong>storage add-on</strong> raises it to {STORAGE_ADDON_GB} GB for $
+          {STORAGE_PRICE_USD} a month. It renews monthly until you cancel it from Billing, and after
+          cancelling you keep the extra storage until the end of the month you paid for. Backups
+          already stored stay downloadable either way; above the limit, new uploads to Stroke Cloud
+          pause.
         </p>
       </LegalSection>
 
