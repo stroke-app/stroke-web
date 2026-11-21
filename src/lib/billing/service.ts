@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 
+import { env } from "#/env/server";
 import { db } from "#/lib/db";
 import { enterpriseDomains, licenses, payments, subscriptions, user } from "#/lib/db/schema";
 import { getOrIssueLicense } from "#/lib/license";
@@ -12,6 +13,7 @@ import {
 } from "#/lib/sponsors/service";
 
 import { domainFromEmail, getEnterpriseDomain, isPublicEmailDomain, TEAM_PLAN } from "./enterprise";
+import { STORAGE_PLAN } from "./plans";
 import type { BillingEvent } from "./providers/types";
 
 /**
@@ -143,10 +145,17 @@ async function grantTeamPurchase(args: {
 }
 
 export async function getActiveSubscription(userId: string) {
+  // The storage add-on is a subscription too, but it is not Stroke Pro.
   const rows = await db
     .select()
     .from(subscriptions)
-    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
+    .where(
+      and(
+        eq(subscriptions.userId, userId),
+        eq(subscriptions.status, "active"),
+        ne(subscriptions.plan, STORAGE_PLAN),
+      ),
+    )
     .limit(1);
   return rows[0] ?? null;
 }
@@ -155,7 +164,7 @@ export async function getSubscription(userId: string) {
   const rows = await db
     .select()
     .from(subscriptions)
-    .where(eq(subscriptions.userId, userId))
+    .where(and(eq(subscriptions.userId, userId), ne(subscriptions.plan, STORAGE_PLAN)))
     .limit(1);
   return rows[0] ?? null;
 }
@@ -254,6 +263,12 @@ export async function handleBillingEvent(event: BillingEvent): Promise<void> {
 
     case "payment.succeeded": {
       if (!data.paymentId) return;
+
+      // The storage add-on's charges (first and monthly) never issue a
+      // license; its subscription events turn the extra storage on and off.
+      if (env.DODO_STORAGE_PRODUCT_ID && data.productIds?.includes(env.DODO_STORAGE_PRODUCT_ID)) {
+        return;
+      }
 
       // A sponsorship pays for signing certificates; it never issues a license.
       if (isSponsorPayment(data.productIds)) {

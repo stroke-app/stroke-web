@@ -57,6 +57,8 @@ export const env = createEnv({
     DODO_TEAM_PRODUCT_ID: z.string().optional(),
     /** Pay-what-you-want "Sponsor Stroke" product. Unset hides the sponsor button. */
     DODO_SPONSOR_PRODUCT_ID: z.string().optional(),
+    /** The Stroke Cloud storage add-on (monthly). Unset hides the offer. */
+    DODO_STORAGE_PRODUCT_ID: z.string().optional(),
     DODO_ENVIRONMENT: z.enum(["live_mode", "test_mode"]).default("test_mode"),
   },
   runtimeEnv: process.env,
