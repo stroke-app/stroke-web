@@ -31,7 +31,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { FRAME, GUTTER, siteButton } from "#/components/page";
 import { SponsorsWall } from "#/components/sponsors-wall";
-import { StrokeIcon } from "#/components/stroke-icon";
+import { StrokeAppTile, StrokeIcon } from "#/components/stroke-icon";
 import { useTheme } from "#/components/theme-provider";
 import { useAuth } from "#/lib/auth/hooks";
 import { ENGINES } from "#/lib/engines";
@@ -749,13 +749,7 @@ export function SiteFooter() {
             aria-hidden="true"
             className="absolute inset-0 -z-10 scale-150 rounded-full bg-[radial-gradient(closest-side,rgb(255_193_7/0.35),transparent)] blur-2xl"
           />
-          <img
-            src="/icon.png"
-            alt=""
-            width={112}
-            height={112}
-            className="size-24 rounded-[24px] shadow-[0_18px_40px_-14px_rgb(0_0_0/0.45)] md:size-28 md:rounded-[28px]"
-          />
+          <StrokeAppTile className="size-24 rounded-[24px] shadow-[0_18px_40px_-14px_rgb(0_0_0/0.45)] md:size-28 md:rounded-[28px]" />
         </span>
         <p className="mt-10 text-[2.5rem] leading-[1.04] font-semibold tracking-[-0.045em] text-balance md:text-[4rem]">
           Open your first database.
