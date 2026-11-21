@@ -36,7 +36,7 @@ import { useEffect, useState } from "react";
 import { FadeUp } from "#/components/amicro/fade-up";
 import { ScrollReveal } from "#/components/amicro/scroll-reveal";
 import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
-import { HeroDownload, TerminalInstall } from "#/components/hero-download";
+import { HeroDownload, InstallPill } from "#/components/hero-download";
 import { NeonGlyph } from "#/components/landing-mockups";
 import { ArrowLink, GUTTER, LINK, PageShell, Panel, Section, Title } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
@@ -103,7 +103,7 @@ function Hero() {
         </p>
       </FadeUp>
       <FadeUp delay={0.16} className="mt-10 flex flex-col items-center gap-x-8 gap-y-5 sm:flex-row">
-        <HeroDownload install={false} />
+        <HeroDownload install={false} compact />
         <Link to="/features" className={cn(LINK, "text-[18px]")}>
           Explore Stroke
           <ChevronRightIcon
@@ -113,7 +113,7 @@ function Hero() {
         </Link>
       </FadeUp>
       {/* Or from a terminal: the one-liner for this system, a tab for the other. */}
-      <FadeUp delay={0.2} className="mt-7 w-full max-w-[34rem]">
+      <FadeUp delay={0.2} className="mt-8 flex w-full justify-center">
         <HeroInstall />
       </FadeUp>
       <FadeUp delay={0.24}>
@@ -129,7 +129,13 @@ function Hero() {
           </p>
           <p>
             {release ? `Version ${release.tag_name.replace(/^v/, "")} · ` : ""}macOS, Windows and
-            Linux · Apple Silicon and Intel
+            Linux ·{" "}
+            <Link
+              to="/download"
+              className="text-[var(--link)] hover:underline hover:underline-offset-4"
+            >
+              Other downloads
+            </Link>
           </p>
         </div>
       </FadeUp>
@@ -140,7 +146,7 @@ function Hero() {
 /** The install one-liner under the hero, on the tab for this computer. */
 function HeroInstall() {
   const platform = usePlatform();
-  return <TerminalInstall initial={platform?.os === "windows" ? "windows" : "unix"} />;
+  return <InstallPill initial={platform?.os === "windows" ? "windows" : "unix"} />;
 }
 
 // ── Product tour: the app in a device, with a tab per screen ─────────────────
