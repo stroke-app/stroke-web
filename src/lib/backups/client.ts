@@ -35,10 +35,6 @@ export type BackupOverview = {
   max_jobs: number;
   used_bytes: number;
   quota_bytes: number;
-  /** The 10 GB add-on is in effect. */
-  storage_addon?: boolean;
-  /** The add-on is on sale. */
-  storage_offer?: boolean;
   pro: boolean;
 };
 

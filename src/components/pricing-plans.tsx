@@ -4,7 +4,6 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import { SmartDownloadButton } from "#/components/download-button";
 import { Cell, CellGrid, Eyebrow, GUTTER, SectionIntro, siteButton } from "#/components/page";
 import { useAuth } from "#/lib/auth/hooks";
-import { STORAGE_ADDON_GB, STORAGE_INCLUDED_GB } from "#/lib/billing/plans";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { cn } from "#/lib/utils";
@@ -62,12 +61,6 @@ const COMPARE: {
   { label: "Backup, restore and Postgres admin", trial: true, pro: true, team: true },
   { label: "End-to-end encrypted sync", trial: false, pro: true, team: true },
   { label: "Scheduled backups to your S3 or Stroke Cloud", trial: false, pro: true, team: true },
-  {
-    label: "Stroke Cloud backup storage",
-    trial: false,
-    pro: `${STORAGE_INCLUDED_GB} GB, or ${STORAGE_ADDON_GB} GB add-on`,
-    team: `${STORAGE_INCLUDED_GB} GB, or ${STORAGE_ADDON_GB} GB add-on`,
-  },
   { label: "How long", trial: `${TRIAL_DAYS} days`, pro: "Forever", team: "Forever" },
   { label: "Computers", trial: "Up to 3", pro: "Up to 3", team: "Everyone at the company" },
   { label: "Future updates", trial: true, pro: true, team: true },

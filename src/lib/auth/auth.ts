@@ -7,7 +7,6 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 import DodoPayments from "dodopayments";
 
 import { env } from "#/env/server";
-import { hasStorageAddon } from "#/lib/backups/storage";
 import {
   domainFromEmail,
   getEnterpriseDomain,
@@ -15,7 +14,6 @@ import {
   STROKE_TEAM_SLUG,
   TEAM_PLAN,
 } from "#/lib/billing/enterprise";
-import { STORAGE_PLAN, STROKE_STORAGE_SLUG } from "#/lib/billing/plans";
 import { handleBillingEvent, userHasActiveLicense } from "#/lib/billing/service";
 import { db } from "#/lib/db";
 import * as schema from "#/lib/db/schema";
@@ -37,41 +35,6 @@ function metadataUserId(metadata: Record<string, unknown> | undefined): string |
   return typeof value === "string" ? value : undefined;
 }
 
-/**
- * A storage add-on subscription event, as the billing service's own event.
- * The add-on's end of period comes from Dodo's next billing date, so a
- * cancelled add-on keeps its storage until the time already paid for.
- */
-async function storageEvent(
-  type:
-    | "subscription.active"
-    | "subscription.renewed"
-    | "subscription.on_hold"
-    | "subscription.cancelled",
-  payload: { data: Record<string, unknown> },
-): Promise<void> {
-  const d = payload.data as {
-    subscription_id?: string;
-    product_id?: string;
-    customer?: { customer_id?: string };
-    metadata?: Record<string, unknown>;
-    next_billing_date?: string;
-  };
-  if (!env.DODO_STORAGE_PRODUCT_ID || d.product_id !== env.DODO_STORAGE_PRODUCT_ID) return;
-  const periodEnd = d.next_billing_date ? new Date(d.next_billing_date) : undefined;
-  await handleBillingEvent({
-    type,
-    raw: payload,
-    data: {
-      subscriptionId: d.subscription_id,
-      customerId: d.customer?.customer_id,
-      userId: metadataUserId(d.metadata),
-      plan: STORAGE_PLAN,
-      periodEnd: periodEnd && !Number.isNaN(periodEnd.getTime()) ? periodEnd : undefined,
-    },
-  } as Parameters<typeof handleBillingEvent>[0]);
-}
-
 function metadataPlan(metadata: Record<string, unknown> | undefined): string | undefined {
   const value = metadata?.plan;
   return typeof value === "string" ? value : undefined;
@@ -84,9 +47,6 @@ const checkoutProducts: { productId: string; slug: string }[] = [
 ];
 if (env.DODO_TEAM_PRODUCT_ID) {
   checkoutProducts.push({ productId: env.DODO_TEAM_PRODUCT_ID, slug: STROKE_TEAM_SLUG });
-}
-if (env.DODO_STORAGE_PRODUCT_ID) {
-  checkoutProducts.push({ productId: env.DODO_STORAGE_PRODUCT_ID, slug: STROKE_STORAGE_SLUG });
 }
 
 export const auth = betterAuth({
@@ -114,24 +74,8 @@ export const auth = betterAuth({
       const isTeam =
         slug === STROKE_TEAM_SLUG ||
         (Boolean(env.DODO_TEAM_PRODUCT_ID) && productId === env.DODO_TEAM_PRODUCT_ID);
-      const isStorage =
-        slug === STROKE_STORAGE_SLUG ||
-        (Boolean(env.DODO_STORAGE_PRODUCT_ID) && productId === env.DODO_STORAGE_PRODUCT_ID);
 
-      if (isStorage) {
-        // Extra Stroke Cloud storage is for Pro owners (cloud backups need
-        // Pro), once per account.
-        if (!(await userHasActiveLicense(session.user.id))) {
-          throw new APIError("FORBIDDEN", {
-            message: "Extra Stroke Cloud storage is an add-on to Stroke Pro. Get Pro first.",
-          });
-        }
-        if (await hasStorageAddon(session.user.id)) {
-          throw new APIError("CONFLICT", {
-            message: "You already have the storage add-on. Manage it from Billing.",
-          });
-        }
-      } else if (isTeam) {
+      if (isTeam) {
         // Team covers everyone on the buyer's email domain, so it must be a
         // company domain and can't already be covered.
         const domain = domainFromEmail(session.user.email);
@@ -164,7 +108,7 @@ export const auth = betterAuth({
             metadata: {
               ...(ctx.body?.metadata ?? {}),
               userId: session.user.id,
-              plan: isStorage ? STORAGE_PLAN : isTeam ? TEAM_PLAN : "pro",
+              plan: isTeam ? TEAM_PLAN : "pro",
             },
           },
         },
@@ -241,15 +185,6 @@ export const auth = betterAuth({
               },
             });
           },
-          // The storage add-on is the only subscription sold; anything else
-          // arriving here is ignored.
-          onSubscriptionActive: async (payload) => storageEvent("subscription.active", payload),
-          onSubscriptionRenewed: async (payload) => storageEvent("subscription.renewed", payload),
-          onSubscriptionOnHold: async (payload) => storageEvent("subscription.on_hold", payload),
-          onSubscriptionFailed: async (payload) => storageEvent("subscription.on_hold", payload),
-          onSubscriptionCancelled: async (payload) =>
-            storageEvent("subscription.cancelled", payload),
-          onSubscriptionExpired: async (payload) => storageEvent("subscription.cancelled", payload),
           onPaymentFailed: async (payload) => {
             await handleBillingEvent({
               type: "payment.failed",
