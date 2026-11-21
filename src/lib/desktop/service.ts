@@ -29,7 +29,7 @@ import { recordSignIn } from "#/lib/signins";
  */
 
 /** Free-trial length in days. Keep in sync with the desktop app (license.rs). */
-export const TRIAL_DAYS = 17;
+export const TRIAL_DAYS = 30;
 const DAY_SEC = 86_400;
 const CODE_TTL_MS = 5 * 60_000;
 /** How long the app may trust a cached, signature-checked entitlement offline. */

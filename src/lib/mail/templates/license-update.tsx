@@ -152,7 +152,7 @@ export function LicenseUpdateEmail() {
                   stroke.click/app.
                 </Point>
                 <Point title="One free trial per account and per computer." last>
-                  The 17-day trial runs once for each. A second account on the same computer doesn't
+                  The 30-day trial runs once for each. A second account on the same computer doesn't
                   start a new one.
                 </Point>
               </tbody>

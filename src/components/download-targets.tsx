@@ -467,7 +467,7 @@ const WHAT_YOU_GET = [
   },
   {
     title: "Everything while you try",
-    body: "Sign in with Google or GitHub and every feature is yours for 17 days. No card needed.",
+    body: "Sign in with Google or GitHub and every feature is yours for 30 days. No card needed.",
   },
   {
     title: "Yours for $9.99",

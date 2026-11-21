@@ -43,7 +43,7 @@ function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      updated="November 15, 2026"
+      updated="November 21, 2026"
       intro="Stroke is built on a simple boundary: the desktop app works with your databases on your machine, and our servers handle accounts, licenses, and a few anonymous counts. This policy describes what crosses that boundary, what never does, and the choices you have."
       highlights={HIGHLIGHTS}
     >
@@ -89,7 +89,7 @@ function PrivacyPage() {
               you deactivate a device.
             </>,
             <>
-              <strong>Your free trial.</strong> The device identifier and the date the 17-day trial
+              <strong>Your free trial.</strong> The device identifier and the date the 30-day trial
               started, so the trial runs once per device.
             </>,
             <>

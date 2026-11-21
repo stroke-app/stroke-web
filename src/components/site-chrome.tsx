@@ -719,7 +719,7 @@ const FOOTER: { title: string; links: FooterLink[] }[] = [
 const FACTS = [
   { label: "Payment", value: "One time", note: "No subscription" },
   { label: "Runs on", value: "3 systems", note: "macOS, Windows, Linux" },
-  { label: "Trial", value: "17 days", note: "Every feature, no card" },
+  { label: "Trial", value: "30 days", note: "Every feature, no card" },
   { label: "Credentials", value: "Local", note: "In your OS keychain" },
 ];
 

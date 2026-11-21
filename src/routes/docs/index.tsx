@@ -32,7 +32,7 @@ export const Route = createFileRoute("/docs/")({
           step: [
             {
               name: "Download and install",
-              text: "Download Stroke for macOS, Windows or Linux from stroke.click/download, or run curl -fsSL https://stroke.click/install.sh | sh (irm https://stroke.click/install.ps1 | iex on Windows). Open it and sign in with Google or GitHub; every feature is free for 17 days.",
+              text: "Download Stroke for macOS, Windows or Linux from stroke.click/download, or run curl -fsSL https://stroke.click/install.sh | sh (irm https://stroke.click/install.ps1 | iex on Windows). Open it and sign in with Google or GitHub; every feature is free for 30 days.",
             },
             {
               name: "Connect your first database",
@@ -65,7 +65,7 @@ const STEPS: Step[] = [
       <>
         <p>
           Stroke runs natively on macOS, Windows, and Linux. Grab the build for your platform and
-          open it. Sign in with Google or GitHub and the full app is yours for 17 days.
+          open it. Sign in with Google or GitHub and the full app is yours for 30 days.
         </p>
         <div className="mt-5">
           <SmartDownloadButton size="sm" />
