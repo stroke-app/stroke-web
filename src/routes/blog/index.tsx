@@ -79,7 +79,7 @@ function BlogIndex() {
                 "h-8 rounded-full px-3.5 text-[13px] transition-colors duration-150",
                 tag === t
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground shadow-[0_0_0_1px_var(--border)_inset] hover:text-foreground",
+                  : "bg-card text-muted-foreground hover:text-foreground",
               )}
             >
               {t ?? "All posts"}
@@ -122,9 +122,9 @@ function BlogIndex() {
       )}
 
       {rest.length > 0 && (
-        <ul className="grid grid-cols-1 gap-px border-t border-border bg-border md:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {rest.map((p) => (
-            <li key={p.slug} className="bg-background">
+            <li key={p.slug} className="rounded-[24px] bg-card">
               <Link
                 to="/blog/$slug"
                 params={{ slug: p.slug }}

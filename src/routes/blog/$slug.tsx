@@ -111,9 +111,9 @@ function PostPage() {
           >
             More from the blog
           </h2>
-          <ul className="grid grid-cols-1 gap-px border-t border-border bg-border md:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
             {more.map((m) => (
-              <li key={m.slug} className="bg-background">
+              <li key={m.slug} className="rounded-[24px] bg-card">
                 <Link
                   to="/blog/$slug"
                   params={{ slug: m.slug }}

@@ -1,20 +1,21 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRightIcon } from "lucide-react";
+import { MotionConfig } from "framer-motion";
+import { ChevronRightIcon } from "lucide-react";
 
 import { SiteFooter, SiteHeader } from "#/components/site-chrome";
 import { cn } from "#/lib/utils";
 
 /**
- * The marketing site's layout. Every page sits in one framed column: hairline
- * rails on the left and right (from lg up), and a hairline between sections
- * that runs rail to rail. Content inside gets the same side padding, so text,
- * grids and screens line up down the whole page.
+ * The marketing site's layout, after Apple's product pages: no frame and no
+ * rules between sections. Sections are separated by space, and structure
+ * comes from warm-gray rounded cards and full-bleed gray bands. Content keeps
+ * one column width and side padding, so text, cards and screens line up.
  */
 
-/** Width of the frame. The header, footer and every section share it. */
-export const FRAME = "mx-auto w-full max-w-[1240px]";
-/** Inside padding of a frame row. */
-export const GUTTER = "px-6 md:px-10 lg:px-14";
+/** Width of the content column. The header, footer and every section share it. */
+export const FRAME = "mx-auto w-full max-w-[1120px]";
+/** Side padding of a content row. */
+export const GUTTER = "px-5 sm:px-8 lg:px-10";
 /** A content row: frame width plus gutter. */
 export const WRAP = cn(FRAME, GUTTER);
 
@@ -25,27 +26,27 @@ export const WRAP = cn(FRAME, GUTTER);
 export const SITE = "site min-h-screen bg-background text-foreground";
 
 /**
- * Buttons: 8px corners, weight 500. Primary is the solid light fill (the one
- * action per view); secondary is a raised surface with a hairline; ghost is
- * text that fills on hover.
+ * Buttons are pills, weight 500. Primary is Stroke amber with black text (the
+ * one action per view); secondary is the card gray; ghost is text that fills
+ * on hover; link is the amber-dark text link with a chevron, Apple style.
  */
 export function siteButton({
   variant = "primary",
   size = "md",
 }: {
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "dark";
   size?: "sm" | "md" | "lg";
 } = {}) {
   return cn(
-    "inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-[background-color,color,box-shadow,scale] duration-150 ease-out outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
-    size === "sm" && "h-8 px-3 text-[13px]",
-    size === "md" && "h-9 px-3.5 text-[14px]",
-    size === "lg" && "h-11 px-5 text-[15px]",
+    "inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap transition-[background-color,color,box-shadow,scale] duration-200 ease-out outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
+    size === "sm" && "h-8 px-3.5 text-[13px]",
+    size === "md" && "h-10 px-4.5 text-[14.5px]",
+    size === "lg" && "h-12 px-6 text-[16px]",
     variant === "primary" &&
-      "bg-primary text-primary-foreground shadow-[0_1px_0_0_rgb(255_255_255/0.2)_inset] hover:bg-primary/88",
-    variant === "secondary" &&
-      "bg-secondary text-foreground shadow-[0_0_0_1px_var(--border)_inset] hover:bg-accent",
-    variant === "ghost" && "text-muted-foreground hover:bg-ink/[0.06] hover:text-foreground",
+      "bg-[var(--amber)] text-[var(--amber-ink)] shadow-[inset_0_1px_0_rgb(255_255_255/0.45),0_1px_2px_rgb(0_0_0/0.08)] hover:bg-[var(--amber-hover)]",
+    variant === "dark" && "bg-primary text-primary-foreground hover:bg-primary/85",
+    variant === "secondary" && "bg-card text-foreground hover:bg-accent",
+    variant === "ghost" && "text-muted-foreground hover:bg-ink/[0.05] hover:text-foreground",
   );
 }
 
@@ -65,7 +66,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "flex items-center gap-2 text-[13px] font-medium text-muted-foreground",
+        "flex items-center gap-2 text-[14px] font-medium text-[var(--link)]",
         className,
       )}
     >
@@ -97,31 +98,68 @@ export function Lead({
   );
 }
 
-/** Text link with a trailing arrow that nudges on hover. */
+/** The amber-dark text link with a chevron that nudges on hover. */
+export const LINK =
+  "group inline-flex items-center gap-1 font-medium text-[var(--link)] transition-colors hover:underline hover:underline-offset-4";
+
 export function ArrowLink({ children, className, ...props }: React.ComponentProps<typeof Link>) {
   return (
-    <Link
-      {...props}
-      className={cn(
-        "group inline-flex items-center gap-1.5 text-[14px] font-medium text-foreground transition-colors hover:text-soft",
-        className,
-      )}
-    >
+    <Link {...props} className={cn(LINK, "text-[15px]", className)}>
       <>
         {children}
-        <ArrowRightIcon className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+        <ChevronRightIcon
+          className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+          strokeWidth={2}
+        />
       </>
     </Link>
   );
 }
 
-/** A frame row with a hairline on top: the unit every page is stacked from. */
+/**
+ * The house headline: the point in black, then a second line that steps down
+ * to gray. "Press Run. / Stroke does the rest."
+ */
+export function Title({
+  children,
+  sub,
+  as: Heading = "h2",
+  id,
+  className,
+}: {
+  children: React.ReactNode;
+  sub?: React.ReactNode;
+  as?: "h1" | "h2" | "h3";
+  id?: string;
+  className?: string;
+}) {
+  return (
+    <Heading
+      id={id}
+      className={cn("text-[2.25rem] text-balance sm:text-[2.75rem] md:text-[3.25rem]", className)}
+    >
+      {children}
+      {sub && (
+        <>
+          {" "}
+          <span className="title-sub block">{sub}</span>
+        </>
+      )}
+    </Heading>
+  );
+}
+
+/**
+ * A content row: the unit every page is stacked from. `band` paints it as a
+ * full-bleed gray band (Apple's alternating sections); `border` is kept for
+ * old call sites and no longer draws a rule.
+ */
 export function Section({
   id,
   className,
   inner,
   children,
-  border = true,
+  band = false,
 }: {
   id?: string;
   className?: string;
@@ -129,13 +167,18 @@ export function Section({
   inner?: string;
   children: React.ReactNode;
   border?: boolean;
+  band?: boolean;
 }) {
   return (
     <section
       id={id}
-      className={cn("relative scroll-mt-20", border && "border-t border-border", className)}
+      className={cn(
+        "relative scroll-mt-24",
+        band && "[margin-inline:calc(50%-50vw)] w-screen max-w-none bg-[var(--band)]",
+        className,
+      )}
     >
-      <div className={cn(GUTTER, "py-20 md:py-28", inner)}>{children}</div>
+      <div className={cn(band ? WRAP : GUTTER, "py-20 md:py-28", inner)}>{children}</div>
     </section>
   );
 }
@@ -146,9 +189,10 @@ export function SectionIntro({
   index,
   icon,
   title,
+  sub,
   children,
   link,
-  as: Heading = "h2",
+  as = "h2",
   align = "start",
   className,
 }: {
@@ -156,6 +200,8 @@ export function SectionIntro({
   index?: string;
   icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   title: React.ReactNode;
+  /** The gray second line of the headline. */
+  sub?: React.ReactNode;
   children?: React.ReactNode;
   link?: { to: React.ComponentProps<typeof Link>["to"]; hash?: string; label?: string };
   as?: "h1" | "h2";
@@ -165,7 +211,7 @@ export function SectionIntro({
   return (
     <div
       className={cn(
-        "flex max-w-2xl flex-col",
+        "flex max-w-3xl flex-col",
         align === "center" && "mx-auto items-center text-center",
         className,
       )}
@@ -175,16 +221,11 @@ export function SectionIntro({
           {eyebrow}
         </Eyebrow>
       )}
-      <Heading
-        className={cn(
-          "text-[2rem] text-balance sm:text-[2.5rem] md:text-[2.875rem]",
-          eyebrow && "mt-4",
-        )}
-      >
+      <Title as={as} sub={sub} className={cn(eyebrow && "mt-3")}>
         {title}
-      </Heading>
+      </Title>
       {children && (
-        <div className="mt-5 space-y-4 text-[16px] leading-[1.6] text-pretty text-muted-foreground md:text-[17px] [&_strong]:font-medium [&_strong]:text-foreground">
+        <div className="mt-6 max-w-2xl space-y-4 text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px] [&_strong]:font-medium [&_strong]:text-foreground">
           {children}
         </div>
       )}
@@ -197,10 +238,7 @@ export function SectionIntro({
   );
 }
 
-/**
- * A grid whose cells are split by hairlines instead of gaps, the way the
- * frame splits sections. Children should be `Cell`s.
- */
+/** A grid of rounded warm-gray cards with gutters. Children should be `Cell`s. */
 export function CellGrid({
   cols = 3,
   className,
@@ -213,7 +251,7 @@ export function CellGrid({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-px overflow-hidden border-y border-border bg-border",
+        "grid grid-cols-1 gap-4 md:gap-5",
         cols === 2 && "md:grid-cols-2",
         cols === 3 && "md:grid-cols-2 lg:grid-cols-3",
         cols === 4 && "sm:grid-cols-2 lg:grid-cols-4",
@@ -227,7 +265,7 @@ export function CellGrid({
 
 export function Cell({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
-    <div {...props} className={cn("bg-background p-7 md:p-9", className)}>
+    <div {...props} className={cn("rounded-[28px] bg-card p-7 md:p-9", className)}>
       {children}
     </div>
   );
@@ -242,7 +280,7 @@ export function Panel({ className, children, ...props }: React.ComponentProps<"d
     <div
       {...props}
       className={cn(
-        "keep-dark dark bezel overflow-hidden rounded-xl bg-[#0a0a0a] shadow-[0_0_0_1px_rgb(255_255_255/0.1),0_1px_0_0_rgb(255_255_255/0.06)_inset]",
+        "keep-dark dark overflow-hidden rounded-2xl bg-[#0a0a0a] shadow-[var(--shadow-float)]",
         className,
       )}
     >
@@ -253,23 +291,32 @@ export function Panel({ className, children, ...props }: React.ComponentProps<"d
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn(SITE, "flex flex-col")}>
-      <SiteHeader />
-      <main className={cn(FRAME, "flex-1 border-border lg:border-x")}>{children}</main>
-      <SiteFooter />
-    </div>
+    // Motion respects the visitor's reduced-motion setting everywhere.
+    <MotionConfig reducedMotion="user">
+      <div className={cn(SITE, "flex flex-col overflow-x-clip")}>
+        {/* Motion renders entrances hidden until they play; without script
+            they would stay hidden, so show everything as it is. */}
+        <noscript>
+          <style>{`.site [style*="opacity:0"],.site [style*="opacity: 0"]{opacity:1!important;transform:none!important;filter:none!important}`}</style>
+        </noscript>
+        <SiteHeader />
+        <main className={cn(FRAME, "flex-1")}>{children}</main>
+        <SiteFooter />
+      </div>
+    </MotionConfig>
   );
 }
 
 /**
  * The title band at the top of every inner page, the homepage's hero at a
- * smaller size: the section name in a pill, the headline, one paragraph, the
- * actions, all centered over a low warm light. `align="start"` keeps it left
- * for reading pages (docs, legal) whose body starts at the left edge.
+ * smaller size: the section name in amber, the headline (with an optional
+ * gray second line), one paragraph, the actions. `align="start"` keeps it
+ * left for reading pages (docs, legal) whose body starts at the left edge.
  */
 export function PageHeader({
   eyebrow,
   title,
+  sub,
   description,
   actions,
   note,
@@ -278,6 +325,8 @@ export function PageHeader({
 }: {
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
+  /** The gray second line of the headline. */
+  sub?: React.ReactNode;
   description?: React.ReactNode;
   actions?: React.ReactNode;
   /** A small line under the actions (version, price). */
@@ -287,14 +336,7 @@ export function PageHeader({
 }) {
   const center = align === "center";
   return (
-    <section className="relative isolate z-10 overflow-x-clip">
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute -top-40 -z-10 h-[30rem] w-[56rem] max-w-[160%] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.09),transparent_70%)]",
-          center ? "left-1/2 -translate-x-1/2" : "-left-40",
-        )}
-      />
+    <section className="relative isolate z-10">
       <div
         className={cn(
           GUTTER,
@@ -303,16 +345,18 @@ export function PageHeader({
         )}
       >
         {eyebrow && <PagePill>{eyebrow}</PagePill>}
-        <h1
+        <Title
+          as="h1"
+          sub={sub}
           className={cn(
-            "max-w-[20ch] text-[2.5rem] leading-[1.05] tracking-[-0.04em] text-balance sm:text-[3.1rem] md:text-[3.6rem]",
-            eyebrow && "mt-6",
+            "max-w-[22ch] text-[2.6rem] leading-[1.04] tracking-[-0.045em] sm:text-[3.4rem] md:text-[4.25rem]",
+            eyebrow && "mt-4",
           )}
         >
           {title}
-        </h1>
+        </Title>
         {description && (
-          <p className="mt-6 max-w-[40rem] text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
+          <p className="mt-7 max-w-[42rem] text-[18px] leading-[1.5] text-pretty text-muted-foreground md:text-[21px]">
             {description}
           </p>
         )}
@@ -339,7 +383,7 @@ export function PagePill({
   return (
     <p
       className={cn(
-        "inline-flex h-7 w-fit items-center gap-2 rounded-full bg-ink/[0.04] px-3 text-[13px] font-medium text-soft shadow-[0_0_0_1px_var(--border)_inset]",
+        "inline-flex w-fit items-center gap-2 text-[15px] font-medium text-[var(--link)]",
         className,
       )}
     >
@@ -348,7 +392,7 @@ export function PagePill({
   );
 }
 
-/** A screenshot of the app in the site's window frame, as the homepage shows one. */
+/** A screenshot of the app in a Mac-style device, as the homepage shows one. */
 export function ProductShot({
   src,
   alt,
@@ -365,9 +409,9 @@ export function ProductShot({
   className?: string;
 }) {
   return (
-    <figure className={cn("mx-auto w-full max-w-[72rem]", className)}>
-      <div className="bezel rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px">
-        <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
+    <figure className={cn("mx-auto w-full max-w-[68rem]", className)}>
+      <div className="device">
+        <div className="keep-dark overflow-hidden rounded-[12px] bg-[#0b0b0b]">
           <img
             src={src}
             alt={alt}
@@ -380,6 +424,7 @@ export function ProductShot({
           />
         </div>
       </div>
+      <div className="device-base" aria-hidden="true" />
     </figure>
   );
 }
@@ -405,7 +450,7 @@ export function PageBody({
     <div
       className={cn(
         GUTTER,
-        "border-t border-border py-12 md:py-16",
+        "py-10 md:py-14",
         aside && !rail && "grid grid-cols-1 gap-10 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-16",
         aside &&
           rail &&
@@ -476,7 +521,7 @@ export function SideNav({ title, items }: { title: string; items: SideNavItem[] 
 /** Closing strip of related links at the bottom of an inner page. */
 export function NextLinks({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-16 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-6 text-sm text-muted-foreground [&_a]:transition-colors [&_a:hover]:text-foreground">
+    <div className="mt-16 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-6 text-[15px] [&_a]:font-medium [&_a]:text-[var(--link)] [&_a:hover]:underline [&_a:hover]:underline-offset-4">
       {children}
     </div>
   );

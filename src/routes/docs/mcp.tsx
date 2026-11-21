@@ -109,7 +109,7 @@ function highlightJson(code: string) {
 /** A code surface in the app's style: a file-name bar with a copy button over mono text. */
 function CodeBlock({ title, code }: { title: string; code: string }) {
   return (
-    <figure className="keep-dark dark mt-6 overflow-hidden rounded-xl border border-border bg-[#0b0c0d] shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_4%,transparent)_inset]">
+    <figure className="keep-dark dark mt-6 overflow-hidden rounded-[24px] bg-[#0b0c0d] bg-card shadow-[0_1px_0_0_color-mix(in_srgb,var(--ink)_4%,transparent)_inset]">
       <figcaption className="flex h-10 items-center justify-between gap-3 border-b border-border pr-1.5 pl-4">
         <span className="truncate font-mono text-[12px] text-muted-foreground">{title}</span>
         <CopyButton text={code} label={`Copy ${title}`} />
@@ -196,7 +196,7 @@ function McpPage() {
             </p>
             <CodeBlock title="claude_desktop_config.json" code={CLAUDE_CONFIG} />
             <p className="pt-2">The config file lives at:</p>
-            <dl className="overflow-hidden rounded-xl border border-border bg-raised">
+            <dl className="overflow-hidden rounded-[24px] bg-card bg-raised">
               {CLAUDE_CONFIG_PATHS.map((row) => (
                 <div
                   key={row.os}

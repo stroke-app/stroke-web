@@ -107,7 +107,7 @@ function ChannelSwitch({ channel }: { channel: ReleaseChannel }) {
     <div
       role="tablist"
       aria-label="Release channel"
-      className="mt-8 inline-flex rounded-lg border border-border bg-ink/[0.02] p-1"
+      className="mt-8 inline-flex rounded-[24px] bg-card p-1"
     >
       {(["stable", "nightly"] as const).map((c) => (
         <Link
@@ -133,7 +133,7 @@ function ChannelSwitch({ channel }: { channel: ReleaseChannel }) {
 function NightlyBanner() {
   const { data: n } = useQuery(nightlyReleaseQueryOptions());
   return (
-    <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-border bg-ink/[0.02] px-5 py-4">
+    <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-[24px] bg-card px-5 py-4">
       <span className="flex items-center gap-2 text-[13px] font-medium text-foreground">
         <span aria-hidden="true" className="size-1.5 rounded-full bg-amber-400" />
         Stroke Nightly

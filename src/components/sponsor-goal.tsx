@@ -46,7 +46,7 @@ export function SponsorProgress({ className }: { className?: string }) {
         aria-valuenow={Math.round(raised / 100)}
       >
         <div
-          className="h-full rounded-full bg-copper transition-[width] duration-500"
+          className="h-full rounded-full bg-[var(--amber)] transition-[width] duration-500"
           style={{ width: `${pct}%` }}
         />
         <span
@@ -86,44 +86,45 @@ export function SponsorButton({
   );
 }
 
-/** Home page band: why, how far along, and the button. */
+/** Home page band: why, how far along, and the button, as one warm card. */
 export function SponsorBand() {
   return (
-    <section aria-labelledby="sponsor-title" className="border-t border-border">
-      <div className="grid grid-cols-1 gap-px bg-border lg:grid-cols-2">
-        <div className="bg-background px-6 py-16 md:px-10 md:py-20 lg:px-14">
-          <p className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
-            <HeartIcon className="size-[15px]" strokeWidth={1.75} />
+    <section aria-labelledby="sponsor-title" className="mt-32 px-5 sm:px-8 md:mt-44 lg:px-10">
+      <div className="grid grid-cols-1 gap-10 rounded-[32px] bg-card p-8 md:p-12 lg:grid-cols-2 lg:gap-14">
+        <div>
+          <p className="flex items-center gap-2 text-[14px] font-medium text-[var(--link)]">
+            <HeartIcon className="size-[15px]" strokeWidth={2} />
             Sponsor
           </p>
-          <h2
-            id="sponsor-title"
-            className="mt-4 max-w-md text-[1.875rem] text-balance md:text-[2.25rem]"
-          >
-            Help sign Stroke for macOS and Windows.
+          <h2 id="sponsor-title" className="mt-3 text-[2rem] text-balance md:text-[2.5rem]">
+            Help sign Stroke.
+            <span className="title-sub block">On Mac and Windows.</span>
           </h2>
-          <p className="mt-4 max-w-md text-[16px] leading-[1.6] text-pretty text-muted-foreground">
+          <p className="mt-5 max-w-md text-[16px] leading-[1.6] text-pretty text-muted-foreground">
             <span className="text-foreground">Signed apps install without scary warnings.</span> The
             certificates cost ${SIGNING_GOAL_USD} a year. Give any amount and it goes straight to
             them.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
             <SponsorButton />
-            <Link to="/sponsors" className={siteButton({ variant: "ghost", size: "lg" })}>
+            <Link
+              to="/sponsors"
+              className="group inline-flex items-center gap-1 text-[16px] font-medium text-[var(--link)] hover:underline hover:underline-offset-4"
+            >
               Where it goes
-              <ArrowRightIcon className="size-4" />
+              <ArrowRightIcon className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
-        <div className="flex flex-col justify-center gap-8 bg-background px-6 py-16 md:px-10 md:py-20 lg:px-14">
+        <div className="flex flex-col justify-center gap-6">
           <SponsorProgress />
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {SIGNING_GOALS.map((g) => {
               const Icon = GOAL_ICON[g.id];
               return (
-                <li key={g.id} className="rounded-xl p-5 shadow-[0_0_0_1px_var(--border)_inset]">
+                <li key={g.id} className="rounded-2xl bg-raised p-5 shadow-[var(--shadow-card)]">
                   <Icon className="size-4 text-soft" />
-                  <p className="mt-4 text-[14px] font-medium">
+                  <p className="mt-4 text-[14px] font-semibold">
                     {g.title}{" "}
                     <span className="font-normal text-muted-foreground">· ${g.usd}/yr</span>
                   </p>

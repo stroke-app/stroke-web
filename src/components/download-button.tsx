@@ -48,12 +48,12 @@ const OS_NAME: Record<OS, string> = { macos: "macOS", windows: "Windows", linux:
  * button it sits beside.
  */
 const SITE_LOOK = {
-  base: "[.site_&]:rounded-lg [.site_&]:font-medium [.site_&]:active:scale-[0.97]",
+  base: "[.site_&]:rounded-full [.site_&]:font-medium [.site_&]:active:scale-[0.97]",
   default:
-    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-primary [.site_&]:text-primary-foreground [.site_&]:shadow-[0_1px_0_0_rgb(255_255_255/0.2)_inset] [.site_&]:hover:bg-primary/88",
+    "[.site_&]:border-transparent [.site_&]:bg-none [.site_&]:bg-[var(--amber)] [.site_&]:text-[var(--amber-ink)] [.site_&]:shadow-[inset_0_1px_0_rgb(255_255_255/0.45)] [.site_&]:hover:bg-[var(--amber-hover)]",
   outline:
-    "[.site_&]:border-transparent [.site_&]:bg-secondary [.site_&]:text-foreground [.site_&]:shadow-[0_0_0_1px_var(--border)_inset] [.site_&]:hover:bg-accent",
-  lg: "[.site_&]:h-11 [.site_&]:px-5 [.site_&]:text-[15px]",
+    "[.site_&]:border-transparent [.site_&]:bg-card [.site_&]:text-foreground [.site_&]:shadow-none [.site_&]:hover:bg-accent",
+  lg: "[.site_&]:h-12 [.site_&]:px-6 [.site_&]:text-[16px]",
   sm: "[.site_&]:h-8 [.site_&]:text-[13px]",
 };
 

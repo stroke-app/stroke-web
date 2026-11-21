@@ -152,7 +152,7 @@ export function BackupDownload({
               placeholder="Sync passphrase"
               aria-invalid={!!error || undefined}
               aria-describedby={error ? `unlock-err-${run.id}` : undefined}
-              className="h-10 w-full rounded-lg bg-secondary px-3 text-[15px] shadow-[0_0_0_1px_var(--border)_inset] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 w-full rounded-[24px] bg-card px-3 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </label>
           {error && (

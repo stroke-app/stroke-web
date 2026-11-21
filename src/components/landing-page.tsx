@@ -1,50 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowRightIcon,
-  BadgeCheckIcon,
-  BotIcon,
   CheckIcon,
+  ChevronRightIcon,
   CommandIcon,
-  DatabaseBackupIcon,
-  DatabaseIcon,
-  GaugeIcon,
+  CornerDownLeftIcon,
   KeyRoundIcon,
   LockKeyholeIcon,
-  MapIcon,
-  MonitorIcon,
-  NetworkIcon,
-  PaletteIcon,
+  MinusIcon,
+  PlayIcon,
   PlusIcon,
   RefreshCwIcon,
-  ReplaceIcon,
-  Share2Icon,
+  SearchIcon,
   ShieldCheckIcon,
-  SquareTerminalIcon,
+  SquareIcon,
   TableIcon,
   TerminalIcon,
 } from "lucide-react";
+import { useState } from "react";
 
+import { FadeUp } from "#/components/amicro/fade-up";
+import { ScrollReveal } from "#/components/amicro/scroll-reveal";
 import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
 import { HeroDownload } from "#/components/hero-download";
-import {
-  ArrowLink,
-  Cell,
-  CellGrid,
-  Eyebrow,
-  GUTTER,
-  Lead,
-  PageShell,
-  Panel,
-  Section,
-  SectionIntro,
-  siteButton,
-} from "#/components/page";
+import { ArrowLink, GUTTER, LINK, PageShell, Panel, Section, Title } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
 import { SponsorBand } from "#/components/sponsor-goal";
 import { useAuth } from "#/lib/auth/hooks";
 import { SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
+import { latestReleaseQueryOptions } from "#/lib/latest-release";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
@@ -53,10 +38,16 @@ export function LandingPage() {
   return (
     <PageShell>
       <Hero />
+      <ProductTour />
+      <EngineStrip />
+      <HardCases />
+      <SafeChanges />
       <Engines />
-      <Introducing />
+      <Comparison />
       <Features />
-      <EverythingElse />
+      <Shortcuts />
+      <Agents />
+      <Private />
       <Reviews />
       <PricingTeaser />
       <Faq />
@@ -65,318 +56,90 @@ export function LandingPage() {
   );
 }
 
+/** Scroll entrance for a block: rises 24px and fades, once. */
+function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <ScrollReveal yOffset={24} scale={1} duration={0.7} className={className}>
+      {children}
+    </ScrollReveal>
+  );
+}
+
 // ── Hero ─────────────────────────────────────────────────────────────────────
 
 function Hero() {
+  const { data: release } = useQuery(latestReleaseQueryOptions());
   const others = SHIPPED_ENGINES.length - 5;
   return (
-    <section className="relative isolate">
-      {/* A low warm light behind the window, so the screenshot reads as the page's subject. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-[22rem] -z-10 h-[38rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgb(245_180_0/0.10),transparent_70%)]"
-      />
-      <div className={cn(GUTTER, "flex flex-col items-center pt-14 text-center md:pt-20")}>
-        <Link
-          to="/stroke-3"
-          className="group inline-flex h-8 items-center gap-2.5 rounded-full bg-ink/[0.04] ps-1 pe-3.5 text-[13px] text-soft shadow-[0_0_0_1px_var(--border)_inset] transition-colors duration-150 hover:bg-ink/[0.07] hover:text-foreground"
-        >
-          <span className="inline-flex h-6 items-center rounded-full bg-primary px-2.5 text-[12px] font-medium text-primary-foreground">
-            New
-          </span>
-          Stroke 3 is out. See what's new
-          <ArrowRightIcon className="size-3.5 opacity-60 transition-transform duration-150 group-hover:translate-x-0.5" />
-        </Link>
-        <h1 className="mt-6 max-w-[17ch] text-[2.5rem] leading-[1.04] tracking-[-0.045em] text-balance sm:text-[3.4rem] md:text-[4.1rem]">
-          The database client for every database you run
+    <section className={cn(GUTTER, "flex flex-col items-center pt-16 text-center md:pt-24")}>
+      <FadeUp className="max-w-[60rem]">
+        <h1 className="text-[2.6rem] leading-[1.03] tracking-[-0.05em] text-balance sm:text-[3.5rem] md:text-[4.5rem]">
+          The database client for every database.
+          <span className="title-sub block">{PRO_PRICE} once. No subscription.</span>
         </h1>
-        <p className="mt-6 max-w-[40rem] text-[17px] leading-[1.6] text-pretty text-muted-foreground md:text-[18px]">
-          Browse, edit and query PostgreSQL, MySQL, SQLite, MongoDB, Redis and {others} more
-          databases in one native app for macOS, Windows and Linux.
+      </FadeUp>
+      <FadeUp delay={0.08}>
+        <p className="mx-auto mt-7 max-w-[40rem] text-[18px] leading-[1.5] text-pretty text-muted-foreground md:text-[21px]">
+          Stroke browses, edits and queries PostgreSQL, MySQL, SQLite, MongoDB, Redis and {others}{" "}
+          more databases in one native app. It streams huge results, stops queries cleanly and keeps
+          your passwords <strong className="font-semibold text-foreground">on your computer</strong>
+          .
         </p>
-        <div className="mt-9 flex w-full justify-center">
-          <HeroDownload />
-        </div>
-        <p className="mt-4 text-[13px] text-faint">
-          Free for {TRIAL_DAYS} days with every feature. Then {PRO_PRICE} once, no subscription.
-        </p>
-      </div>
-      <div className={cn(GUTTER, "mt-14 md:mt-20")}>
-        <HeroShot />
-      </div>
-      <TrustStrip />
-    </section>
-  );
-}
-
-/** The app itself, in a window frame: the first thing a buyer wants to see. */
-function HeroShot() {
-  return (
-    <figure className="mx-auto max-w-[72rem]">
-      <div className="bezel rounded-[14px] bg-gradient-to-b from-ink/[0.14] to-ink/[0.04] p-px">
-        <div className="keep-dark overflow-hidden rounded-[13px] bg-[#0b0b0b]">
-          <img
-            src="/shots/mongo.webp"
-            alt="Stroke with a MongoDB orders collection open in the data grid, and Postgres, Turso and other connections in the sidebar"
-            width={1600}
-            height={1005}
-            fetchPriority="high"
-            decoding="async"
-            className="block h-auto w-full"
+      </FadeUp>
+      <FadeUp delay={0.16} className="mt-10 flex flex-col items-center gap-x-8 gap-y-5 sm:flex-row">
+        <HeroDownload install={false} />
+        <Link to="/features" className={cn(LINK, "text-[18px]")}>
+          Explore Stroke
+          <ChevronRightIcon
+            className="size-[18px] transition-transform duration-150 group-hover:translate-x-0.5"
+            strokeWidth={2}
           />
-        </div>
-      </div>
-    </figure>
-  );
-}
-
-const TRUST = [
-  {
-    icon: MonitorIcon,
-    title: "Mac, Windows and Linux",
-    body: "Apple Silicon and Intel. One purchase covers 3 of your computers.",
-  },
-  {
-    icon: LockKeyholeIcon,
-    title: "Credentials stay with you",
-    body: "Stroke connects straight from your computer. Passwords live in your OS keychain.",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Nothing changes by accident",
-    body: "Edits wait until you press Apply. Read-only connections refuse every write.",
-  },
-  {
-    icon: BadgeCheckIcon,
-    title: `${PRO_PRICE}, paid once`,
-    body: "Every feature and every update. No subscription to cancel.",
-  },
-];
-
-function TrustStrip() {
-  return (
-    <div className={cn(GUTTER, "mt-14 md:mt-20")}>
-      <ul className="mx-auto grid max-w-[72rem] grid-cols-1 overflow-hidden rounded-xl border border-border sm:grid-cols-2 lg:grid-cols-4">
-        {TRUST.map((t, i) => (
-          <li
-            key={t.title}
-            className={cn(
-              "flex flex-col gap-3 p-5 md:p-6",
-              i > 0 && "border-border max-sm:border-t",
-              i % 2 === 1 && "sm:border-l",
-              i >= 2 && "sm:max-lg:border-t",
-              i === 2 && "lg:border-l",
-            )}
-          >
-            <span className="flex size-9 items-center justify-center rounded-lg bg-ink/[0.05] text-foreground">
-              <t.icon className="size-[17px]" strokeWidth={1.7} />
-            </span>
-            <div>
-              <p className="text-[15px] font-medium text-foreground">{t.title}</p>
-              <p className="mt-1 text-[14px] leading-[1.55] text-pretty text-muted-foreground">
-                {t.body}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/** One line of an agent's MCP session, as the app logs it. */
-const AGENT_STEPS: { tool: string; arg: string; out: string; blocked?: boolean }[] = [
-  { tool: "list_tables", arg: "public", out: "21 tables" },
-  { tool: "describe_table", arg: "orders", out: "9 columns" },
-  { tool: "query", arg: "SELECT status, count(*) FROM orders GROUP BY 1", out: "4 rows · 6 ms" },
-  { tool: "query", arg: "UPDATE orders SET status = 'refunded' WHERE id = 8812", out: "1 row" },
-  { tool: "query", arg: "DROP TABLE orders", out: "Blocked: needs Full access", blocked: true },
-];
-
-function AgentCard() {
-  return (
-    <div className="keep-dark dark bezel rounded-xl bg-[#0d0d0d] p-5 text-[#e8e8e8] shadow-[0_0_0_1px_rgb(255_255_255/0.1)]">
-      <div className="flex items-center justify-between">
-        <p className="text-[15px] font-semibold">Claude Code · prod</p>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/[0.07] px-2 py-0.5 text-[12px] text-[#c8c8c8]">
-          <span className="size-1.5 rounded-full bg-[#f5b400]" />
-          Read and write
-        </span>
-      </div>
-      <p className="mt-1 text-[13px] text-[#8f8f8f]">Every call the agent makes, as it happens.</p>
-      <ul className="mt-5 space-y-2.5 font-mono text-[12.5px]">
-        {AGENT_STEPS.map((s, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <span
-              className={cn(
-                "mt-[5px] size-1.5 shrink-0 rounded-full",
-                s.blocked ? "bg-[#ff5f57]" : "bg-[#28c840]",
-              )}
-            />
-            <span className="flex min-w-0 flex-1 gap-2">
-              <span className="shrink-0 text-[#8ab8ff]">{s.tool}</span>
-              <span className="truncate text-[#a8a8a8]" title={s.arg}>
-                {s.arg}
-              </span>
-            </span>
-            <span className={cn("shrink-0", s.blocked ? "text-[#ff8a80]" : "text-[#6b6b6b]")}>
-              {s.out}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/** The newest thing, as one card: a word, a sentence, a button, a real visual. */
-function Introducing() {
-  return (
-    <section
-      className={cn(
-        GUTTER,
-        "relative isolate overflow-hidden border-t border-border py-20 md:py-28",
-      )}
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 right-0 -z-10 h-[28rem] w-[40rem] -translate-y-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,rgb(196_107_255/0.08),transparent_70%)]"
-      />
-      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
-        <div>
-          <p className="text-[19px] font-medium tracking-[-0.01em]">Built in</p>
-          <p className="mt-1 bg-gradient-to-r from-[#f5b400] via-[#ff7a59] to-[#c46bff] bg-clip-text text-[3rem] leading-[1.1] font-semibold tracking-[-0.04em] text-transparent md:text-[3.5rem]">
-            Agents
-          </p>
-          <p className="mt-4 max-w-sm text-[17px] leading-[1.6] text-pretty text-muted-foreground">
-            Claude Code, Codex and Cursor read your schema and run queries through Stroke, and every
-            query is held to the access level you set for that connection.
-          </p>
-          <ul className="mt-6 flex flex-col gap-2 text-[14.5px] text-soft">
-            {[
-              "Read only, read and write, or full access, per connection",
-              "Every call logged in the app as it happens",
-              "Nothing destructive without asking first",
-            ].map((x) => (
-              <li key={x} className="flex gap-2.5">
-                <CheckIcon className="mt-1 size-4 shrink-0 text-[#4cb782]" />
-                {x}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-2.5">
-            <CommandMenu label="Add to your agent" items={AGENT_COMMANDS} />
-            <Link to="/docs/mcp" className={siteButton({ variant: "ghost", size: "lg" })}>
-              How it works
-              <ArrowRightIcon className="size-4" />
+        </Link>
+      </FadeUp>
+      <FadeUp delay={0.24}>
+        <div className="mt-7 space-y-1 text-[14px] leading-relaxed text-faint">
+          <p>
+            Free for {TRIAL_DAYS} days with every feature · No subscription ·{" "}
+            <Link
+              to="/pricing"
+              className="text-[var(--link)] hover:underline hover:underline-offset-4"
+            >
+              See pricing
             </Link>
-          </div>
-        </div>
-        <AgentCard />
-      </div>
-    </section>
-  );
-}
-
-// ── Engines ──────────────────────────────────────────────────────────────────
-
-function Engines() {
-  return (
-    <section className="mt-20 border-t border-border md:mt-28" aria-labelledby="engines-title">
-      <div className={cn(GUTTER, "py-16 md:py-20")}>
-        <div className="flex flex-col items-center text-center">
-          <h2
-            id="engines-title"
-            className="text-[1.75rem] leading-tight tracking-[-0.03em] text-balance md:text-[2.25rem]"
-          >
-            Works with the {SHIPPED_ENGINES.length} databases you already run
-          </h2>
-          <p className="mt-3 max-w-xl text-[15px] text-pretty text-muted-foreground">
-            SQL, documents, key-value, analytics and search. One app, one set of shortcuts.
+          </p>
+          <p>
+            {release ? `Version ${release.tag_name.replace(/^v/, "")} · ` : ""}macOS, Windows and
+            Linux · Apple Silicon and Intel
           </p>
         </div>
-        <ul className="mx-auto mt-10 grid max-w-[64rem] grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
-          {SHIPPED_ENGINES.map((e) => (
-            <li key={e.slug}>
-              <Link
-                to="/databases/$engine"
-                params={{ engine: e.slug }}
-                className="group flex h-full flex-col items-center gap-2.5 rounded-xl bg-ink/[0.02] px-2 py-4 text-center shadow-[0_0_0_1px_var(--border)_inset] transition-[background-color,box-shadow] duration-150 hover:bg-ink/[0.05] hover:shadow-[0_0_0_1px_color-mix(in_oklch,var(--foreground)_22%,transparent)_inset]"
-              >
-                <span
-                  className="flex size-10 items-center justify-center rounded-lg transition-transform duration-150 group-hover:scale-105"
-                  style={{ background: `color-mix(in oklch, ${e.color} 14%, transparent)` }}
-                >
-                  <e.Icon className="size-5" color={e.color} />
-                </span>
-                <span className="w-full truncate text-[12.5px] text-soft group-hover:text-foreground">
-                  {e.name}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 flex justify-center">
-          <ArrowLink to="/databases" className="text-[14px]">
-            What Stroke does with each one
-          </ArrowLink>
-        </div>
-      </div>
+      </FadeUp>
     </section>
   );
 }
 
-// ── Features ─────────────────────────────────────────────────────────────────
+// ── Product tour: the app in a device, with a tab per screen ─────────────────
 
 type Screen =
   | { kind: "image"; src: string; alt: string; width: number; height: number }
   | { kind: "video"; name: string; label: string; width: number; height: number };
 
-type Feature = {
-  id: string;
-  eyebrow: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  title: string;
-  lead: string;
-  body: string;
-  points: string[];
-  link?: { to: React.ComponentProps<typeof Link>["to"]; label: string };
-  screen: Screen;
-};
-
-const FEATURES: Feature[] = [
+const TOUR: { id: string; label: string; note: string; screen: Screen }[] = [
   {
     id: "browse",
-    eyebrow: "Browse and edit",
-    icon: TableIcon,
-    title: "A grid that keeps up with you.",
-    lead: "Sort, filter, pin and edit millions of rows.",
-    body: "Every change is staged and marked in the grid until you press Apply, so nothing reaches the database by accident.",
-    points: [
-      "Filters that write the WHERE clause for you",
-      "Column stats: nulls, distinct values, min and max",
-      "Seven views of the same rows, from JSON to a map",
-    ],
+    label: "Browse",
+    note: "A MongoDB collection in the grid, with Postgres, Turso and more in the sidebar.",
     screen: {
       kind: "image",
-      src: "/shots/column-stats.webp",
-      alt: "A table in Stroke's grid with a column's menu and its stats: rows, nulls and distinct values",
+      src: "/shots/mongo.webp",
+      alt: "Stroke with a MongoDB orders collection open in the data grid",
       width: 1600,
       height: 1005,
     },
   },
   {
     id: "query",
-    eyebrow: "Query",
-    icon: TerminalIcon,
-    title: "Write SQL. Read the result your way.",
-    lead: "Run a whole script and every result gets its own tab.",
-    body: "Look at each one as a table, JSON, a chart or a query plan, without copying anything into another tool.",
-    points: [
-      "Autocomplete that knows your schema",
-      "Bar, line, area and pie charts from any result",
-      "EXPLAIN as readable steps with cost per step",
-    ],
+    label: "Query",
+    note: "A script's results, each statement in its own tab.",
     screen: {
       kind: "image",
       src: "/shots/multi-result.webp",
@@ -387,17 +150,8 @@ const FEATURES: Feature[] = [
   },
   {
     id: "agents",
-    eyebrow: "AI and MCP",
-    icon: BotIcon,
-    title: "Hand your database to an agent.",
-    lead: "Ask in the app, or connect Claude, Cursor or Codex.",
-    body: "The built-in MCP server lets any agent read your schema and run queries, with read-only and write levels you choose per connection.",
-    points: [
-      "Every query the agent runs is listed as it happens",
-      "Answers come back as tables, charts and ER diagrams",
-      "Bring your own key, or use the models built in",
-    ],
-    link: { to: "/docs/mcp", label: "Set up MCP" },
+    label: "AI and MCP",
+    note: "The assistant creating tables, every step listed.",
     screen: {
       kind: "image",
       src: "/shots/ai-steps.webp",
@@ -407,16 +161,661 @@ const FEATURES: Feature[] = [
     },
   },
   {
-    id: "nosql",
-    eyebrow: "Beyond SQL",
-    icon: DatabaseIcon,
-    title: "MongoDB, Redis and DynamoDB in the same window.",
-    lead: "Documents, keys and items each get a view built for them.",
-    body: "Browse a collection as a grid, build an aggregation stage by stage, or watch Redis memory and hit ratio live.",
+    id: "admin",
+    label: "Server insights",
+    note: "A Postgres 16 server's live connections, cache and writes.",
+    screen: {
+      kind: "image",
+      src: "/shots/insights.webp",
+      alt: "Instance insights for a Postgres 16 server",
+      width: 1600,
+      height: 1005,
+    },
+  },
+  {
+    id: "plan",
+    label: "Query plan",
+    note: "EXPLAIN as readable steps, the slowest one marked.",
+    screen: {
+      kind: "image",
+      src: "/shots/query-plan.webp",
+      alt: "A query plan drawn as steps with their cost",
+      width: 1600,
+      height: 1005,
+    },
+  },
+];
+
+function ProductTour() {
+  const [active, setActive] = useState(0);
+  const tab = TOUR[active];
+  return (
+    <section className={cn(GUTTER, "mt-16 md:mt-24")} aria-label="Stroke, screen by screen">
+      <FadeUp delay={0.3} yOffset={40}>
+        <figure className="mx-auto max-w-[68rem]">
+          <div className="device">
+            <div className="keep-dark relative aspect-[1600/1005] overflow-hidden rounded-[12px] bg-[#0b0b0b]">
+              {TOUR.map((t, i) => (
+                <img
+                  key={t.id}
+                  src={
+                    t.screen.kind === "image" ? t.screen.src : `/shots/${t.screen.name}-poster.webp`
+                  }
+                  alt={t.screen.kind === "image" ? t.screen.alt : t.screen.label}
+                  width={1600}
+                  height={1005}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "auto"}
+                  decoding="async"
+                  aria-hidden={i !== active}
+                  className={cn(
+                    "absolute inset-0 block h-full w-full object-cover object-top-left transition-opacity duration-500 ease-out",
+                    i === active ? "opacity-100" : "opacity-0",
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="device-base" aria-hidden="true" />
+        </figure>
+      </FadeUp>
+      <div className="mt-10 flex flex-col items-center">
+        <div
+          role="tablist"
+          aria-label="Screens"
+          className="flex max-w-full gap-1 overflow-x-auto rounded-full bg-card p-1"
+        >
+          {TOUR.map((t, i) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={i === active}
+              onClick={() => setActive(i)}
+              className={cn(
+                "h-9 shrink-0 rounded-full px-4 text-[13.5px] font-medium transition-[background-color,color,box-shadow] duration-200",
+                i === active
+                  ? "bg-background text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)]"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-4 text-[14px] text-muted-foreground" aria-live="polite">
+          {tab.note}
+        </p>
+        <p className="mt-1 text-[12px] text-faint">Real screenshots of Stroke, not mockups.</p>
+      </div>
+    </section>
+  );
+}
+
+// ── The engines, as a line of marks ──────────────────────────────────────────
+
+function EngineStrip() {
+  const shown = SHIPPED_ENGINES.slice(0, 8);
+  return (
+    <section className={cn(GUTTER, "mt-24 text-center md:mt-28")} aria-label="Databases">
+      <p className="text-[14px] text-faint">Connects to</p>
+      <ul className="mx-auto mt-5 flex max-w-[60rem] flex-wrap items-center justify-center gap-x-7 gap-y-4">
+        {shown.map((e) => (
+          <li key={e.slug}>
+            <Link
+              to="/databases/$engine"
+              params={{ engine: e.slug }}
+              className="flex items-center gap-2 text-[16px] font-semibold tracking-[-0.01em] text-foreground transition-opacity hover:opacity-70"
+            >
+              <e.Icon className="size-5" color={e.color} />
+              {e.name}
+            </Link>
+          </li>
+        ))}
+        <li>
+          <Link
+            to="/databases"
+            className="flex items-center gap-1 text-[16px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          >
+            and {SHIPPED_ENGINES.length - shown.length} more
+            <ChevronRightIcon className="size-4" strokeWidth={2} />
+          </Link>
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+// ── The hard cases, as a bento of cards ──────────────────────────────────────
+
+function Card({
+  title,
+  body,
+  children,
+  className,
+}: {
+  title: string;
+  body: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("flex flex-col overflow-hidden rounded-[28px] bg-card p-7 md:p-9", className)}
+    >
+      <h3 className="text-[1.375rem] leading-tight tracking-[-0.025em] md:text-[1.5rem]">
+        {title}
+      </h3>
+      <p className="mt-2.5 max-w-md text-[15px] leading-[1.55] text-pretty text-muted-foreground md:text-[16px]">
+        {body}
+      </p>
+      {children && <div className="mt-8 flex flex-1 items-end justify-center">{children}</div>}
+    </div>
+  );
+}
+
+/** A small floating surface inside a card: the app's UI, drawn light. */
+function Float({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <div
+      className={cn(
+        "w-full rounded-2xl bg-raised p-4 text-left shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] dark:ring-white/[0.06]",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+const STAGED = [
+  ["8812", "Ana Beridze", "paid", "refunded"],
+  ["8813", "Luka Maisuradze", "paid", null],
+  ["8814", "Jordan Lee", "shipped", null],
+] as const;
+
+function StagedEditsMock() {
+  return (
+    <Float className="max-w-[30rem]">
+      <div className="flex items-center gap-2 text-[12px] text-faint">
+        <TableIcon className="size-3.5" />
+        public.orders
+      </div>
+      <table className="mt-3 w-full text-[12.5px]">
+        <thead>
+          <tr className="text-left text-[11px] text-faint">
+            <th className="pb-1.5 font-medium">id</th>
+            <th className="pb-1.5 font-medium">customer</th>
+            <th className="pb-1.5 font-medium">status</th>
+          </tr>
+        </thead>
+        <tbody className="font-mono">
+          {STAGED.map(([id, name, was, now]) => (
+            <tr key={id} className="border-t border-border">
+              <td className="py-1.5 text-muted-foreground">{id}</td>
+              <td className="py-1.5 font-sans text-foreground">{name}</td>
+              <td className="py-1.5">
+                {now ? (
+                  <span className="rounded-md bg-[var(--amber)]/25 px-1.5 py-0.5 text-foreground">
+                    <span className="text-faint line-through">{was}</span> {now}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">{was}</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-card px-3 py-2">
+        <span className="text-[12px] text-muted-foreground">1 change, not applied yet</span>
+        <span className="flex gap-1.5">
+          <span className="rounded-full px-2.5 py-1 text-[11.5px] font-medium text-muted-foreground">
+            Discard
+          </span>
+          <span className="rounded-full bg-[var(--amber)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--amber-ink)]">
+            Apply
+          </span>
+        </span>
+      </div>
+    </Float>
+  );
+}
+
+function StopMock() {
+  return (
+    <Float className="max-w-[17rem]">
+      <div className="flex items-center gap-2.5">
+        <span className="relative flex size-7 items-center justify-center rounded-full bg-[#ff3b30]/12">
+          <span className="size-2 animate-pulse rounded-full bg-[#ff3b30] motion-reduce:animate-none" />
+        </span>
+        <span>
+          <span className="block text-[13px] font-semibold">Running on prod</span>
+          <span className="block text-[11.5px] text-faint">SELECT … FROM events</span>
+        </span>
+      </div>
+      <p className="mt-3 font-mono text-[30px] leading-none font-medium tracking-[-0.03em] tabular-nums">
+        00:12.4
+      </p>
+      <div className="mt-4 flex gap-2">
+        <span className="flex items-center gap-1.5 rounded-full bg-[#ff3b30] px-3 py-1.5 text-[12px] font-medium text-white">
+          <SquareIcon className="size-2.5 fill-current" />
+          Stop
+        </span>
+      </div>
+      <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+        <CheckIcon className="size-3.5 text-[#28a745]" strokeWidth={2.4} />
+        Cancelled on the server, connection ready
+      </p>
+    </Float>
+  );
+}
+
+function StreamMock() {
+  return (
+    <Float>
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-semibold">2,000,000 rows</span>
+        <span className="text-[11.5px] text-faint">streamed</span>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">
+        <div className="h-full w-[78%] rounded-full bg-[var(--amber)]" />
+      </div>
+      <div className="mt-3 flex justify-between text-[11.5px] text-muted-foreground">
+        <span>First rows on screen at once</span>
+        <span className="tabular-nums">memory flat</span>
+      </div>
+    </Float>
+  );
+}
+
+const PLAN = [
+  { depth: 0, step: "Sort", ms: "4 ms" },
+  { depth: 1, step: "Hash Join", ms: "11 ms" },
+  { depth: 2, step: "Seq Scan on events", ms: "312 ms", slow: true },
+  { depth: 2, step: "Index Scan on users", ms: "2 ms" },
+];
+
+function PlanMock() {
+  return (
+    <Float>
+      <ul className="space-y-1.5 text-[12.5px]">
+        {PLAN.map((p) => (
+          <li
+            key={p.step}
+            className={cn(
+              "flex items-center justify-between rounded-lg px-2 py-1.5",
+              p.slow && "bg-[#ff9500]/14",
+            )}
+            style={{ marginLeft: p.depth * 14 }}
+          >
+            <span className={cn(p.slow ? "font-semibold text-foreground" : "text-soft")}>
+              {p.step}
+            </span>
+            <span
+              className={cn("tabular-nums", p.slow ? "font-semibold text-[#c26a00]" : "text-faint")}
+            >
+              {p.ms}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[11.5px] text-muted-foreground">
+        Full scan throws away most rows. An index would let it read only the matches.
+      </p>
+    </Float>
+  );
+}
+
+function TunnelMock() {
+  return (
+    <Float>
+      <div className="flex items-center gap-2.5">
+        <span className="flex size-7 items-center justify-center rounded-full bg-[#28a745]/12">
+          <RefreshCwIcon className="size-3.5 text-[#1f8a3a]" strokeWidth={2.2} />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-[13px] font-semibold">SSH tunnel to bastion</span>
+          <span className="block text-[11.5px] text-faint">Reconnected on the same port</span>
+        </span>
+      </div>
+      <div className="mt-3 flex gap-1" aria-hidden="true">
+        {Array.from({ length: 22 }, (_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-5 flex-1 rounded-sm",
+              i === 13 || i === 14 ? "bg-[#ff3b30]/70" : "bg-[#28a745]/55",
+            )}
+          />
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] text-muted-foreground">Dropped for 4 s. Nothing to redo.</p>
+    </Float>
+  );
+}
+
+function HardCases() {
+  return (
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="cases-title">
+      <Reveal>
+        <Title id="cases-title" sub="Stroke keeps working.">
+          Huge plans, huge results, lost tunnels.
+        </Title>
+        <p className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Any client can draw a grid. These are the moments where most of them fall over, and where
+          Stroke was built to hold.
+        </p>
+      </Reveal>
+      <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+        <Reveal className="md:col-span-2">
+          <Card
+            className="h-full"
+            title="Nothing changes by accident."
+            body="Edits are staged and marked in the grid until you press Apply. Read-only connections refuse every write."
+          >
+            <StagedEditsMock />
+          </Card>
+        </Reveal>
+        <Reveal>
+          <Card
+            className="h-full"
+            title="Stop means stopped."
+            body="Stop cancels the query on the server, on every engine that can, and leaves the connection ready for the next one."
+          >
+            <StopMock />
+          </Card>
+        </Reveal>
+        <Reveal>
+          <Card
+            className="h-full"
+            title="A 2 GB result, no freeze."
+            body="Rows stream to disk as they arrive, so the grid fills at once and memory stays flat."
+          >
+            <StreamMock />
+          </Card>
+        </Reveal>
+        <Reveal>
+          <Card
+            className="h-full"
+            title="Plans you can read."
+            body="EXPLAIN as steps with their time, the slow one marked, for SQL and document engines."
+          >
+            <PlanMock />
+          </Card>
+        </Reveal>
+        <Reveal>
+          <Card
+            className="h-full"
+            title="Tunnels come back."
+            body="If SSH drops, Stroke reconnects it on the same port and tells you it happened."
+          >
+            <TunnelMock />
+          </Card>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ── A gray band: changing data, step by step ─────────────────────────────────
+
+const STEPS = [
+  {
+    n: "01",
+    title: "Stage the change",
+    body: "Edit cells, insert rows or paste a column. Everything waits in the grid, marked.",
+  },
+  {
+    n: "02",
+    title: "Try it in a transaction",
+    body: "Begin a transaction in the SQL editor, run the change, read the result, then commit or roll back.",
+  },
+  {
+    n: "03",
+    title: "Apply all at once",
+    body: "On Postgres, MySQL and SQLite the changes go in one transaction, so a failure leaves nothing half done.",
+  },
+];
+
+function SafeChanges() {
+  return (
+    <Section band className="mt-32 md:mt-44" inner="py-24 md:py-32">
+      <Reveal>
+        <p className="text-[14px] font-medium text-[var(--link)]">
+          For developers, analysts and DBAs
+        </p>
+        <h2 className="mt-3 text-[2.25rem] text-balance sm:text-[2.75rem] md:text-[3.25rem]">
+          Change production without holding your breath.
+        </h2>
+        <p className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Stroke treats your data the way you would. Nothing reaches the server until you have seen
+          it, and a long transaction tells you when it is blocking someone.
+        </p>
+      </Reveal>
+      <ol className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+        {STEPS.map((s) => (
+          <Reveal key={s.n}>
+            <li className="border-t border-border pt-5">
+              <p className="font-mono text-[12px] text-faint">{s.n}</p>
+              <h3 className="mt-3 text-[1.25rem] tracking-[-0.02em]">{s.title}</h3>
+              <p className="mt-2 text-[15px] leading-[1.55] text-muted-foreground">{s.body}</p>
+            </li>
+          </Reveal>
+        ))}
+      </ol>
+      <div className="mt-14 flex flex-wrap gap-x-6 gap-y-3 border-t border-border pt-6 text-[14px]">
+        <span className="text-faint">Read more:</span>
+        {(
+          [
+            ["Features", "/features"],
+            ["Security", "/security"],
+            ["Docs", "/docs"],
+            ["Compare", "/compare"],
+          ] as const
+        ).map(([label, to]) => (
+          <Link
+            key={to}
+            to={to}
+            className="text-[var(--link)] underline underline-offset-4 hover:no-underline"
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── Engines grid ─────────────────────────────────────────────────────────────
+
+function Engines() {
+  return (
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="engines-title">
+      <Reveal>
+        <Title id="engines-title" sub="One set of shortcuts.">
+          {SHIPPED_ENGINES.length} databases.
+        </Title>
+        <p className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          SQL, documents, key-value, analytics and search, each with a view built for it. Connect in
+          one click from Neon, Supabase, PlanetScale, Turso and more.
+        </p>
+      </Reveal>
+      <Reveal>
+        <ul className="mt-12 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-7">
+          {SHIPPED_ENGINES.map((e) => (
+            <li key={e.slug}>
+              <Link
+                to="/databases/$engine"
+                params={{ engine: e.slug }}
+                className="group flex h-full flex-col items-center gap-2.5 rounded-2xl bg-card px-2 py-4 text-center text-[13.5px] font-semibold tracking-[-0.01em] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-accent"
+              >
+                <e.Icon
+                  className="size-6 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  color={e.color}
+                />
+                <span className="w-full truncate">{e.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+      <p className="mt-6 text-[13px] text-faint">
+        Each engine has its own page with what Stroke does with it.{" "}
+        <Link
+          to="/databases"
+          className="text-[var(--link)] hover:underline hover:underline-offset-4"
+        >
+          All databases
+        </Link>
+      </p>
+    </section>
+  );
+}
+
+// ── Comparison ───────────────────────────────────────────────────────────────
+
+const COMPARE = [
+  { lead: "SQL and NoSQL in one window", note: "Postgres, MongoDB and Redis side by side." },
+  { lead: "One set of shortcuts", note: "Learn it once, use it on every engine." },
+  { lead: "One license for every engine", note: `${PRO_PRICE} once, on up to 3 computers.` },
+  {
+    lead: "One MCP server for your agents",
+    note: "Claude, Cursor and Codex reach every engine through it.",
+  },
+  { lead: "One place for history and saved queries", note: "Whatever you're connected to." },
+];
+
+function Comparison() {
+  return (
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="compare-title">
+      <Reveal className="flex flex-col items-center text-center">
+        <Title id="compare-title" sub="Or one Stroke.">
+          A client per database.
+        </Title>
+        <p className="mt-6 max-w-xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Most teams run a Postgres tool, a Mongo tool and a Redis tool. Stroke replaces the stack.
+        </p>
+      </Reveal>
+      <Reveal>
+        <div className="mx-auto mt-14 max-w-[52rem] rounded-[28px] bg-card p-3 md:p-4">
+          <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem] items-end gap-2 px-4 pt-3 pb-2 md:grid-cols-[minmax(0,1fr)_9rem_9rem] md:px-6">
+            <span />
+            <span className="flex flex-col items-center gap-1.5 rounded-t-2xl bg-background pt-4 pb-2 text-center">
+              <img src="/icon.png" alt="" className="size-9 rounded-[9px]" />
+              <span className="text-[13px] font-semibold">Stroke</span>
+            </span>
+            <span className="pb-2 text-center text-[12px] leading-tight text-muted-foreground">
+              A client per database
+            </span>
+          </div>
+          <ul className="px-4 md:px-6">
+            {COMPARE.map((r, i) => (
+              <li
+                key={r.lead}
+                className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem] items-center gap-2 md:grid-cols-[minmax(0,1fr)_9rem_9rem]"
+              >
+                <span className={cn("py-4", i > 0 && "border-t border-border")}>
+                  <span className="block text-[14.5px] font-medium">{r.lead}</span>
+                  <span className="block text-[12.5px] text-muted-foreground">{r.note}</span>
+                </span>
+                <span
+                  className={cn(
+                    "flex h-full items-center justify-center bg-background",
+                    i === COMPARE.length - 1 && "rounded-b-2xl",
+                  )}
+                >
+                  <span className="flex size-6 items-center justify-center rounded-full bg-[var(--amber)]">
+                    <CheckIcon className="size-3.5 text-[var(--amber-ink)]" strokeWidth={3} />
+                  </span>
+                </span>
+                <span className="flex items-center justify-center">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-black/[0.06] dark:bg-white/[0.08]">
+                    <MinusIcon className="size-3.5 text-faint" strokeWidth={2.5} />
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Reveal>
+      <p className="mt-5 text-center text-[13px] text-faint">
+        How Stroke compares to TablePlus, DBeaver and others, feature by feature:{" "}
+        <Link to="/compare" className="text-[var(--link)] hover:underline hover:underline-offset-4">
+          Compare
+        </Link>
+      </p>
+    </section>
+  );
+}
+
+// ── Features, screen by screen ───────────────────────────────────────────────
+
+type Feature = {
+  id: string;
+  title: string;
+  sub: string;
+  body: string;
+  points: { lead: string; body: string }[];
+  link?: { to: React.ComponentProps<typeof Link>["to"]; label: string };
+  screen: Screen;
+};
+
+const FEATURES: Feature[] = [
+  {
+    id: "browse",
+    title: "A grid that keeps up.",
+    sub: "Even at millions of rows.",
+    body: "Sort, filter, pin and edit, with every change staged until you press Apply.",
     points: [
-      "Typed document fields, with a JSON view one key away",
-      "Redis keys, pub/sub and a server overview",
-      "DynamoDB with your AWS profile or DynamoDB Local",
+      {
+        lead: "Filters that write the WHERE",
+        body: "Pick a column and a value, Stroke writes the clause.",
+      },
+      { lead: "Column stats", body: "Nulls, distinct values, min and max, one click away." },
+      { lead: "Seven views of the same rows", body: "Grid, JSON, text, chart, map and more." },
+    ],
+    screen: {
+      kind: "image",
+      src: "/shots/column-stats.webp",
+      alt: "A table in Stroke's grid with a column's menu and its stats",
+      width: 1600,
+      height: 1005,
+    },
+  },
+  {
+    id: "query",
+    title: "Write SQL.",
+    sub: "Read the result your way.",
+    body: "Run a whole script and every result gets its own tab: a table, JSON, a chart or a plan.",
+    points: [
+      {
+        lead: "Autocomplete that knows your schema",
+        body: "Tables, columns and joins as you type.",
+      },
+      { lead: "Charts from any result", body: "Bar, line, area and pie, no export needed." },
+      { lead: "Transactions you can see", body: "How long locks are held, and who is waiting." },
+    ],
+    screen: {
+      kind: "image",
+      src: "/shots/multi-result.webp",
+      alt: "The SQL editor with two result tabs",
+      width: 1600,
+      height: 1005,
+    },
+  },
+  {
+    id: "nosql",
+    title: "MongoDB, Redis and DynamoDB.",
+    sub: "In the same window.",
+    body: "Documents, keys and items each get a view built for them.",
+    points: [
+      {
+        lead: "Aggregations, stage by stage",
+        body: "See what each stage returns as you build it.",
+      },
+      { lead: "Redis keys and a live overview", body: "Memory, hit ratio and pub/sub." },
+      { lead: "DynamoDB", body: "With your AWS profile or DynamoDB Local." },
     ],
     screen: {
       kind: "image",
@@ -427,36 +826,14 @@ const FEATURES: Feature[] = [
     },
   },
   {
-    id: "admin",
-    eyebrow: "Postgres admin",
-    icon: GaugeIcon,
-    title: "Run the server, not only the queries.",
-    lead: "See what Postgres is doing right now.",
-    body: "Connections, cache hit ratio and writes refresh live. Change a setting, manage roles, and turn on row level security per table.",
-    points: [
-      "Instance insights, refreshed every few seconds",
-      "Every server setting, searchable and editable",
-      "Roles, grants and RLS in one place",
-    ],
-    screen: {
-      kind: "image",
-      src: "/shots/insights.webp",
-      alt: "Instance insights for a Postgres 16 server",
-      width: 1600,
-      height: 1005,
-    },
-  },
-  {
     id: "backup",
-    eyebrow: "Backup and restore",
-    icon: DatabaseBackupIcon,
-    title: "Back up a database in a few clicks.",
-    lead: "Export a whole database to a .sql file.",
-    body: "Restore it into another one and watch every statement apply, with a live log and the errors collected at the end.",
+    title: "Back up a database.",
+    sub: "Restore it anywhere.",
+    body: "Export a whole database to a .sql file and restore it into another, with a live log.",
     points: [
-      "Postgres, MySQL, SQLite, D1, Turso, DuckDB, SQL Server",
-      "Pick tables, schema, data and functions",
-      "Restore across providers, D1 to Postgres included",
+      { lead: "Seven engines", body: "Postgres, MySQL, SQLite, D1, Turso, DuckDB, SQL Server." },
+      { lead: "Pick what goes", body: "Tables, schema, data and functions." },
+      { lead: "Across providers", body: "D1 to Postgres included, over SSH too." },
     ],
     screen: {
       kind: "video",
@@ -468,15 +845,13 @@ const FEATURES: Feature[] = [
   },
   {
     id: "share",
-    eyebrow: "Sharing",
-    icon: Share2Icon,
-    title: "Share a result, not your database.",
-    lead: "Send rows, a chart or a schema as a link.",
-    body: "It's end-to-end encrypted and expires when you say. The person you send it to needs no account and no app.",
+    title: "Share a result.",
+    sub: "Not your database.",
+    body: "Send rows, a chart or a schema as an end-to-end encrypted link that expires when you say.",
     points: [
-      "Pick the columns and mask sensitive values",
-      "Set an expiry, a view limit or a password",
-      "Revoke it any time from your account",
+      { lead: "Mask what is sensitive", body: "Pick the columns, hide the values." },
+      { lead: "Expiry, view limit, password", body: "Set any of them per link." },
+      { lead: "Revoke any time", body: "From your account, in one click." },
     ],
     screen: {
       kind: "image",
@@ -519,127 +894,290 @@ function FeatureScreen({ screen }: { screen: Screen }) {
 
 function Features() {
   return (
-    <>
+    <div className="mt-32 space-y-32 md:mt-44 md:space-y-44">
       {FEATURES.map((f, i) => (
         <section
           key={f.id}
           id={f.id}
-          className="scroll-mt-20 border-t border-border"
+          className={cn(GUTTER, "scroll-mt-24")}
           aria-labelledby={`${f.id}-title`}
         >
+          <Reveal>
+            <Title id={`${f.id}-title`} sub={f.sub}>
+              {f.title}
+            </Title>
+            <p className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+              {f.body}
+            </p>
+          </Reveal>
           <div
             className={cn(
-              GUTTER,
-              "grid grid-cols-1 items-center gap-10 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-14",
-              i % 2 === 1 && "lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]",
+              "mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:gap-12",
+              i % 2 === 1 && "lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]",
             )}
           >
-            <div className={cn("max-w-md", i % 2 === 1 && "lg:order-2")}>
-              <Eyebrow icon={f.icon}>{f.eyebrow}</Eyebrow>
-              <h2
-                id={`${f.id}-title`}
-                className="mt-4 text-[1.875rem] text-balance md:text-[2.25rem]"
-              >
-                {f.title}
-              </h2>
-              <Lead lead={f.lead} className="mt-4 text-[16px] leading-[1.6]">
-                {f.body}
-              </Lead>
-              <ul className="mt-7 space-y-3 border-t border-border pt-6 text-[14px]">
-                {f.points.map((p) => (
-                  <li key={p} className="flex items-start gap-3 text-soft">
-                    <CheckIcon
-                      className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                      strokeWidth={2}
-                    />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-              {f.link && (
-                <ArrowLink to={f.link.to} className="mt-7">
-                  {f.link.label}
-                </ArrowLink>
-              )}
-            </div>
-            <div className={cn(i % 2 === 1 && "lg:order-1")}>
-              <FeatureScreen screen={f.screen} />
-            </div>
+            <Reveal className={cn(i % 2 === 1 && "lg:order-2")}>
+              <div className="rounded-[28px] bg-card p-3 md:p-5">
+                <FeatureScreen screen={f.screen} />
+              </div>
+            </Reveal>
+            <ul className={cn("divide-y divide-border", i % 2 === 1 && "lg:order-1")}>
+              {f.points.map((p) => (
+                <li key={p.lead} className="py-5 first:pt-0 last:pb-0">
+                  <p className="text-[16px] font-semibold tracking-[-0.01em]">{p.lead}</p>
+                  <p className="mt-1 text-[14.5px] leading-[1.5] text-muted-foreground">{p.body}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       ))}
-    </>
+      <div className={cn(GUTTER, "-mt-16 md:-mt-24")}>
+        <ArrowLink to="/features">Every feature, screen by screen</ArrowLink>
+      </div>
+    </div>
   );
 }
 
-const SMALL_FEATURES = [
-  {
-    icon: CommandIcon,
-    lead: "Command palette.",
-    body: "Every table, view and action a few keys away with Cmd/Ctrl+K.",
-  },
-  {
-    icon: ReplaceIcon,
-    lead: "Find and replace.",
-    body: "Preview every cell that will change before you replace it.",
-  },
-  {
-    icon: NetworkIcon,
-    lead: "ER diagrams.",
-    body: "Draw your schema, or ask the AI for one and save it.",
-  },
-  {
-    icon: MapIcon,
-    lead: "Map view.",
-    body: "PostGIS rows on a map, clustered when there are too many.",
-  },
-  {
-    icon: SquareTerminalIcon,
-    lead: "Built-in terminal.",
-    body: "The database's own shell under the grid, already connected.",
-  },
-  {
-    icon: RefreshCwIcon,
-    lead: "Sync across devices.",
-    body: "Connections and settings, end-to-end encrypted.",
-  },
+// ── Shortcuts: the command palette ───────────────────────────────────────────
+
+const PALETTE = [
+  { icon: TableIcon, label: "Open table orders", hint: "Table" },
+  { icon: TerminalIcon, label: "New SQL tab", hint: "Editor" },
+  { icon: PlayIcon, label: "Explain query", hint: "Plan" },
+  { icon: SearchIcon, label: "Find in every table", hint: "Search" },
+  { icon: LockKeyholeIcon, label: "Make connection read-only", hint: "Connection" },
+];
+
+function Key({ children, label }: { children: React.ReactNode; label?: string }) {
+  return (
+    <span className="flex size-[72px] flex-col items-center justify-center rounded-2xl bg-raised text-[22px] font-medium shadow-[0_1px_0_rgb(0_0_0/0.06),0_6px_14px_-6px_rgb(0_0_0/0.18)] ring-1 ring-black/[0.06] md:size-20 dark:ring-white/[0.08]">
+      {children}
+      {label && <span className="mt-1 text-[10px] font-normal text-faint">{label}</span>}
+    </span>
+  );
+}
+
+function Shortcuts() {
+  return (
+    <section
+      className={cn(GUTTER, "mt-32 flex flex-col items-center text-center md:mt-44")}
+      aria-labelledby="keys-title"
+    >
+      <Reveal className="flex flex-col items-center">
+        <Title id="keys-title" sub="One shortcut away.">
+          Every action.
+        </Title>
+        <p className="mt-6 max-w-xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Press ⌘K (Ctrl+K on Windows and Linux) to open a table, run a query or change a setting,
+          without reaching for the mouse.
+        </p>
+      </Reveal>
+      <Reveal className="mt-12 flex items-center gap-3">
+        <Key label="command">
+          <CommandIcon className="size-6" strokeWidth={1.8} />
+        </Key>
+        <Key>K</Key>
+      </Reveal>
+      <Reveal className="mt-8 w-full max-w-[30rem]">
+        <Float className="p-2">
+          <div className="flex items-center gap-2 rounded-xl bg-card px-3 py-2.5 text-[13.5px] text-faint">
+            <SearchIcon className="size-4" />
+            Open, run or go to…
+          </div>
+          <ul className="mt-1.5 space-y-0.5">
+            {PALETTE.map((p, i) => (
+              <li
+                key={p.label}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px]",
+                  i === 2 ? "bg-[var(--amber)] text-[var(--amber-ink)]" : "text-foreground",
+                )}
+              >
+                <p.icon className="size-4 shrink-0 opacity-70" />
+                <span className="flex-1 text-left">{p.label}</span>
+                {i === 2 ? (
+                  <CornerDownLeftIcon className="size-3.5 opacity-70" />
+                ) : (
+                  <span className="text-[12px] text-faint">{p.hint}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Float>
+      </Reveal>
+    </section>
+  );
+}
+
+// ── Agents ───────────────────────────────────────────────────────────────────
+
+const AGENT_STEPS: { tool: string; arg: string; out: string; blocked?: boolean }[] = [
+  { tool: "list_tables", arg: "public", out: "21 tables" },
+  { tool: "describe_table", arg: "orders", out: "9 columns" },
+  { tool: "query", arg: "SELECT status, count(*) FROM orders GROUP BY 1", out: "4 rows · 6 ms" },
+  { tool: "query", arg: "DROP TABLE orders", out: "Blocked", blocked: true },
+];
+
+function AgentLog() {
+  return (
+    <div className="keep-dark w-full rounded-2xl bg-[#0d0d0d] p-5 text-left text-[#e8e8e8] shadow-[var(--shadow-float)]">
+      <div className="flex items-center justify-between">
+        <p className="text-[14px] font-semibold">Claude Code · prod</p>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/[0.08] px-2 py-0.5 text-[11.5px] text-[#c8c8c8]">
+          <span className="size-1.5 rounded-full bg-[var(--amber)]" />
+          Read and write
+        </span>
+      </div>
+      <ul className="mt-4 space-y-2.5 font-mono text-[12px]">
+        {AGENT_STEPS.map((s, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <span
+              className={cn(
+                "mt-[5px] size-1.5 shrink-0 rounded-full",
+                s.blocked ? "bg-[#ff5f57]" : "bg-[#28c840]",
+              )}
+            />
+            <span className="flex min-w-0 flex-1 gap-2">
+              <span className="shrink-0 text-[#8ab8ff]">{s.tool}</span>
+              <span className="truncate text-[#a8a8a8]" title={s.arg}>
+                {s.arg}
+              </span>
+            </span>
+            <span className={cn("shrink-0", s.blocked ? "text-[#ff8a80]" : "text-[#6b6b6b]")}>
+              {s.out}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const CLIENTS = [
+  { name: "Claude Code", note: "In your terminal" },
+  { name: "Codex", note: "OpenAI's agent" },
+  { name: "Gemini CLI", note: "Google's agent" },
+  { name: "Cursor, Claude Desktop", note: "And other MCP clients" },
+];
+
+function Agents() {
+  return (
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="agents-title">
+      <Reveal className="flex flex-col items-center text-center">
+        <Title id="agents-title" sub="In your AI assistant.">
+          Your databases.
+        </Title>
+        <p className="mt-6 max-w-xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Stroke's built-in MCP server lets Claude, Cursor and Codex read your schema and run
+          queries, held to the access level you set per connection.
+        </p>
+      </Reveal>
+      <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:gap-5">
+        <Reveal>
+          <Card
+            className="h-full"
+            title="Every call, as it happens."
+            body="Each query an agent runs is logged in the app. Anything destructive waits for you."
+          >
+            <AgentLog />
+          </Card>
+        </Reveal>
+        <Reveal>
+          <Card
+            className="h-full"
+            title="Works with your agent."
+            body="Add Stroke to any MCP client in one step."
+          >
+            <Float className="p-2">
+              <ul>
+                {CLIENTS.map((c) => (
+                  <li
+                    key={c.name}
+                    className="flex items-center justify-between rounded-xl px-3 py-2.5"
+                  >
+                    <span className="text-[13.5px] font-semibold">{c.name}</span>
+                    <span className="text-[12px] text-faint">{c.note}</span>
+                  </li>
+                ))}
+              </ul>
+            </Float>
+          </Card>
+        </Reveal>
+      </div>
+      <Reveal>
+        <div className="mt-4 flex flex-col items-start gap-5 rounded-[28px] bg-card p-7 md:mt-5 md:flex-row md:items-center md:justify-between md:p-9">
+          <div>
+            <h3 className="text-[1.375rem] tracking-[-0.025em]">Connect in one line.</h3>
+            <p className="mt-2 max-w-md text-[15px] text-muted-foreground">
+              Pick your agent and copy the command, or read the{" "}
+              <Link
+                to="/docs/mcp"
+                className="text-[var(--link)] hover:underline hover:underline-offset-4"
+              >
+                MCP setup guide
+              </Link>
+              .
+            </p>
+          </div>
+          <CommandMenu label="Add to your agent" items={AGENT_COMMANDS} />
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+// ── Private by design ────────────────────────────────────────────────────────
+
+const PRIVATE = [
   {
     icon: LockKeyholeIcon,
-    lead: "Credentials stay local.",
-    body: "Passwords live in your OS keychain, never on our servers.",
+    title: "Passwords stay in your keychain.",
+    body: "Stroke connects straight from your computer. Credentials never touch our servers.",
   },
   {
-    icon: PaletteIcon,
-    lead: "Themes.",
-    body: "Dark, light and a dozen editor themes to pick from.",
+    icon: ShieldCheckIcon,
+    title: "Read-only means read-only.",
+    body: "Mark a connection read-only and every write is refused, by you or an agent.",
   },
   {
     icon: KeyRoundIcon,
-    lead: "Keyboard first.",
-    body: "Every action has a shortcut, and you can change them.",
+    title: "Sync is end-to-end encrypted.",
+    body: "Connections and settings sync between your computers, encrypted before they leave.",
   },
 ];
 
-function EverythingElse() {
+function Private() {
   return (
-    <section className="border-t border-border" aria-labelledby="more-title">
-      <div className={cn(GUTTER, "pt-20 pb-12 md:pt-28")}>
-        <SectionIntro
-          eyebrow="And the rest"
-          title="The small things you'd miss in other clients."
-          link={{ to: "/features", label: "Every feature" }}
-        />
-      </div>
-      <CellGrid cols={3} className="border-b-0">
-        {SMALL_FEATURES.map((f) => (
-          <Cell key={f.lead} className="min-h-[148px]">
-            <f.icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
-            <Lead lead={f.lead} className="mt-5 text-[15px] leading-[1.55]">
-              {f.body}
-            </Lead>
-          </Cell>
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="private-title">
+      <Reveal>
+        <Title id="private-title" sub="Plain to see.">
+          Private by design.
+        </Title>
+        <p className="mt-6 max-w-2xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          What Stroke stores, where, and what it never sees.{" "}
+          <Link
+            to="/security"
+            className="text-[var(--link)] hover:underline hover:underline-offset-4"
+          >
+            Read the security page
+          </Link>
+          .
+        </p>
+      </Reveal>
+      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+        {PRIVATE.map((p) => (
+          <Reveal key={p.title}>
+            <div className="h-full rounded-[28px] bg-card p-7 md:p-8">
+              <span className="flex size-11 items-center justify-center rounded-full bg-raised shadow-[var(--shadow-card)]">
+                <p.icon className="size-5 text-[var(--link)]" strokeWidth={1.8} />
+              </span>
+              <h3 className="mt-6 text-[1.2rem] leading-snug tracking-[-0.02em]">{p.title}</h3>
+              <p className="mt-2 text-[15px] leading-[1.55] text-muted-foreground">{p.body}</p>
+            </div>
+          </Reveal>
         ))}
-      </CellGrid>
+      </div>
     </section>
   );
 }
@@ -650,32 +1188,36 @@ function Reviews() {
   const { data: reviews } = useQuery(approvedReviewsQueryOptions());
   if (!reviews || reviews.length === 0) return null;
   return (
-    <section className="border-t border-border" aria-labelledby="reviews-title">
-      <div className={cn(GUTTER, "pt-20 pb-12 md:pt-28")}>
-        <SectionIntro eyebrow="Reviews" title="From people who use it every day." />
-      </div>
-      <CellGrid cols={3} className="border-b-0">
+    <section className={cn(GUTTER, "mt-32 md:mt-44")} aria-labelledby="reviews-title">
+      <Reveal>
+        <Title id="reviews-title" sub="Who use it every day.">
+          From people
+        </Title>
+      </Reveal>
+      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
         {reviews.slice(0, 6).map((r) => (
-          <Cell key={r.id} className="flex flex-col justify-between gap-8">
-            <blockquote className="text-[15px] leading-[1.6] text-pretty text-soft">
-              “{r.body}”
-            </blockquote>
-            <figcaption className="flex items-center gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-ink/[0.07] text-[12px] font-medium text-foreground">
-                {r.authorName.trim().charAt(0).toUpperCase() || "?"}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-[13px] font-medium">{r.authorName}</span>
-                {r.title && (
-                  <span className="block truncate text-[12px] text-muted-foreground">
-                    {r.title}
-                  </span>
-                )}
-              </span>
-            </figcaption>
-          </Cell>
+          <Reveal key={r.id}>
+            <figure className="flex h-full flex-col justify-between gap-8 rounded-[28px] bg-card p-7">
+              <blockquote className="text-[16px] leading-[1.55] text-pretty text-foreground">
+                “{r.body}”
+              </blockquote>
+              <figcaption className="flex items-center gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--amber)] text-[13px] font-semibold text-[var(--amber-ink)]">
+                  {r.authorName.trim().charAt(0).toUpperCase() || "?"}
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[14px] font-semibold">{r.authorName}</span>
+                  {r.title && (
+                    <span className="block truncate text-[12.5px] text-muted-foreground">
+                      {r.title}
+                    </span>
+                  )}
+                </span>
+              </figcaption>
+            </figure>
+          </Reveal>
         ))}
-      </CellGrid>
+      </div>
     </section>
   );
 }
@@ -685,54 +1227,56 @@ function Reviews() {
 function PricingTeaser() {
   const { user } = useAuth();
   return (
-    <Section id="pricing">
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center lg:gap-20">
-        <SectionIntro
-          eyebrow="Pricing"
-          title={`Try it for ${TRIAL_DAYS} days. Then ${PRO_PRICE}, once.`}
-        >
-          <p>
-            Use every feature free for {TRIAL_DAYS} days. If Stroke earns its place, it's{" "}
-            <strong>{PRO_PRICE} once</strong>: every update included, nothing to renew or cancel.
+    <section
+      id="pricing"
+      className={cn(GUTTER, "mt-32 scroll-mt-24 md:mt-44")}
+      aria-labelledby="price-title"
+    >
+      <Reveal className="flex flex-col items-center text-center">
+        <Title id="price-title" sub="Paid once.">
+          One price.
+        </Title>
+        <p className="mt-6 max-w-xl text-[17px] leading-[1.55] text-pretty text-muted-foreground md:text-[19px]">
+          Use every feature free for {TRIAL_DAYS} days. If Stroke earns its place, it's {PRO_PRICE}{" "}
+          once: every update included, nothing to renew or cancel.
+        </p>
+      </Reveal>
+      <Reveal>
+        <div className="mx-auto mt-12 max-w-[34rem] rounded-[32px] bg-card p-8 text-center md:p-10">
+          <p className="text-[15px] font-semibold">Stroke Pro</p>
+          <p className="mt-4 flex items-baseline justify-center gap-2">
+            <span className="text-[4rem] leading-none font-semibold tracking-[-0.05em] tabular-nums">
+              {PRO_PRICE}
+            </span>
+            <span className="text-[16px] text-muted-foreground">once</span>
           </p>
-        </SectionIntro>
-        <div className="rounded-2xl p-1.5 shadow-[0_0_0_1px_var(--border)_inset]">
-          <div className="rounded-[calc(1rem-2px)] bg-card p-7 md:p-9">
-            <div className="flex items-baseline justify-between gap-4">
-              <p className="text-[15px] font-medium">Stroke Pro</p>
-              <p className="text-[13px] text-muted-foreground">One payment</p>
-            </div>
-            <p className="mt-6 flex items-baseline gap-2">
-              <span className="text-[3.25rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">
-                {PRO_PRICE}
-              </span>
-              <span className="text-[15px] text-muted-foreground">once</span>
-            </p>
-            <ul className="mt-7 grid grid-cols-1 gap-3 text-[14px] text-soft sm:grid-cols-2">
-              {[
-                "Every feature and engine",
-                "Every future update",
-                "Up to 3 computers",
-                "Sync and scheduled backups",
-              ].map((p) => (
-                <li key={p} className="flex items-center gap-2.5">
-                  <CheckIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
-                  {p}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to={user ? "/app/billing" : "/signup"} className={siteButton({ size: "lg" })}>
-                Buy Stroke Pro
-              </Link>
-              <Link to="/pricing" className={siteButton({ variant: "ghost", size: "lg" })}>
-                Compare plans
-              </Link>
-            </div>
+          <ul className="mx-auto mt-8 grid max-w-sm grid-cols-1 gap-3 text-left text-[15px] sm:grid-cols-2">
+            {[
+              "Every feature and engine",
+              "Every future update",
+              "Up to 3 computers",
+              "Sync and scheduled backups",
+            ].map((p) => (
+              <li key={p} className="flex items-center gap-2.5">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--amber)]">
+                  <CheckIcon className="size-3 text-[var(--amber-ink)]" strokeWidth={3} />
+                </span>
+                {p}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+            <Link
+              to={user ? "/app/billing" : "/signup"}
+              className="inline-flex h-12 items-center rounded-full bg-[var(--amber)] px-7 text-[16px] font-medium text-[var(--amber-ink)] transition-colors hover:bg-[var(--amber-hover)]"
+            >
+              Buy Stroke Pro
+            </Link>
+            <ArrowLink to="/pricing">Compare plans</ArrowLink>
           </div>
         </div>
-      </div>
-    </Section>
+      </Reveal>
+    </section>
   );
 }
 
@@ -741,42 +1285,47 @@ function PricingTeaser() {
 /** FAQ accordion. Rendered on the landing page and the /pricing page. */
 export function Faq() {
   return (
-    <Section id="faq">
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
-        <SectionIntro eyebrow="FAQ" title="Questions, answered.">
-          <p>
-            Anything else? Email{" "}
+    <section
+      id="faq"
+      className={cn(GUTTER, "mt-32 scroll-mt-24 md:mt-44")}
+      aria-labelledby="faq-title"
+    >
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16">
+        <div>
+          <Title id="faq-title" sub="Answered.">
+            Questions?
+          </Title>
+          <p className="mt-5 text-[16px] text-muted-foreground">
+            Something else?{" "}
             <a
               href="mailto:support@stroke.click"
-              className="text-foreground underline decoration-ink/25 underline-offset-4 hover:decoration-ink/60"
+              className="text-[var(--link)] hover:underline hover:underline-offset-4"
             >
-              support@stroke.click
+              Email me
             </a>
             . I answer every one.
           </p>
-        </SectionIntro>
+        </div>
         <div className="divide-y divide-border border-y border-border">
           {FAQ_ITEMS.map((item, i) => (
             <details key={item.q} className="group" open={i === 0}>
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[15px] font-medium transition-colors duration-150 hover:text-soft [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[16px] font-semibold tracking-[-0.01em] transition-colors duration-150 hover:text-soft [&::-webkit-details-marker]:hidden">
                 {item.q}
                 <PlusIcon
-                  className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-45"
+                  className="size-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45"
                   strokeWidth={1.75}
                 />
               </summary>
-              <p className="-mt-1 pb-6 text-[15px] leading-relaxed text-pretty text-muted-foreground">
+              <p className="-mt-1 pb-6 text-[15.5px] leading-relaxed text-pretty text-muted-foreground">
                 {item.a}
               </p>
             </details>
           ))}
         </div>
       </div>
-    </Section>
+    </section>
   );
 }
-
-// ── Closer ───────────────────────────────────────────────────────────────────
 
 // The pricing page reuses the plans block.
 export { Pricing } from "#/components/pricing-plans";

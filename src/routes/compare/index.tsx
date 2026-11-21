@@ -91,7 +91,7 @@ function ComparePage() {
           {[{ slug: "", name: "Stroke", ...STROKE_FACTS }, ...COMPETITORS].map((c) => (
             <li
               key={c.name}
-              className={cn("rounded-xl border border-border p-4", !c.slug && "bg-ink/[0.04]")}
+              className={cn("rounded-[24px] bg-card p-4", !c.slug && "bg-ink/[0.04]")}
             >
               <p className="text-[15px] font-semibold">
                 {c.slug ? (
@@ -118,7 +118,7 @@ function ComparePage() {
           ))}
         </ul>
         {/* Wider screens: one row per client, so nothing scrolls sideways. */}
-        <div className="hidden overflow-x-auto rounded-xl border border-border md:block">
+        <div className="hidden overflow-x-auto rounded-[24px] bg-card md:block">
           <table className="w-full min-w-[46rem] border-collapse text-left text-[13.5px]">
             <thead>
               <tr className="border-b border-border bg-ink/[0.02] text-[12.5px]">
@@ -186,7 +186,7 @@ function ComparePage() {
               <Link
                 to="/compare/$slug"
                 params={{ slug: c.slug }}
-                className="group flex h-full flex-col rounded-xl border border-border bg-ink/[0.015] p-5 transition-[background-color,border-color] duration-150 hover:border-ink/20 hover:bg-ink/[0.04]"
+                className="group flex h-full flex-col rounded-[24px] bg-card p-5 transition-[background-color] duration-150 hover:bg-accent"
               >
                 <span className="flex items-center justify-between gap-3 text-[16px] font-semibold">
                   Stroke vs {c.name}

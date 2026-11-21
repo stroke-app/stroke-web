@@ -60,7 +60,7 @@ function useOutside(open: boolean, close: () => void) {
   return ref;
 }
 
-export function HeroDownload() {
+export function HeroDownload({ install = true }: { install?: boolean } = {}) {
   const platform = usePlatform();
   const { data: release } = useQuery(latestReleaseQueryOptions());
   const [open, setOpen] = useState(false);
@@ -73,10 +73,10 @@ export function HeroDownload() {
     ? `Download for ${OS_NAME[platform.os]}${platform.os === "macos" ? (platform.arch === "arm64" ? " (Apple Silicon)" : " (Intel)") : ""}`
     : "Download Stroke";
   const half =
-    "flex h-12 items-center gap-2 bg-primary text-[15px] font-medium text-primary-foreground transition-colors duration-150 hover:bg-primary/88 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "flex h-[52px] items-center gap-2 bg-[var(--amber)] text-[17px] font-medium text-[var(--amber-ink)] transition-colors duration-200 hover:bg-[var(--amber-hover)] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   return (
-    <div className="flex w-full max-w-[34rem] flex-col items-center gap-4">
+    <div className={cn("flex flex-col items-center gap-4", install && "w-full max-w-[34rem]")}>
       <div ref={root} className="relative flex items-stretch">
         {asset ? (
           <a
@@ -89,7 +89,7 @@ export function HeroDownload() {
                 asset: asset.name,
               })
             }
-            className={cn(half, "rounded-l-xl ps-5 pe-4")}
+            className={cn(half, "rounded-l-full ps-7 pe-5")}
           >
             <DownloadIcon className="size-[18px]" />
             {label}
@@ -98,19 +98,19 @@ export function HeroDownload() {
             )}
           </a>
         ) : (
-          <Link to="/download" className={cn(half, "rounded-l-xl ps-5 pe-4")}>
+          <Link to="/download" className={cn(half, "rounded-l-full ps-7 pe-5")}>
             <DownloadIcon className="size-[18px]" />
             {label}
           </Link>
         )}
-        <span aria-hidden="true" className="w-px bg-primary-foreground/15" />
+        <span aria-hidden="true" className="w-px bg-black/15" />
         <button
           type="button"
           aria-expanded={open}
           aria-controls={menuId}
           aria-label="Other downloads"
           onClick={() => setOpen((v) => !v)}
-          className={cn(half, "rounded-r-xl px-3")}
+          className={cn(half, "rounded-r-full ps-3 pe-4")}
         >
           <ChevronDownIcon
             className={cn("size-4 transition-transform duration-200", open && "rotate-180")}
@@ -119,7 +119,7 @@ export function HeroDownload() {
         {open && (
           <div
             id={menuId}
-            className="absolute top-[calc(100%+8px)] left-1/2 z-30 w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 animate-in rounded-xl bg-popover p-1.5 text-left shadow-[0_0_0_1px_var(--border),0_24px_60px_-20px_rgb(0_0_0/0.6)] duration-150 fade-in-0 slide-in-from-top-1"
+            className="absolute top-[calc(100%+8px)] left-1/2 z-30 w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 animate-in rounded-[20px] bg-popover p-1.5 text-left shadow-[var(--shadow-float)] duration-150 fade-in-0 slide-in-from-top-1"
           >
             {(["macos", "windows", "linux"] as OS[]).map((os) => {
               const Icon = OS_ICON[os];
@@ -160,14 +160,14 @@ export function HeroDownload() {
             })}
             <Link
               to="/download"
-              className="mt-0.5 flex items-center justify-center rounded-lg border-t border-border px-3 py-2.5 text-[13px] text-muted-foreground transition-colors hover:bg-ink/[0.04] hover:text-foreground"
+              className="mt-0.5 flex items-center justify-center rounded-xl border-t border-border px-3 py-2.5 text-[13px] text-[var(--link)] transition-colors hover:bg-ink/[0.04] hover:text-foreground"
             >
               Every download, Homebrew, Scoop and Nightly
             </Link>
           </div>
         )}
       </div>
-      <TerminalInstall initial={platform?.os === "windows" ? "windows" : "unix"} />
+      {install && <TerminalInstall initial={platform?.os === "windows" ? "windows" : "unix"} />}
     </div>
   );
 }
@@ -195,12 +195,7 @@ export function TerminalInstall({
     });
   };
   return (
-    <div
-      className={cn(
-        "w-full overflow-hidden rounded-xl bg-ink/[0.03] text-left shadow-[0_0_0_1px_var(--border)_inset]",
-        className,
-      )}
-    >
+    <div className={cn("w-full overflow-hidden rounded-2xl bg-card text-left", className)}>
       <div className="flex items-center gap-1 border-b border-border px-2 pt-1.5">
         <TerminalIcon className="ms-1.5 me-1 size-3.5 text-faint" />
         {(

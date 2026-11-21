@@ -133,7 +133,7 @@ const PACKAGES: [string, string][] = [
   ["Arch", "yay -Syu stroke-bin"],
 ];
 
-const tile = "overflow-hidden rounded-2xl shadow-[0_0_0_1px_var(--border)_inset]";
+const tile = "overflow-hidden rounded-[24px] bg-card";
 const lead = "px-6 pt-6 text-[17px] leading-[1.45] text-pretty md:px-7 md:pt-7";
 
 function Picture({ t }: { t: PicTile }) {
@@ -319,7 +319,7 @@ function Stroke3Page() {
                 </div>
               ))}
             </div>
-            <div className="rounded-xl bg-ink/[0.03] p-5 shadow-[0_0_0_1px_var(--border)_inset]">
+            <div className="rounded-[24px] bg-card bg-ink/[0.03] p-5">
               <p className="text-[15px] font-medium">Stroke 3 asks you to sign in</p>
               <p className="mt-1.5 text-[14px] leading-[1.6] text-muted-foreground">
                 Sign in with Google or GitHub. If you bought a license, use the email you bought it
