@@ -177,19 +177,19 @@
   --soft: #424245;
   --muted-foreground: #6e6e73;
   --faint: #86868b;
-  /* The cards: a warm gray a breath off white. */
-  --card: #f6f5f3;
+  /* Cards and bands: Apple's neutral gray, a breath off white. */
+  --card: #f5f5f7;
   --card-foreground: #1d1d1f;
   --raised: #ffffff;
-  --band: #f6f5f3;
+  --band: #f5f5f7;
   --popover: #ffffff;
   --popover-foreground: #1d1d1f;
   --primary: #1d1d1f;
   --primary-foreground: #ffffff;
-  --secondary: #f6f5f3;
+  --secondary: #f5f5f7;
   --secondary-foreground: #1d1d1f;
-  --muted: #f6f5f3;
-  --accent: #efeee9;
+  --muted: #f5f5f7;
+  --accent: #ebebef;
   --accent-foreground: #1d1d1f;
   --border: rgb(0 0 0 / 0.08);
   --input: rgb(0 0 0 / 0.12);
@@ -243,10 +243,10 @@ html.dark .site {
   --soft: #d2d2d7;
   --muted-foreground: #a1a1a6;
   --faint: #6e6e73;
-  --card: #141414;
+  --card: #161617;
   --card-foreground: #f5f5f7;
-  --raised: #1d1d1f;
-  --band: #0b0b0b;
+  --raised: #1f1f21;
+  --band: #101011;
   --popover: #161616;
   --popover-foreground: #f5f5f7;
   --primary: #f5f5f7;
@@ -292,6 +292,30 @@ html.dark body:has(.site) {
   --input: rgb(255 255 255 / 0.12);
   color-scheme: dark;
   color: var(--foreground);
+}
+
+/* A soft color wash in a card's top corner, from its `--tint`. Light and dark
+   both: the tint is mixed into whatever the card's own gray is. */
+.site .tinted {
+  background-image: radial-gradient(
+    120% 90% at 100% 0%,
+    color-mix(in oklab, var(--tint, var(--amber)) 16%, transparent),
+    transparent 62%
+  );
+}
+html.dark .site .tinted {
+  background-image: radial-gradient(
+    120% 90% at 100% 0%,
+    color-mix(in oklab, var(--tint, var(--amber)) 22%, transparent),
+    transparent 62%
+  );
+}
+
+/* Wires in the providers art: dashes run toward the databases. */
+@keyframes wire {
+  to {
+    stroke-dashoffset: -20;
+  }
 }
 
 /* A device around the product: an aluminium lid with a thin black bezel,

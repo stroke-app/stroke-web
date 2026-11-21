@@ -12,7 +12,7 @@ import { shares } from "#/lib/db/schema";
  * viewer page decrypts with the key from the link's #fragment.
  */
 
-export const SHARE_KINDS = ["table", "result", "query", "erd", "mermaid", "chart"] as const;
+export const SHARE_KINDS = ["table", "result", "query", "erd", "mermaid", "chart", "json"] as const;
 export type ShareKind = (typeof SHARE_KINDS)[number];
 
 /** What each plan may do. Row caps are applied in the app before encrypting. */

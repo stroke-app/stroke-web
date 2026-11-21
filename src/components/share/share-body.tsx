@@ -9,6 +9,9 @@ const ShareErd = lazy(() =>
 const ShareMermaid = lazy(() =>
   import("#/components/share/share-canvas").then((m) => ({ default: m.ShareMermaid })),
 );
+const ShareJson = lazy(() =>
+  import("#/components/share/share-json").then((m) => ({ default: m.ShareJson })),
+);
 const ShareChart = lazy(() =>
   import("#/components/share/share-chart").then((m) => ({ default: m.ShareChart })),
 );
@@ -60,6 +63,15 @@ export function Body({
           columns={payload.columns}
           rows={payload.rows}
           title={payload.title}
+        />
+      );
+    case "json":
+      return (
+        <ShareJson
+          value={payload.value}
+          title={payload.title}
+          totalItems={payload.totalItems}
+          toolbar={toolbar}
         />
       );
     default:

@@ -134,7 +134,7 @@ function EmbedPage() {
     const wanted =
       p && (p.kind === "table" || p.kind === "result")
         ? chrome + (opts.toolbar ? 44 : 0) + 36 + Math.max(3, Math.min(p.rows.length, 20)) * 32 + 40
-        : p && (p.kind === "erd" || p.kind === "mermaid" || p.kind === "chart")
+        : p && (p.kind === "erd" || p.kind === "mermaid" || p.kind === "chart" || p.kind === "json")
           ? chrome + 460
           : null;
     const post = () =>
@@ -173,7 +173,8 @@ function EmbedPage() {
       ready.payload.kind === "table" ||
       ready.payload.kind === "erd" ||
       ready.payload.kind === "mermaid" ||
-      ready.payload.kind === "chart");
+      ready.payload.kind === "chart" ||
+      ready.payload.kind === "json");
 
   return (
     <div
