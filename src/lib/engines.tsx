@@ -6,7 +6,11 @@ import {
   SiCockroachlabs,
   SiDuckdb,
   SiElasticsearch,
+  SiApachehive,
+  SiDatabricks,
   SiFirebase,
+  SiGooglebigquery,
+  SiGooglecloudspanner,
   SiMariadb,
   SiMongodb,
   SiMysql,
@@ -14,10 +18,13 @@ import {
   SiPostgresql,
   SiPosthog,
   SiRedis,
+  SiSap,
   SiSqlite,
+  SiTeradata,
+  SiTrino,
   SiTurso,
 } from "@icons-pack/react-simple-icons";
-import { DatabaseIcon } from "lucide-react";
+import { CableIcon, DatabaseIcon } from "lucide-react";
 
 /**
  * Every engine Stroke opens, in one place: the home page's wall of logos,
@@ -26,7 +33,13 @@ import { DatabaseIcon } from "lucide-react";
  * shipped is `status: "soon"`.
  */
 
-export type EngineCategory = "relational" | "document" | "key-value" | "analytics" | "search";
+export type EngineCategory =
+  | "relational"
+  | "document"
+  | "key-value"
+  | "analytics"
+  | "search"
+  | "odbc";
 export type EngineStatus = "stable" | "beta" | "soon";
 
 export interface Engine {
@@ -44,6 +57,8 @@ export interface Engine {
   highlights: string[];
   /** How to connect: the URL to paste, the provider, the Docker image. */
   connect: string[];
+  /** Reached through the ODBC bridge with the vendor's driver, not built in. */
+  via?: "odbc";
 }
 
 export const CATEGORY_LABEL: Record<EngineCategory, string> = {
@@ -52,6 +67,7 @@ export const CATEGORY_LABEL: Record<EngineCategory, string> = {
   "key-value": "Key-value",
   analytics: "Analytics",
   search: "Search",
+  odbc: "Through ODBC",
 };
 
 const RELATIONAL_BASE = [
@@ -59,6 +75,185 @@ const RELATIONAL_BASE = [
   "A SQL editor with completion from your schema, formatting, history and saved queries",
   "Schema diagrams, EXPLAIN plans and a terminal tab running the engine's own CLI",
 ];
+
+const ODBC_BASE = [
+  "Schemas, tables, columns, primary and foreign keys from the driver's catalog",
+  "Browse, filter, sort and edit rows by primary key, with values bound as parameters",
+  "A SQL editor whose results stream in as they arrive, and a Stop that cancels on the server",
+];
+
+interface OdbcPresetPage {
+  slug: string;
+  name: string;
+  Icon: React.ElementType;
+  color: string;
+  vendor: string;
+  driver: string;
+  fields: string;
+}
+
+/** Engines with a preset in the app's ODBC form. */
+const ODBC_PRESETS: OdbcPresetPage[] = [
+  {
+    slug: "db2",
+    name: "IBM Db2",
+    Icon: DatabaseIcon,
+    color: "#0f62fe",
+    vendor: "IBM",
+    driver: "IBM Data Server Driver for ODBC and CLI",
+    fields: "host, port and database",
+  },
+  {
+    slug: "sap-hana",
+    name: "SAP HANA",
+    Icon: SiSap,
+    color: "#0faaff",
+    vendor: "SAP",
+    driver: "the HANA client (HDBODBC)",
+    fields: "host, port and tenant database; HANA Cloud's port turns on TLS",
+  },
+  {
+    slug: "sap-ase",
+    name: "SAP ASE (Sybase)",
+    Icon: SiSap,
+    color: "#0faaff",
+    vendor: "SAP",
+    driver: "SAP's ASE ODBC driver or FreeTDS",
+    fields: "host, port and database",
+  },
+  {
+    slug: "informix",
+    name: "Informix",
+    Icon: DatabaseIcon,
+    color: "#0f62fe",
+    vendor: "IBM",
+    driver: "the Informix Client SDK",
+    fields: "host, port, server name and database",
+  },
+  {
+    slug: "teradata",
+    name: "Teradata",
+    Icon: SiTeradata,
+    color: "#f37440",
+    vendor: "Teradata",
+    driver: "the Teradata ODBC driver",
+    fields: "host and default database",
+  },
+  {
+    slug: "vertica",
+    name: "Vertica",
+    Icon: DatabaseIcon,
+    color: "#5b6ee1",
+    vendor: "OpenText",
+    driver: "the Vertica client drivers",
+    fields: "host, port and database",
+  },
+  {
+    slug: "exasol",
+    name: "Exasol",
+    Icon: DatabaseIcon,
+    color: "#21a685",
+    vendor: "Exasol",
+    driver: "the Exasol ODBC driver",
+    fields: "host, port and certificate fingerprint",
+  },
+  {
+    slug: "firebird",
+    name: "Firebird",
+    Icon: DatabaseIcon,
+    color: "#e2552a",
+    vendor: "the Firebird project",
+    driver: "the Firebird ODBC driver",
+    fields: "host, port and database file or alias",
+  },
+  {
+    slug: "redshift",
+    name: "Amazon Redshift",
+    Icon: DatabaseIcon,
+    color: "#8c4fff",
+    vendor: "AWS",
+    driver: "the Amazon Redshift ODBC driver",
+    fields: "endpoint, port and database",
+  },
+  {
+    slug: "databricks",
+    name: "Databricks",
+    Icon: SiDatabricks,
+    color: "#ff3621",
+    vendor: "Databricks",
+    driver: "the Databricks ODBC driver",
+    fields: "host, HTTP path and an access token",
+  },
+  {
+    slug: "hive",
+    name: "Apache Hive",
+    Icon: SiApachehive,
+    color: "#c9a400",
+    vendor: "Cloudera",
+    driver: "a Hive ODBC driver",
+    fields: "host, port and database",
+  },
+  {
+    slug: "trino",
+    name: "Trino and Presto",
+    Icon: SiTrino,
+    color: "#dd00a1",
+    vendor: "Starburst",
+    driver: "a Trino or Presto ODBC driver",
+    fields: "host, port, catalog and schema",
+  },
+  {
+    slug: "dremio",
+    name: "Dremio",
+    Icon: DatabaseIcon,
+    color: "#31b8c9",
+    vendor: "Dremio",
+    driver: "the Arrow Flight SQL ODBC driver",
+    fields: "host and port",
+  },
+  {
+    slug: "intersystems-iris",
+    name: "InterSystems IRIS",
+    Icon: DatabaseIcon,
+    color: "#2f6db5",
+    vendor: "InterSystems",
+    driver: "the IRIS ODBC driver",
+    fields: "host, port and namespace",
+  },
+  {
+    slug: "microsoft-access",
+    name: "Microsoft Access",
+    Icon: DatabaseIcon,
+    color: "#a4373a",
+    vendor: "Microsoft",
+    driver: "the Access Database Engine on Windows, or MDB Tools",
+    fields: "the .mdb or .accdb file",
+  },
+];
+
+function odbcEngine(p: OdbcPresetPage): Engine {
+  return {
+    slug: p.slug,
+    name: p.name,
+    Icon: p.Icon,
+    color: p.color,
+    category: "odbc",
+    status: "beta",
+    via: "odbc",
+    searchTitle: `${p.name} GUI client for Mac, Windows and Linux`,
+    summary: `Browse, edit and query ${p.name} through its ODBC driver, in the same app as your other databases.`,
+    highlights: [
+      `A ${p.name} preset that picks the installed driver and asks for ${p.fields}`,
+      ...ODBC_BASE,
+      `Beta: the preset follows ${p.vendor}'s driver documentation and has not yet been run against a live ${p.name}`,
+    ],
+    connect: [
+      `Install ${p.driver}`,
+      `Choose ${p.name} under "Through ODBC" and fill in the fields, or pick a data source (DSN)`,
+      "Or paste a connection string; the password stays in your OS keychain",
+    ],
+  };
+}
 
 export const ENGINES: Engine[] = [
   {
@@ -403,10 +598,77 @@ export const ENGINES: Engine[] = [
       "Amazon OpenSearch with its endpoint and credentials",
     ],
   },
+  {
+    slug: "spanner",
+    name: "Google Spanner",
+    Icon: SiGooglecloudspanner,
+    color: "#4285f4",
+    category: "relational",
+    status: "beta",
+    searchTitle: "Google Cloud Spanner GUI client",
+    summary:
+      "Browse, edit and query Cloud Spanner databases, GoogleSQL or PostgreSQL dialect, from the same app as everything else.",
+    highlights: [
+      "Schemas, tables and views with primary keys, foreign keys, indexes and the database's own DDL",
+      "Filter, search, sort and edit rows, with every value sent as a typed query parameter",
+      "INSERT, UPDATE and DELETE run in a read-write transaction; CREATE, ALTER and DROP as a schema update",
+      "Query plans from Spanner's PLAN mode, drawn as a tree, without running the query",
+    ],
+    connect: [
+      "Project, instance and database",
+      "Sign in with a service account key, your gcloud login, or point at the emulator",
+    ],
+  },
+  {
+    slug: "bigquery",
+    name: "Google BigQuery",
+    Icon: SiGooglebigquery,
+    color: "#669df6",
+    category: "analytics",
+    status: "beta",
+    searchTitle: "BigQuery GUI client and SQL editor",
+    summary:
+      "Datasets, tables and GoogleSQL in a native window, careful about what you are billed for.",
+    highlights: [
+      "Paging through a table reads it with tabledata.list, which runs no query and bills nothing",
+      "Row counts come from table metadata, and plans are dry runs that say how much a query would read",
+      "Stop cancels the query job on BigQuery's side, not just in the window",
+      "Results stream page by page, and rows are edited by primary key where a table declares one",
+    ],
+    connect: [
+      "A project ID, with an optional default dataset and location",
+      "Sign in with a service account key, your gcloud login, or point at an emulator",
+    ],
+  },
+  {
+    slug: "odbc",
+    name: "ODBC",
+    Icon: CableIcon,
+    color: "#8a8f98",
+    category: "odbc",
+    status: "beta",
+    via: "odbc",
+    searchTitle: "ODBC database client for Mac, Windows and Linux",
+    summary: "Any database with an ODBC driver, through a data source name or a connection string.",
+    highlights: [
+      "The ODBC driver manager is built into the app; only the database's own driver needs installing",
+      "Finds the drivers and data sources already set up on your computer",
+      ...ODBC_BASE,
+    ],
+    connect: [
+      "Pick a data source (DSN) from the list",
+      "Or paste a connection string; the password stays in your OS keychain",
+    ],
+  },
+  ...ODBC_PRESETS.map(odbcEngine),
 ];
 
 export function engineBySlug(slug: string) {
   return ENGINES.find((e) => e.slug === slug) ?? null;
 }
 
-export const SHIPPED_ENGINES = ENGINES.filter((e) => e.status !== "soon");
+/** Engines built into the app. The counts on the site are these. */
+export const SHIPPED_ENGINES = ENGINES.filter((e) => e.status !== "soon" && !e.via);
+
+/** Engines reached through the ODBC bridge with their vendor's driver. */
+export const ODBC_ENGINES = ENGINES.filter((e) => e.via === "odbc");

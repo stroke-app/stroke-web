@@ -1,6 +1,6 @@
 import { POSTS } from "#/lib/blog";
 import { COMPETITORS, STROKE_EXTRAS, STROKE_FACTS } from "#/lib/competitors";
-import { CATEGORY_LABEL, SHIPPED_ENGINES } from "#/lib/engines";
+import { CATEGORY_LABEL, ODBC_ENGINES, SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
 import { REPO_URL, SITE_URL } from "#/lib/seo";
@@ -46,6 +46,10 @@ export function llmsTxt() {
 
 ${SHIPPED_ENGINES.map((e) => `- [${e.searchTitle}](${link(`/databases/${e.slug}`)}): ${e.summary}`).join("\n")}
 
+### Through ODBC (beta), with the vendor's driver installed
+
+${ODBC_ENGINES.map((e) => `- [${e.name}](${link(`/databases/${e.slug}`)}): ${e.summary}`).join("\n")}
+
 ## Comparisons
 
 ${COMPETITORS.map((c) => `- [Stroke vs ${c.name}](${link(`/compare/${c.slug}`)}): a ${c.searchTitle}`).join("\n")}
@@ -54,6 +58,7 @@ ${COMPETITORS.map((c) => `- [Stroke vs ${c.name}](${link(`/compare/${c.slug}`)})
 
 - [Getting started](${link("/docs")}): install, connect a database, get Pro, connect agents
 - [MCP for agents](${link("/docs/mcp")}): Claude Code, Codex, Cursor and any MCP client
+- [ODBC databases](${link("/docs/odbc")}): Db2, SAP HANA, Teradata, Vertica, Databricks, Hive, Trino and any database with an ODBC driver (beta)
 
 ## Blog
 
@@ -72,7 +77,7 @@ ${POSTS.map((p) => `- [${p.title}](${link(`/blog/${p.slug}`)}): ${p.description}
 export function llmsFullTxt() {
   const byCategory = Object.entries(CATEGORY_LABEL)
     .map(([cat, label]) => {
-      const list = SHIPPED_ENGINES.filter((e) => e.category === cat);
+      const list = [...SHIPPED_ENGINES, ...ODBC_ENGINES].filter((e) => e.category === cat);
       if (!list.length) return "";
       return `### ${label}\n\n${list
         .map(

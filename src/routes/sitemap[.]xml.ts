@@ -29,6 +29,7 @@ const PAGES: {
   { path: "/pricing", priority: "0.8", changefreq: "monthly" },
   { path: "/docs", priority: "0.7", changefreq: "monthly" },
   { path: "/docs/mcp", priority: "0.7", changefreq: "monthly" },
+  { path: "/docs/odbc", priority: "0.6", changefreq: "monthly" },
   { path: "/changelog", priority: "0.6", changefreq: "weekly", release: true },
   { path: "/roadmap", priority: "0.5", changefreq: "monthly" },
   { path: "/themes", priority: "0.5", changefreq: "weekly" },

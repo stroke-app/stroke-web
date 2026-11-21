@@ -37,6 +37,7 @@ import { Route as SIdRouteImport } from './routes/s.$id'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as EIdRouteImport } from './routes/e.$id'
 import { Route as DownloadOsRouteImport } from './routes/download_.$os'
+import { Route as DocsOdbcRouteImport } from './routes/docs/odbc'
 import { Route as DocsMcpRouteImport } from './routes/docs/mcp'
 import { Route as DesktopSignInRouteImport } from './routes/desktop/sign-in'
 import { Route as DatabasesEngineRouteImport } from './routes/databases/$engine'
@@ -230,6 +231,11 @@ const EIdRoute = EIdRouteImport.update({
 const DownloadOsRoute = DownloadOsRouteImport.update({
   id: '/download_/$os',
   path: '/download/$os',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsOdbcRoute = DocsOdbcRouteImport.update({
+  id: '/docs/odbc',
+  path: '/docs/odbc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsMcpRoute = DocsMcpRouteImport.update({
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/docs/odbc': typeof DocsOdbcRoute
   '/download/$os': typeof DownloadOsRoute
   '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -632,6 +639,7 @@ export interface FileRoutesByTo {
   '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/docs/odbc': typeof DocsOdbcRoute
   '/download/$os': typeof DownloadOsRoute
   '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -719,6 +727,7 @@ export interface FileRoutesById {
   '/databases/$engine': typeof DatabasesEngineRoute
   '/desktop/sign-in': typeof DesktopSignInRoute
   '/docs/mcp': typeof DocsMcpRoute
+  '/docs/odbc': typeof DocsOdbcRoute
   '/download_/$os': typeof DownloadOsRoute
   '/e/$id': typeof EIdRoute
   '/ingest/$': typeof IngestSplatRoute
@@ -805,6 +814,7 @@ export interface FileRouteTypes {
     | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
+    | '/docs/odbc'
     | '/download/$os'
     | '/e/$id'
     | '/ingest/$'
@@ -888,6 +898,7 @@ export interface FileRouteTypes {
     | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
+    | '/docs/odbc'
     | '/download/$os'
     | '/e/$id'
     | '/ingest/$'
@@ -974,6 +985,7 @@ export interface FileRouteTypes {
     | '/databases/$engine'
     | '/desktop/sign-in'
     | '/docs/mcp'
+    | '/docs/odbc'
     | '/download_/$os'
     | '/e/$id'
     | '/ingest/$'
@@ -1058,6 +1070,7 @@ export interface RootRouteChildren {
   DatabasesEngineRoute: typeof DatabasesEngineRoute
   DesktopSignInRoute: typeof DesktopSignInRoute
   DocsMcpRoute: typeof DocsMcpRoute
+  DocsOdbcRoute: typeof DocsOdbcRoute
   DownloadOsRoute: typeof DownloadOsRoute
   EIdRoute: typeof EIdRoute
   IngestSplatRoute: typeof IngestSplatRoute
@@ -1294,6 +1307,13 @@ declare module '@tanstack/react-router' {
       path: '/download/$os'
       fullPath: '/download/$os'
       preLoaderRoute: typeof DownloadOsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/odbc': {
+      id: '/docs/odbc'
+      path: '/docs/odbc'
+      fullPath: '/docs/odbc'
+      preLoaderRoute: typeof DocsOdbcRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/mcp': {
@@ -1821,6 +1841,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatabasesEngineRoute: DatabasesEngineRoute,
   DesktopSignInRoute: DesktopSignInRoute,
   DocsMcpRoute: DocsMcpRoute,
+  DocsOdbcRoute: DocsOdbcRoute,
   DownloadOsRoute: DownloadOsRoute,
   EIdRoute: EIdRoute,
   IngestSplatRoute: IngestSplatRoute,

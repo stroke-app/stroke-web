@@ -473,7 +473,7 @@ export function PageBody({
 }
 
 type SideNavItem =
-  | { label: React.ReactNode; to: "/docs" | "/docs/mcp"; hash?: never }
+  | { label: React.ReactNode; to: "/docs" | "/docs/mcp" | "/docs/odbc"; hash?: never }
   | { label: React.ReactNode; hash: string; to?: never };
 
 const SIDE_LINK =
@@ -535,6 +535,7 @@ export function DocsNav() {
       items={[
         { label: "Getting started", to: "/docs" },
         { label: "MCP for agents", to: "/docs/mcp" },
+        { label: "ODBC databases", to: "/docs/odbc" },
       ]}
     />
   );
