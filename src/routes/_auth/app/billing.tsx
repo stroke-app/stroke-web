@@ -72,7 +72,7 @@ const BUYER_FAQ = [
   },
   {
     q: "Can I try it first?",
-    a: "Yes. Sign in to the app and a 17-day trial starts for your account, with every feature unlocked. No card needed.",
+    a: "Yes. Sign in to the app and a 30-day trial starts for your account, with every feature unlocked. No card needed.",
   },
   {
     q: "What happens after I pay?",
@@ -543,7 +543,7 @@ function ProOffer({ loading, onBuy }: { loading: boolean; onBuy: () => void }) {
           ))}
         </ul>
         <p className="mt-6 border-t border-border pt-5 text-[15px] text-pretty text-muted-foreground">
-          Try every feature free for 17 days first. No card needed.
+          Try every feature free for 30 days first. No card needed.
         </p>
       </div>
     </section>

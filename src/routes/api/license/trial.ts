@@ -5,7 +5,7 @@ import { db } from "#/lib/db";
 import { deviceTrials } from "#/lib/db/schema";
 
 /** Free-trial length in days. Keep in sync with the desktop app (license.rs). */
-const TRIAL_DAYS = 17;
+const TRIAL_DAYS = 30;
 const DAY_MS = 86_400_000;
 
 /**

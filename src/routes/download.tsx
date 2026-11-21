@@ -89,7 +89,7 @@ function DownloadPage() {
           )
         }
         title="Download Stroke"
-        description="One native app for every database you run, on macOS, Windows and Linux. Every feature is yours for 17 days, without a card."
+        description="One native app for every database you run, on macOS, Windows and Linux. Every feature is yours for 30 days, without a card."
         actions={
           <>
             <SmartDownloadButton size="lg" variant="default" align="center" />

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/terms")({
     seo({
       title: "Terms of Service · Stroke database client",
       description:
-        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 17-day free trial, a one-time $9.99 license for 3 computers, and a source-available app.",
+        "The terms for the Stroke database client, stroke.click, and Stroke licenses: a 30-day free trial, a one-time $9.99 license for 3 computers, and a source-available app.",
       path: "/terms",
       breadcrumbs: [{ name: "Terms of Service", path: "/terms" }],
     }),
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/terms")({
 const HIGHLIGHTS = [
   {
     icon: TimerIcon,
-    title: "Free for 17 days",
+    title: "Free for 30 days",
     body: "Every feature, no card. Once per account and once per computer.",
   },
   {
@@ -44,7 +44,7 @@ function TermsPage() {
   return (
     <LegalPage
       title="Terms of Service"
-      updated="November 19, 2026"
+      updated="November 21, 2026"
       intro="These terms cover the Stroke desktop app, the stroke.click website, and Stroke licenses. They're written to be read. The short version: try the app free, buy a license once and it's yours, and use both in good faith."
       highlights={HIGHLIGHTS}
     >
@@ -82,10 +82,10 @@ function TermsPage() {
       <LegalSection
         number="03"
         title="Free trial"
-        summary="17 days of every feature, once per account and once per computer."
+        summary="30 days of every feature, once per account and once per computer."
       >
         <p>
-          When you first sign in to Stroke, a 17-day trial starts with every feature unlocked. No
+          When you first sign in to Stroke, a 30-day trial starts with every feature unlocked. No
           payment is needed. The trial belongs to your account and to the computer: a second account
           on the same computer continues that computer's trial rather than starting a new one. When
           the trial ends, the Pro features need a license.
