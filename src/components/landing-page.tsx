@@ -36,7 +36,7 @@ import { useEffect, useState } from "react";
 import { FadeUp } from "#/components/amicro/fade-up";
 import { ScrollReveal } from "#/components/amicro/scroll-reveal";
 import { AGENT_COMMANDS, CommandMenu } from "#/components/hero-commands";
-import { HeroDownload } from "#/components/hero-download";
+import { HeroDownload, TerminalInstall } from "#/components/hero-download";
 import { NeonGlyph } from "#/components/landing-mockups";
 import { ArrowLink, GUTTER, LINK, PageShell, Panel, Section, Title } from "#/components/page";
 import { LoopVideo } from "#/components/showcase";
@@ -46,6 +46,7 @@ import { SHIPPED_ENGINES } from "#/lib/engines";
 import { FAQ_ITEMS } from "#/lib/faq";
 import { latestReleaseQueryOptions } from "#/lib/latest-release";
 import { PRO_PRICE, TRIAL_DAYS } from "#/lib/pricing";
+import { usePlatform } from "#/lib/releases";
 import { approvedReviewsQueryOptions } from "#/lib/reviews/functions";
 import { cn } from "#/lib/utils";
 
@@ -111,8 +112,12 @@ function Hero() {
           />
         </Link>
       </FadeUp>
+      {/* Or from a terminal: the one-liner for this system, a tab for the other. */}
+      <FadeUp delay={0.2} className="mt-7 w-full max-w-[34rem]">
+        <HeroInstall />
+      </FadeUp>
       <FadeUp delay={0.24}>
-        <div className="mt-7 space-y-1 text-[14px] leading-relaxed text-faint">
+        <div className="mt-6 space-y-1 text-[14px] leading-relaxed text-faint">
           <p>
             Free for {TRIAL_DAYS} days with every feature · No subscription ·{" "}
             <Link
@@ -130,6 +135,12 @@ function Hero() {
       </FadeUp>
     </section>
   );
+}
+
+/** The install one-liner under the hero, on the tab for this computer. */
+function HeroInstall() {
+  const platform = usePlatform();
+  return <TerminalInstall initial={platform?.os === "windows" ? "windows" : "unix"} />;
 }
 
 // ── Product tour: the app in a device, with a tab per screen ─────────────────
