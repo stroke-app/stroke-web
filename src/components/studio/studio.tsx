@@ -24,6 +24,7 @@ import {
 import { cn } from "#/lib/utils";
 
 import { SqlTab } from "./sql-tab";
+import { StudioThemeMenu, useStudioPalette } from "./studio-theme";
 import { TableTab } from "./table-tab";
 
 const ENGINE_LABEL: Record<string, string> = {
@@ -62,6 +63,8 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
   const [sidebar, setSidebar] = useState(true);
   const [columnsByTable, setColumnsByTable] = useState<Record<string, string[]>>({});
   const sqlSeq = useRef(0);
+  const [palette, setPalette] = useStudioPalette();
+  const tabStrip = useRef<HTMLDivElement>(null);
 
   const loadTables = useCallback(async () => {
     try {
@@ -94,6 +97,13 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // The active tab stays in view when the strip overflows.
+  useEffect(() => {
+    if (!activeId) return;
+    const el = tabStrip.current?.querySelector<HTMLElement>(`[data-tab="${CSS.escape(activeId)}"]`);
+    el?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [activeId, tabs.length]);
 
   const schemas = useMemo(() => [...new Set((tables ?? []).map((t) => t.schema))], [tables]);
   const defaultSchema = schemas.includes("public")
@@ -228,59 +238,72 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
     );
   };
 
-  return (
-    <div className="studio flex h-dvh flex-col bg-background text-foreground">
-      {/* Top bar */}
-      <header className="flex h-11 shrink-0 items-center gap-2 border-b border-border px-2">
-        <button
-          type="button"
-          onClick={() => setSidebar((v) => !v)}
-          className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Toggle the sidebar"
-          title="Toggle the sidebar"
-        >
-          <PanelLeftIcon className="size-4" />
-        </button>
-        <Link to="/" aria-label="Stroke home" className="flex items-center">
-          <StrokeIcon className="size-5" />
-        </Link>
-        <span className="truncate font-mono text-[13px] font-medium">{info.database}</span>
-        <span className="hidden truncate text-[12px] text-muted-foreground sm:inline">
-          {info.label ?? ENGINE_LABEL[info.engine] ?? info.engine} · {info.host}
-        </span>
-        {info.shared && (
-          <span
-            className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11.5px] font-medium text-muted-foreground"
-            title={
-              info.readonly
-                ? "Opened from a share link. You can browse and run SELECT queries; changes are off."
-                : "Opened from a share link. Changes reach the shared database."
-            }
-          >
-            {info.readonly ? "Shared · read-only" : "Shared"}
-          </span>
-        )}
-        <div className="ms-auto flex items-center gap-1">
-          <Link
-            to="/download"
-            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] text-muted-foreground hover:bg-accent hover:text-foreground"
-          >
-            <DownloadIcon className="size-3.5" />
-            <span className="hidden sm:inline">Get the desktop app</span>
-          </Link>
-        </div>
-      </header>
+  const engineLabel = info.label ?? ENGINE_LABEL[info.engine] ?? info.engine;
+  const sidebarToggle = (
+    <button
+      type="button"
+      onClick={() => setSidebar((v) => !v)}
+      className="hidden size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground md:flex"
+      aria-label={sidebar ? "Hide the sidebar" : "Show the sidebar"}
+      title={sidebar ? "Hide the sidebar" : "Show the sidebar"}
+      aria-pressed={sidebar}
+    >
+      <PanelLeftIcon className="size-4" />
+    </button>
+  );
 
+  return (
+    // No top bar: what it said (the database, the engine, Shared) heads the
+    // sidebar, and the rest went to the status bar, so the rows start right
+    // under the tabs.
+    <div
+      className="studio flex h-dvh flex-col bg-background text-foreground"
+      data-palette={palette || undefined}
+    >
       <div className="flex min-h-0 flex-1">
         {/* Sidebar */}
         {sidebar && (
-          <aside className="hidden w-64 shrink-0 flex-col border-r border-border md:flex">
-            <div className="flex items-center gap-1 p-2">
+          <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
+            {/* Which database this is, where the top bar used to say it. */}
+            <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border px-2">
+              <Link
+                to="/"
+                aria-label="Stroke home"
+                className="flex size-7 shrink-0 items-center justify-center rounded-md hover:bg-accent"
+              >
+                <StrokeIcon className="size-4.5" />
+              </Link>
+              <div className="min-w-0 flex-1 leading-tight">
+                <p className="truncate font-mono text-[12.5px] font-medium" title={info.database}>
+                  {info.database}
+                </p>
+                <p
+                  className="truncate text-[11px] text-muted-foreground"
+                  title={`${engineLabel} · ${info.host}`}
+                >
+                  {engineLabel} · {info.host}
+                </p>
+              </div>
+              {sidebarToggle}
+            </div>
+            {info.shared && (
+              <p
+                className="mx-2 mt-2 rounded-md bg-muted px-2 py-1 text-[11.5px] text-muted-foreground"
+                title={
+                  info.readonly
+                    ? "Opened from a share link. You can browse and run SELECT queries; changes are off."
+                    : "Opened from a share link. Changes reach the shared database."
+                }
+              >
+                {info.readonly ? "Shared with you · read-only" : "Shared with you"}
+              </p>
+            )}
+            <div className="flex items-center gap-1 p-2 pb-1">
               {multiSchema ? (
                 <select
                   value={schema}
                   onChange={(e) => setSchemaPick(e.target.value)}
-                  className="h-8 min-w-0 flex-1 rounded-md border border-border bg-background px-2 font-mono text-[12.5px]"
+                  className="h-7 min-w-0 flex-1 rounded-md border border-border bg-background px-2 font-mono text-[12.5px]"
                   aria-label="Schema"
                 >
                   {schemas.map((s) => (
@@ -290,14 +313,14 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                   ))}
                 </select>
               ) : (
-                <span className="flex-1 truncate px-1 font-mono text-[12.5px] text-muted-foreground">
+                <span className="flex-1 truncate px-1 font-mono text-[12px] text-muted-foreground">
                   {schema}
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => void loadTables()}
-                className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+                className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                 aria-label="Reload tables"
                 title="Reload tables"
               >
@@ -306,25 +329,25 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
               <button
                 type="button"
                 onClick={() => newSql()}
-                className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+                className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                 aria-label="New SQL console"
                 title="New SQL console"
               >
                 <TerminalIcon className="size-3.5" />
               </button>
             </div>
-            <label className="mx-2 mb-1 flex h-8 items-center gap-2 rounded-md border border-border px-2 text-[13px]">
+            <label className="mx-2 mb-1 flex h-7 items-center gap-2 rounded-md border border-border bg-background px-2 text-[12.5px]">
               <SearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
               <input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                placeholder="Filter tables…"
+                placeholder="Filter tables"
                 className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-faint"
                 aria-label="Filter tables"
               />
             </label>
             <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-2" aria-label="Tables">
-              <p className="flex items-center justify-between px-2 pt-2 pb-1 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              <p className="flex items-center justify-between px-2 pt-2 pb-1 text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase">
                 Tables <span className="tabular-nums">{plain.length}</span>
               </p>
               {plain.map(sideItem)}
@@ -333,7 +356,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
               )}
               {views.length > 0 && (
                 <>
-                  <p className="flex items-center justify-between px-2 pt-3 pb-1 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+                  <p className="flex items-center justify-between px-2 pt-3 pb-1 text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase">
                     Views <span className="tabular-nums">{views.length}</span>
                   </p>
                   {views.map(sideItem)}
@@ -344,63 +367,75 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
         )}
 
         <main className="flex min-w-0 flex-1 flex-col">
-          {/* Tab bar */}
-          <div
-            className="flex h-9 shrink-0 items-stretch gap-0.5 overflow-x-auto border-b border-border px-1.5 pt-1"
-            role="tablist"
-          >
-            {tabs.map((t) => {
-              const on = t.id === activeId;
-              const label = t.kind === "table" ? t.table.name : t.title;
-              const Icon =
-                t.kind === "table" ? (t.table.kind === "view" ? EyeIcon : TableIcon) : TerminalIcon;
-              return (
-                <div
-                  key={t.id}
-                  className={cn(
-                    "group/tab flex max-w-52 min-w-24 shrink-0 items-center rounded-t-md border border-b-0",
-                    on ? "border-border bg-background" : "border-transparent hover:bg-accent/50",
-                  )}
-                  onAuxClick={(e) => e.button === 1 && closeTab(t.id)}
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={on}
-                    onClick={() => setActiveId(t.id)}
-                    className={cn(
-                      "flex min-w-0 flex-1 items-center gap-1.5 pl-2.5 text-[12.5px]",
-                      on ? "text-foreground" : "text-muted-foreground",
-                    )}
-                  >
-                    <Icon className="size-3.5 shrink-0 opacity-70" />
-                    <span className={cn("truncate", t.kind === "table" && "font-mono")}>
-                      {label}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => closeTab(t.id)}
-                    aria-label={`Close ${label}`}
-                    className={cn(
-                      "mx-1 flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground",
-                      !on && "opacity-0 group-hover/tab:opacity-100",
-                    )}
-                  >
-                    <XIcon className="size-3" />
-                  </button>
-                </div>
-              );
-            })}
-            <button
-              type="button"
-              onClick={() => newSql()}
-              aria-label="New SQL console"
-              title="New SQL console"
-              className="ms-0.5 flex w-7 shrink-0 items-center justify-center self-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+          {/* Tab bar: the desktop app's pill tabs. With the sidebar hidden its
+              toggle leads the strip, which is all the chrome there is. */}
+          <div className="flex h-11 shrink-0 items-center gap-1 border-b border-border px-2">
+            {!sidebar && sidebarToggle}
+            <div
+              ref={tabStrip}
+              className="studio-tabs flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto"
+              role="tablist"
+              aria-label="Open tabs"
             >
-              <PlusIcon className="size-3.5" />
-            </button>
+              {tabs.map((t) => {
+                const on = t.id === activeId;
+                const label = t.kind === "table" ? t.table.name : t.title;
+                const Icon =
+                  t.kind === "table"
+                    ? t.table.kind === "view"
+                      ? EyeIcon
+                      : TableIcon
+                    : TerminalIcon;
+                return (
+                  <div
+                    key={t.id}
+                    data-tab={t.id}
+                    className={cn(
+                      "group/tab flex h-7 max-w-56 min-w-0 shrink-0 items-center rounded-md transition-colors duration-150",
+                      on
+                        ? "bg-accent text-foreground"
+                        : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+                    )}
+                    onAuxClick={(e) => e.button === 1 && closeTab(t.id)}
+                  >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={on}
+                      onClick={() => setActiveId(t.id)}
+                      className="flex h-full min-w-0 flex-1 items-center gap-1.5 rounded-md ps-2.5 pe-1 text-[12.5px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      title={t.kind === "table" ? keyOf(t.table) : t.title}
+                    >
+                      <Icon className="size-3.5 shrink-0 opacity-70" />
+                      <span className={cn("truncate", t.kind === "table" && "font-mono")}>
+                        {label}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => closeTab(t.id)}
+                      aria-label={`Close ${label}`}
+                      title="Close (middle-click)"
+                      className={cn(
+                        "me-1 flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-background/70 hover:text-foreground",
+                        !on && "opacity-0 group-hover/tab:opacity-100 focus-visible:opacity-100",
+                      )}
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => newSql()}
+                aria-label="New SQL console"
+                title="New SQL console"
+                className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                <PlusIcon className="size-3.5" />
+              </button>
+            </div>
           </div>
 
           {/* Mobile: tables as a picker */}
@@ -467,16 +502,25 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
         </main>
       </div>
 
-      {/* Status bar */}
+      {/* Status bar: the connection, then the things that used to crowd the
+          top bar (the theme, the desktop app). */}
       <footer className="flex h-7 shrink-0 items-center gap-3 border-t border-border px-3 text-[11.5px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-500" />
-          {info.label ?? ENGINE_LABEL[info.engine] ?? info.engine}
+          <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-500" />
+          {engineLabel}
         </span>
         <span className="truncate font-mono">{info.database}</span>
-        <span className="hidden truncate sm:inline">{info.version}</span>
+        <span className="hidden truncate lg:inline">{info.version}</span>
         <span className="ms-auto tabular-nums">{tables.length} tables</span>
-        <span className="hidden sm:inline">strokedb {info.bridge ?? "0.1"}</span>
+        <StudioThemeMenu palette={palette} onPalette={setPalette} />
+        <Link
+          to="/download"
+          className="hidden h-5 items-center gap-1 rounded px-1.5 hover:bg-accent hover:text-foreground sm:flex"
+        >
+          <DownloadIcon aria-hidden="true" className="size-3" />
+          Desktop app
+        </Link>
+        <span className="hidden xl:inline">strokedb {info.bridge ?? "0.1"}</span>
       </footer>
     </div>
   );

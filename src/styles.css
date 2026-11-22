@@ -586,6 +586,69 @@ html.light .studio {
   --cm-operator: #0e7490;
 }
 
+/* Web studio tab strip: a hairline scrollbar, and the edge fades when tabs
+   run past it so it reads as more, not as cut off. */
+.studio-tabs {
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 8px,
+    black calc(100% - 16px),
+    transparent 100%
+  );
+}
+.studio-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Web studio palettes (studio-theme.tsx). Each sits on the site theme it
+   names as its base (Paper on light, Graphite and Midnight on dark) and only
+   moves surfaces, lines and the code colours. */
+.studio[data-palette="graphite"] {
+  --background: oklch(0.205 0.004 260);
+  --card: oklch(0.23 0.004 260);
+  --popover: oklch(0.25 0.004 260);
+  --muted: oklch(0.25 0.004 260);
+  --accent: oklch(0.27 0.005 260);
+  --secondary: oklch(0.27 0.005 260);
+  --muted-foreground: oklch(0.74 0.006 260);
+  --faint: oklch(0.6 0.006 260);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --raised: oklch(0.24 0.004 260);
+}
+.studio[data-palette="midnight"] {
+  --background: oklch(0.17 0.03 265);
+  --card: oklch(0.2 0.035 265);
+  --popover: oklch(0.22 0.035 265);
+  --muted: oklch(0.22 0.035 265);
+  --accent: oklch(0.25 0.04 265);
+  --secondary: oklch(0.25 0.04 265);
+  --foreground: oklch(0.95 0.01 265);
+  --muted-foreground: oklch(0.74 0.03 265);
+  --faint: oklch(0.6 0.03 265);
+  --border: oklch(0.8 0.05 265 / 12%);
+  --input: oklch(0.8 0.05 265 / 16%);
+  --raised: oklch(0.2 0.035 265);
+  --cm-keyword: #c4a7ff;
+  --cm-name: #7dd3fc;
+}
+.studio[data-palette="paper"] {
+  --background: oklch(0.985 0.008 85);
+  --card: oklch(0.97 0.012 85);
+  --popover: oklch(0.99 0.006 85);
+  --muted: oklch(0.955 0.014 85);
+  --accent: oklch(0.94 0.016 85);
+  --secondary: oklch(0.94 0.016 85);
+  --foreground: oklch(0.2 0.015 60);
+  --muted-foreground: oklch(0.47 0.02 60);
+  --faint: oklch(0.58 0.02 60);
+  --border: oklch(0.35 0.03 60 / 12%);
+  --input: oklch(0.35 0.03 60 / 16%);
+  --raised: oklch(0.97 0.012 85);
+}
+
 /*
  * A bezel instead of a drop shadow for product pictures and panels: the
  * element keeps its own hairline, and a soft rim of the page's ink sits
