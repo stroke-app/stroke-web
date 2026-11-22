@@ -21,7 +21,7 @@ import {
   fileStem,
 } from "#/components/share/share-export";
 import { menuItem, menuPopup, textBtn } from "#/components/share/share-ui";
-import { PresenceContext, type CellRef } from "#/lib/relay/presence";
+import { PresenceContext, rowKey, type CellRef } from "#/lib/relay/presence";
 import {
   cellText,
   type BridgeClient,
@@ -157,7 +157,7 @@ export function TableTab({
   const rowKeys = useMemo(() => {
     const cols = page?.columns ?? [];
     return (page?.rows ?? []).map((row, r) =>
-      pk.length ? JSON.stringify(pk.map((c) => row[cols.indexOf(c)] ?? null)) : `#${offset + r}`,
+      pk.length ? rowKey(pk.map((c) => row[cols.indexOf(c)])) : `#${offset + r}`,
     );
   }, [page, pk, offset]);
   const marks = useMemo<PeerMark[]>(() => {
