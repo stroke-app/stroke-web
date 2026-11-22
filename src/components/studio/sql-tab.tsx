@@ -1,8 +1,9 @@
 import { Menu } from "@base-ui/react/menu";
-import { HistoryIcon, Loader2Icon, PlayIcon, TriangleAlertIcon } from "lucide-react";
+import { HistoryIcon, Loader2Icon, PlayIcon, TriangleAlertIcon, UsersIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { menuItem, menuPopup, textBtn } from "#/components/share/share-ui";
+import type { SharedConsole } from "#/lib/relay/shared-console";
 import type { BridgeClient, Engine, Result } from "#/lib/studio-bridge";
 import { cn } from "#/lib/utils";
 
@@ -32,6 +33,7 @@ export function SqlTab({
   schema,
   initial = "",
   onRanWrite,
+  shared,
 }: {
   id: string;
   client: BridgeClient;
@@ -40,9 +42,12 @@ export function SqlTab({
   initial?: string;
   /** A statement that changes data or the schema ran: refresh the sidebar. */
   onRanWrite?: () => void;
+  /** The shared console: everyone on the link edits this one document. */
+  shared?: SharedConsole | null;
 }) {
   const storeKey = `stroke-studio-sql:${id}`;
   const [sql, setSql] = useState(() => {
+    if (shared) return shared.text.toString();
     try {
       return sessionStorage.getItem(storeKey) ?? initial;
     } catch {
@@ -121,7 +126,14 @@ export function SqlTab({
                   <Menu.Item
                     key={h}
                     className={cn(menuItem, "h-auto py-1.5")}
-                    onClick={() => setSql(h)}
+                    onClick={() => {
+                      if (!shared) return setSql(h);
+                      // Into the shared document, so everyone gets it.
+                      shared.doc.transact(() => {
+                        shared.text.delete(0, shared.text.length);
+                        shared.text.insert(0, h);
+                      });
+                    }}
                   >
                     <span className="line-clamp-2 font-mono text-[12px] whitespace-pre-wrap">
                       {h}
@@ -132,6 +144,15 @@ export function SqlTab({
             </Menu.Positioner>
           </Menu.Portal>
         </Menu.Root>
+        {shared && (
+          <span
+            className="ms-1 inline-flex items-center gap-1 text-[12px] text-muted-foreground"
+            title="Everyone on this link edits this console together. Run runs it for you."
+          >
+            <UsersIcon className="size-3.5" aria-hidden="true" />
+            Shared
+          </span>
+        )}
         <span className="ms-auto text-[12px] text-muted-foreground tabular-nums">
           {summary}
           {result && ` · ${result.durationMs} ms`}
@@ -145,6 +166,7 @@ export function SqlTab({
           engine={engine}
           schema={schema}
           handleRef={editor}
+          collab={shared}
           autoFocus
           placeholder="Write SQL. Mod+Enter runs the selection, or everything."
         />

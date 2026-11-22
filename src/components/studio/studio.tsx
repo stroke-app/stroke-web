@@ -9,6 +9,7 @@ import {
   SearchIcon,
   TableIcon,
   TerminalIcon,
+  UsersIcon,
   XIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 
 import { StrokeIcon } from "#/components/stroke-icon";
 import { PresenceContext, usePresence, type Peer } from "#/lib/relay/presence";
+import { useSharedConsole } from "#/lib/relay/shared-console";
 import {
   BridgeError,
   bridgeClient,
@@ -38,7 +40,11 @@ const ENGINE_LABEL: Record<string, string> = {
 
 type Tab =
   | { id: string; kind: "table"; table: TableRef }
-  | { id: string; kind: "sql"; title: string; initial?: string };
+  | { id: string; kind: "sql"; title: string; initial?: string; shared?: boolean };
+
+/** The shared console's tab, and where it says people are (presence `tab`). */
+const SHARED_CONSOLE_ID = "sql:shared";
+const CONSOLE_TAB = "console";
 
 const keyOf = (t: { schema: string; name: string }) => `${t.schema}.${t.name}`;
 const fmtCount = (n: number | null | undefined) =>
@@ -70,6 +76,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
     session.kind === "relay" ? session.key : null,
   );
   const { publish } = presence;
+  const sharedConsole = useSharedConsole(session.kind === "relay" ? presence : null);
   const sqlSeq = useRef(0);
   const [palette, setPalette] = useStudioPalette();
   const tabStrip = useRef<HTMLDivElement>(null);
@@ -123,7 +130,12 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
 
   // Others see which table this page is on.
   const activeTable = tabs.find((t) => t.id === activeId);
-  const activeKey = activeTable?.kind === "table" ? keyOf(activeTable.table) : null;
+  const activeKey =
+    activeTable?.kind === "table"
+      ? keyOf(activeTable.table)
+      : activeTable?.kind === "sql" && activeTable.shared
+        ? CONSOLE_TAB
+        : null;
   useEffect(() => {
     publish({ tab: activeKey, cell: null, pointer: null, editing: null });
   }, [activeKey, publish]);
@@ -207,6 +219,15 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
       { id, kind: "sql", title: `SQL ${cur.filter((t) => t.kind === "sql").length + 1}`, initial },
     ]);
     setActiveId(id);
+  }
+  /** The one console everyone on the link edits together. */
+  function openSharedConsole() {
+    setTabs((cur) =>
+      cur.some((t) => t.id === SHARED_CONSOLE_ID)
+        ? cur
+        : [...cur, { id: SHARED_CONSOLE_ID, kind: "sql", title: "Shared console", shared: true }],
+    );
+    setActiveId(SHARED_CONSOLE_ID);
   }
   function closeTab(id: string) {
     setTabs((cur) => {
@@ -418,7 +439,9 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                       ? t.table.kind === "view"
                         ? EyeIcon
                         : TableIcon
-                      : TerminalIcon;
+                      : t.shared
+                        ? UsersIcon
+                        : TerminalIcon;
                   return (
                     <div
                       key={t.id}
@@ -443,10 +466,14 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                         <span className={cn("truncate", t.kind === "table" && "font-mono")}>
                           {label}
                         </span>
-                        {t.kind === "table" && (
+                        {t.kind === "table" ? (
                           <PeerDots
                             peers={presence.peers.filter((p) => p.tab === keyOf(t.table))}
                           />
+                        ) : (
+                          t.shared && (
+                            <PeerDots peers={presence.peers.filter((p) => p.tab === CONSOLE_TAB)} />
+                          )
                         )}
                       </button>
                       <button
@@ -473,6 +500,18 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                 >
                   <PlusIcon className="size-3.5" />
                 </button>
+                {sharedConsole && !tabs.some((t) => t.id === SHARED_CONSOLE_ID) && (
+                  <button
+                    type="button"
+                    onClick={openSharedConsole}
+                    title="One SQL console everyone on this link edits together"
+                    className="flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2 text-[12.5px] text-muted-foreground hover:bg-accent hover:text-foreground"
+                  >
+                    <UsersIcon className="size-3.5" aria-hidden="true" />
+                    Shared console
+                    <PeerDots peers={presence.peers.filter((p) => p.tab === CONSOLE_TAB)} />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -520,6 +559,7 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
                     schema={completion}
                     initial={t.initial}
                     onRanWrite={() => void loadTables()}
+                    shared={t.shared ? sharedConsole : null}
                   />
                 )}
               </div>

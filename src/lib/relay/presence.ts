@@ -56,7 +56,15 @@ type Message =
   | { t: "hello" }
   | { t: "changed"; table: string }
   /** The host (an agent through `strokedb mcp`, or the app) shows everyone a table. */
-  | { t: "open"; table: string };
+  | { t: "open"; table: string }
+  | DocMessage;
+
+/**
+ * The shared console's document (shared-console.ts): a Yjs update, a request
+ * for everyone's state from someone who just joined, and cursors (awareness).
+ * Base64, sealed like everything else.
+ */
+export type DocMessage = { t: "y"; u: string } | { t: "y-sync" } | { t: "aw"; u: string };
 
 const NAMES = [
   "Otter",
@@ -127,6 +135,8 @@ export function usePresence(
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const changedHandlers = useRef(new Set<(table: string) => void>());
   const openHandlers = useRef(new Set<(table: string, by: string) => void>());
+  const docHandlers = useRef(new Set<(msg: DocMessage) => void>());
+  const connectHandlers = useRef(new Set<() => void>());
   /** Who each sender said they are, for messages only the host may send. */
   const senders = useRef(new Map<number, { name: string; role: "host" | "viewer" }>());
 
@@ -165,6 +175,7 @@ export function usePresence(
         // The keepalive doubles as a heartbeat: others drop a cursor that
         // has said nothing for STALE_MS.
         ping = setInterval(() => sendState(), 20_000);
+        for (const h of connectHandlers.current) h();
       };
       ws.onmessage = async (ev) => {
         let raw: { from?: number; gone?: number; iv?: string; ct?: string };
@@ -193,7 +204,11 @@ export function usePresence(
         const from = raw.from;
         if (msg.t === "hello") sendState();
         else if (msg.t === "changed") for (const h of changedHandlers.current) h(msg.table);
-        else if (msg.t === "open" && typeof msg.table === "string") {
+        else if ((msg.t === "y" || msg.t === "aw") && typeof msg.u === "string") {
+          for (const h of docHandlers.current) h(msg);
+        } else if (msg.t === "y-sync") {
+          for (const h of docHandlers.current) h(msg);
+        } else if (msg.t === "open" && typeof msg.table === "string") {
           const sender = senders.current.get(from);
           if (sender?.role === "host")
             for (const h of openHandlers.current) h(msg.table, sender.name);
@@ -272,7 +287,20 @@ export function usePresence(
     return () => void openHandlers.current.delete(fn);
   }, []);
 
-  return { peers, me, publish, announceChanged, onChanged, onOpen };
+  /** Send a shared-document message now (not batched like positions). */
+  const sendDoc = useCallback((msg: DocMessage) => void send(msg), [send]);
+  /** Run `fn` for each shared-document message from the others. */
+  const onDoc = useCallback((fn: (msg: DocMessage) => void) => {
+    docHandlers.current.add(fn);
+    return () => void docHandlers.current.delete(fn);
+  }, []);
+  /** Run `fn` each time the socket (re)connects, to catch up on what was missed. */
+  const onConnect = useCallback((fn: () => void) => {
+    connectHandlers.current.add(fn);
+    return () => void connectHandlers.current.delete(fn);
+  }, []);
+
+  return { peers, me, publish, announceChanged, onChanged, onOpen, sendDoc, onDoc, onConnect };
 }
 
 /** The studio's presence, for the tabs and grids below it; null when not shared. */

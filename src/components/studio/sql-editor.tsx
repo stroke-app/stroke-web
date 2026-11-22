@@ -23,7 +23,10 @@ import {
 } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
 import { useEffect, useRef } from "react";
+import { yCollab, yUndoManagerKeymap } from "y-codemirror.next";
+import * as Y from "yjs";
 
+import type { SharedConsole } from "#/lib/relay/shared-console";
 import type { Engine } from "#/lib/studio-bridge";
 
 /** Colours from the site's tokens (.studio in styles.css), so light and dark both read. */
@@ -101,6 +104,7 @@ export function SqlEditor({
   handleRef,
   placeholder = "",
   autoFocus = false,
+  collab,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -110,6 +114,8 @@ export function SqlEditor({
   handleRef?: React.RefObject<SqlEditorHandle | null>;
   placeholder?: string;
   autoFocus?: boolean;
+  /** Edit the shared console's document with everyone else (live cursors). */
+  collab?: SharedConsole | null;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
@@ -125,10 +131,15 @@ export function SqlEditor({
     const v = new EditorView({
       parent: host.current,
       state: EditorState.create({
-        doc: value,
+        doc: collab ? collab.text.toString() : value,
         extensions: [
           lineNumbers(),
-          history(),
+          // Shared: undo takes back only this person's typing (Yjs), not others'.
+          collab
+            ? yCollab(collab.text, collab.awareness, {
+                undoManager: new Y.UndoManager(collab.text),
+              })
+            : history(),
           drawSelection(),
           highlightActiveLine(),
           bracketMatching(),
@@ -151,7 +162,7 @@ export function SqlEditor({
             indentWithTab,
             ...completionKeymap,
             ...searchKeymap,
-            ...historyKeymap,
+            ...(collab ? yUndoManagerKeymap : historyKeymap),
             ...defaultKeymap,
           ]),
           EditorView.updateListener.of((u) => {
@@ -179,13 +190,15 @@ export function SqlEditor({
     });
   }, [engine, schema]);
 
-  // A value set from outside (history, a new tab): replace the document.
+  // A value set from outside (history, a new tab): replace the document. A
+  // shared console's document is Yjs's: changes go through it, not here.
   useEffect(() => {
     const v = view.current;
+    if (collab) return;
     if (v && v.state.doc.toString() !== value) {
       v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: value } });
     }
-  }, [value]);
+  }, [value, collab]);
 
   useEffect(() => {
     if (!handleRef) return;
