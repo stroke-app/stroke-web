@@ -54,7 +54,9 @@ export interface Peer extends Presence {
 type Message =
   | ({ t: "state"; name: string; color: string; role: "host" | "viewer" } & Presence)
   | { t: "hello" }
-  | { t: "changed"; table: string };
+  | { t: "changed"; table: string }
+  /** The host (an agent through `strokedb mcp`, or the app) shows everyone a table. */
+  | { t: "open"; table: string };
 
 const NAMES = [
   "Otter",
@@ -124,6 +126,9 @@ export function usePresence(
   const key = useRef<CryptoKey | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const changedHandlers = useRef(new Set<(table: string) => void>());
+  const openHandlers = useRef(new Set<(table: string, by: string) => void>());
+  /** Who each sender said they are, for messages only the host may send. */
+  const senders = useRef(new Map<number, { name: string; role: "host" | "viewer" }>());
 
   const send = useCallback(async (msg: Message) => {
     const ws = sock.current;
@@ -188,7 +193,11 @@ export function usePresence(
         const from = raw.from;
         if (msg.t === "hello") sendState();
         else if (msg.t === "changed") for (const h of changedHandlers.current) h(msg.table);
-        else if (msg.t === "state") {
+        else if (msg.t === "open" && typeof msg.table === "string") {
+          const sender = senders.current.get(from);
+          if (sender?.role === "host")
+            for (const h of openHandlers.current) h(msg.table, sender.name);
+        } else if (msg.t === "state") {
           const peer: Peer = {
             id: from,
             name: String(msg.name).slice(0, 40),
@@ -200,6 +209,7 @@ export function usePresence(
             editing: msg.editing ?? null,
             seen: Date.now(),
           };
+          senders.current.set(from, { name: peer.name, role: peer.role });
           setPeers((ps) => [...ps.filter((p) => p.id !== from), peer].sort((a, b) => a.id - b.id));
         }
       };
@@ -256,7 +266,13 @@ export function usePresence(
     return () => void changedHandlers.current.delete(fn);
   }, []);
 
-  return { peers, me, publish, announceChanged, onChanged };
+  /** Run `fn` when the host shows everyone a table. */
+  const onOpen = useCallback((fn: (table: string, by: string) => void) => {
+    openHandlers.current.add(fn);
+    return () => void openHandlers.current.delete(fn);
+  }, []);
+
+  return { peers, me, publish, announceChanged, onChanged, onOpen };
 }
 
 /** The studio's presence, for the tabs and grids below it; null when not shared. */

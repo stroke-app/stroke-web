@@ -11,13 +11,15 @@ import {
   TerminalIcon,
   XIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { StrokeIcon } from "#/components/stroke-icon";
 import { PresenceContext, usePresence, type Peer } from "#/lib/relay/presence";
 import {
   BridgeError,
   bridgeClient,
+  findTable,
   type BridgeInfo,
   type Session,
   type TableRef,
@@ -88,7 +90,11 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
       setTables(t);
       setTabs((cur) => {
         if (cur.length) return cur;
-        const first = t.find((x) => x.kind === "table") ?? t[0];
+        // The link can name the table to start on (an agent's "show me users").
+        const first =
+          (session.open ? findTable(t, session.open) : undefined) ??
+          t.find((x) => x.kind === "table") ??
+          t[0];
         const tab: Tab = first
           ? { id: `t:${keyOf(first)}`, kind: "table", table: first }
           : { id: "sql:1", kind: "sql", title: "SQL 1" };
@@ -98,11 +104,22 @@ export function Studio({ session, onLeave }: { session: Session; onLeave: () => 
     } catch (e) {
       setError(e instanceof BridgeError ? e : new BridgeError(String(e)));
     }
-  }, [client]);
+  }, [client, session.open]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // The host showing everyone a table: an AI agent through `strokedb mcp`.
+  const { onOpen } = presence;
+  const showTable = useEffectEvent((ref: string, by: string) => {
+    const t = tables ? findTable(tables, ref) : undefined;
+    if (!t) return;
+    setSchemaPick(t.schema);
+    openTable(t);
+    toast(`${by} opened ${t.name}`);
+  });
+  useEffect(() => onOpen(showTable), [onOpen]);
 
   // Others see which table this page is on.
   const activeTable = tabs.find((t) => t.id === activeId);

@@ -95,6 +95,24 @@ function StudioLanding() {
         ))}
       </section>
 
+      <section className={cn(WRAP, "pb-16")}>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-[17px] font-[510]">Let your AI agent show you the data</h2>
+          <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-pretty text-muted-foreground">
+            Claude Code, Codex or any MCP client can read the database and open a table for you,
+            even from a cloud box. Ask it to show you the users table: you get a link that opens it
+            here or in the Stroke app, and later asks switch the open studio to the next table.
+            Read-only, end-to-end encrypted.
+          </p>
+          <div className="mt-5 grid max-w-2xl gap-3">
+            <CommandCard
+              label="Add it to Claude Code"
+              command="claude mcp add strokedb -- npx -y strokedb mcp"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className={cn(WRAP, "pb-24")}>
         <div className="flex flex-col items-start gap-5 rounded-xl border border-border bg-card p-6 md:flex-row md:items-center md:justify-between">
           <div>
