@@ -410,9 +410,19 @@ export function DataGrid({
                     </div>
                   )}
                   {box && (
+                    // Above the cell, or under it when the header leaves no room.
                     <span
-                      className="pointer-events-none absolute z-[8] -translate-y-full rounded-t-sm px-1.5 py-px font-sans text-[10.5px] leading-4 font-medium whitespace-nowrap text-white"
-                      style={{ left: box.left, top: box.top, background: p.color }}
+                      className={cn(
+                        "pointer-events-none absolute z-[8] px-1.5 py-px font-sans text-[10.5px] leading-4 font-medium whitespace-nowrap text-white",
+                        box.top < scrollTop + 18
+                          ? "rounded-b-sm"
+                          : "-translate-y-full rounded-t-sm",
+                      )}
+                      style={{
+                        left: box.left,
+                        top: box.top < scrollTop + 18 ? box.top + ROW_H : box.top,
+                        background: p.color,
+                      }}
                     >
                       {p.name}
                       {p.editing ? " is typing" : ""}

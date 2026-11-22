@@ -13,10 +13,22 @@ import { importKey, openSealed, seal, type Sealed } from "./relay-crypto";
  * differently, and a cell is the same cell everywhere.
  */
 
+/**
+ * A row's key as every side writes it: the primary key values as strings, so
+ * `1` from one driver and `"1"` from another are the same row.
+ */
+export function rowKey(values: unknown[]): string {
+  return JSON.stringify(
+    values.map((v) =>
+      v === null || v === undefined ? null : typeof v === "object" ? JSON.stringify(v) : String(v),
+    ),
+  );
+}
+
 /** A cell, wherever it is on someone's screen. */
 export interface CellRef {
   table: string;
-  /** The row's primary key values as JSON, or `#<n>` without one. */
+  /** The row's key from `rowKey`, or `#<n>` without a primary key. */
   row: string;
   col: string;
 }
