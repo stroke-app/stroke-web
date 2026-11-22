@@ -29,8 +29,12 @@ const MAX_PENDING = 32;
 const MAX_CALL_BYTES = 1.5 * 1024 * 1024;
 /** People in one room's presence channel at once. */
 const MAX_PEERS = 32;
-/** One presence message (a cursor, a draft value): small on purpose. */
-const MAX_PRESENCE_BYTES = 16 * 1024;
+/**
+ * One presence message: a cursor or a draft value is small, but the shared
+ * console sends its whole document to someone joining, so there is room for a
+ * long query, sealed and base64 (about 1.4x the text).
+ */
+const MAX_PRESENCE_BYTES = 256 * 1024;
 /** A claimed room stays claimed this long after the host leaves, so a viewer can't take it over. */
 const ROOM_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
