@@ -27,6 +27,10 @@ const CALL_TIMEOUT_MS = 60_000;
 const MAX_PENDING = 32;
 /** A call body (the bridge itself takes 1MB). */
 const MAX_CALL_BYTES = 1.5 * 1024 * 1024;
+/** People in one room's presence channel at once. */
+const MAX_PEERS = 32;
+/** One presence message (a cursor, a draft value): small on purpose. */
+const MAX_PRESENCE_BYTES = 16 * 1024;
 /** A claimed room stays claimed this long after the host leaves, so a viewer can't take it over. */
 const ROOM_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -47,13 +51,17 @@ export class StudioRelay extends DurableObject {
   private host: WebSocket | null = null;
   private seq = 0;
   private pending = new Map<number, (reply: Sealed | { error: string }) => void>();
+  /** Presence sockets by their number in this room (live cursors and edits). */
+  private peers = new Map<number, WebSocket>();
+  private peerSeq = 0;
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const action = url.pathname.split("/").pop();
     if (action === "host") return this.acceptHost(request, url);
     if (action === "call" && request.method === "POST") return this.call(request);
-    if (action === "status") return json(200, { online: !!this.host });
+    if (action === "presence") return this.acceptPeer(request);
+    if (action === "status") return json(200, { online: !!this.host, here: this.peers.size });
     return json(404, { error: "Not found" });
   }
 
@@ -111,6 +119,60 @@ export class StudioRelay extends DurableObject {
     server.addEventListener("close", gone);
     server.addEventListener("error", gone);
     return new Response(null, { status: 101, webSocket: client });
+  }
+
+  /**
+   * Live presence: everyone in the room (the sharing app and each studio page)
+   * holds one socket, and every message is passed to all the others as it
+   * came, with the sender's number. The messages are sealed with the link's
+   * key, so this object relays cursors and edits it cannot read. It says only
+   * when someone leaves, so the others can drop their cursor.
+   */
+  private acceptPeer(request: Request): Response {
+    if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
+      return json(426, { error: "Expected a WebSocket" });
+    }
+    if (this.peers.size >= MAX_PEERS) return json(429, { error: "This shared studio is full." });
+    const pair = new WebSocketPair();
+    const [client, server] = Object.values(pair) as [WebSocket, WebSocket];
+    server.accept();
+    const id = ++this.peerSeq;
+    this.peers.set(id, server);
+    server.addEventListener("message", (event) => {
+      if (typeof event.data !== "string" || event.data.length > MAX_PRESENCE_BYTES) return;
+      let msg: { iv?: unknown; ct?: unknown; ping?: unknown };
+      try {
+        msg = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      if (msg.ping) {
+        server.send('{"pong":1}');
+        return;
+      }
+      if (typeof msg.iv !== "string" || typeof msg.ct !== "string") return;
+      this.broadcast(id, JSON.stringify({ from: id, iv: msg.iv, ct: msg.ct }));
+    });
+    const gone = () => {
+      if (!this.peers.delete(id)) return;
+      this.broadcast(id, JSON.stringify({ gone: id }));
+    };
+    server.addEventListener("close", gone);
+    server.addEventListener("error", gone);
+    // Its own number, so it can ignore nothing and others can address it.
+    server.send(JSON.stringify({ you: id }));
+    return new Response(null, { status: 101, webSocket: client });
+  }
+
+  private broadcast(from: number, text: string) {
+    for (const [id, sock] of this.peers) {
+      if (id === from) continue;
+      try {
+        sock.send(text);
+      } catch {
+        this.peers.delete(id);
+      }
+    }
   }
 
   private async call(request: Request): Promise<Response> {

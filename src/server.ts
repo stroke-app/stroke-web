@@ -28,10 +28,10 @@ export default {
     env: { STUDIO_RELAY: DurableObjectNamespace },
     ctx: ExecutionContext,
   ) {
-    // Shared studio (Labs): /api/relay/<room>/(host|call|status) goes to that
+    // Shared studio (Labs): /api/relay/<room>/(host|call|status|presence) goes to that
     // room's relay object, before the app router.
     const url = new URL(request.url);
-    const m = url.pathname.match(/^\/api\/relay\/([^/]+)\/(host|call|status)$/);
+    const m = url.pathname.match(/^\/api\/relay\/([^/]+)\/(host|call|status|presence)$/);
     if (m) {
       if (!ROOM_RE.test(m[1])) return new Response('{"error":"Bad room"}', { status: 400 });
       const stub = env.STUDIO_RELAY.get(env.STUDIO_RELAY.idFromName(m[1]));
