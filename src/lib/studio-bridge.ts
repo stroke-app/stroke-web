@@ -84,8 +84,9 @@ export interface Sort {
 }
 
 /** This machine's bridge (`npx strokedb`), or a shared one through the relay. */
-export type LocalSession = { kind?: "local"; bridge: string; token: string };
-export type RelaySession = { kind: "relay"; relay: string; key: string };
+/** `open`: a table to show first, `schema.table` or a bare name (from an agent's link). */
+export type LocalSession = { kind?: "local"; bridge: string; token: string; open?: string };
+export type RelaySession = { kind: "relay"; relay: string; key: string; open?: string };
 export type Session = LocalSession | RelaySession;
 
 /** Room ids, as the relay accepts them. */
@@ -131,7 +132,10 @@ export function takeSession(): Session | null {
       // private mode: the session lasts until the tab reloads
     }
     history.replaceState(null, "", window.location.pathname + window.location.search);
-    return s;
+    // The table to show first is for this load only, not every reload.
+    const open = hash.get("open")?.trim();
+    // eslint-disable-next-line no-control-regex
+    return open && open.length <= 200 && !/[\u0000-\u001f]/.test(open) ? { ...s, open } : s;
   }
   try {
     const raw = sessionStorage.getItem(KEY);
@@ -253,4 +257,20 @@ export function cellText(v: unknown): string {
   if (v === null || v === undefined) return "";
   if (typeof v === "object") return JSON.stringify(v);
   return String(v);
+}
+
+/**
+ * The table a reference names: `schema.table` exactly, else a table of that
+ * name in any schema (an agent often says just "users").
+ */
+export function findTable(tables: TableRef[], ref: string): TableRef | undefined {
+  const exact = tables.find((t) => `${t.schema}.${t.name}` === ref);
+  if (exact) return exact;
+  const lower = ref.toLowerCase();
+  return (
+    tables.find((t) => t.name === ref) ??
+    tables.find(
+      (t) => t.name.toLowerCase() === lower || `${t.schema}.${t.name}`.toLowerCase() === lower,
+    )
+  );
 }
