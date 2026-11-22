@@ -60,6 +60,16 @@ export interface GridAction {
  * double-click; Enter saves, Esc cancels, Tab saves and moves right) and a
  * right-click menu. Row numbers select rows (Shift and Mod for several).
  */
+/** Another person in a shared studio, placed on this grid (see presence.ts). */
+export interface PeerMark {
+  id: number;
+  name: string;
+  color: string;
+  cell: { r: number; c: number } | null;
+  pointer: { r: number; c: number; fx: number; fy: number } | null;
+  editing: { r: number; c: number; value: string } | null;
+}
+
 export function DataGrid({
   columns,
   rows,
@@ -72,6 +82,8 @@ export function DataGrid({
   selectedRows,
   onSelectRows,
   onCursor,
+  peers = [],
+  onPresence,
 }: {
   columns: GridColumn[];
   rows: unknown[][];
@@ -84,6 +96,14 @@ export function DataGrid({
   selectedRows?: Set<number>;
   onSelectRows?: (rows: Set<number>) => void;
   onCursor?: (row: number | null) => void;
+  /** Others in a shared studio, placed on this grid's rows (live presence). */
+  peers?: PeerMark[];
+  /** Where this person is: the cell, the pointer over a cell, a value being typed. */
+  onPresence?: (p: {
+    cell?: { r: number; c: number } | null;
+    pointer?: { r: number; c: number; fx: number; fy: number } | null;
+    editing?: { r: number; c: number; value: string } | null;
+  }) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -116,7 +136,41 @@ export function DataGrid({
 
   useEffect(() => {
     onCursor?.(cursor ? cursor.r : null);
+    onPresence?.({ cell: cursor });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor, onCursor]);
+  useEffect(() => {
+    onPresence?.({ editing });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing]);
+  /** Left edge of each column, for placing other people's marks. */
+  const colX = useMemo(() => {
+    const xs: number[] = [];
+    let x = NUM_W;
+    for (const w of widths) {
+      xs.push(x);
+      x += w;
+    }
+    return xs;
+  }, [widths]);
+  const lastPointer = useRef(0);
+  function trackPointer(e: React.MouseEvent) {
+    if (!onPresence) return;
+    const now = performance.now();
+    if (now - lastPointer.current < 40) return;
+    lastPointer.current = now;
+    const cell = (e.target as HTMLElement).closest<HTMLElement>("[data-r][data-c]");
+    if (!cell) return;
+    const box = cell.getBoundingClientRect();
+    onPresence({
+      pointer: {
+        r: Number(cell.dataset.r),
+        c: Number(cell.dataset.c),
+        fx: Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)),
+        fy: Math.min(1, Math.max(0, (e.clientY - box.top) / box.height)),
+      },
+    });
+  }
 
   const first = Math.max(0, Math.floor(scrollTop / ROW_H) - OVERSCAN);
   const last = Math.min(rows.length, Math.ceil((scrollTop + height) / ROW_H) + OVERSCAN);
@@ -247,6 +301,8 @@ export function DataGrid({
         aria-colcount={columns.length}
         className="relative min-h-0 flex-1 overflow-auto outline-none"
         onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
+        onMouseMove={trackPointer}
+        onMouseLeave={() => onPresence?.({ pointer: null })}
         onKeyDown={onKeyDown}
         onContextMenu={(e) => {
           const td = (e.target as HTMLElement).closest<HTMLElement>("[data-r]");
@@ -317,6 +373,79 @@ export function DataGrid({
 
           {/* Rows */}
           <div style={{ height: rows.length * ROW_H, position: "relative" }}>
+            {/* Everyone else in a shared studio: their cell, what they are
+                typing into it, and their pointer, in their colour. */}
+            {peers.map((p) => {
+              const cellBox = (r: number, c: number) =>
+                colX[c] === undefined
+                  ? null
+                  : { left: colX[c], top: r * ROW_H, width: widths[c] ?? 120 };
+              const at = p.editing ?? p.cell;
+              const box = at ? cellBox(at.r, at.c) : null;
+              const ptr = p.pointer ? cellBox(p.pointer.r, p.pointer.c) : null;
+              return (
+                <div key={p.id} aria-hidden="true">
+                  {box && (
+                    <div
+                      className="pointer-events-none absolute z-[7] overflow-hidden"
+                      style={{
+                        ...box,
+                        height: ROW_H,
+                        boxShadow: `inset 0 0 0 2px ${p.color}`,
+                        // Opaque, so the saved value doesn't show through what's typed.
+                        background: p.editing
+                          ? `linear-gradient(${p.color}1f, ${p.color}1f), var(--background)`
+                          : undefined,
+                      }}
+                    >
+                      {p.editing && (
+                        <span className="flex h-full items-center truncate px-2.5 font-mono text-[12.5px] text-foreground">
+                          {p.editing.value}
+                          <span
+                            className="ms-px inline-block h-3.5 w-px animate-pulse"
+                            style={{ background: p.color }}
+                          />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {box && (
+                    <span
+                      className="pointer-events-none absolute z-[8] -translate-y-full rounded-t-sm px-1.5 py-px font-sans text-[10.5px] leading-4 font-medium whitespace-nowrap text-white"
+                      style={{ left: box.left, top: box.top, background: p.color }}
+                    >
+                      {p.name}
+                      {p.editing ? " is typing" : ""}
+                    </span>
+                  )}
+                  {ptr && p.pointer && (
+                    <div
+                      className="pointer-events-none absolute z-[9] transition-[left,top] duration-75 ease-linear"
+                      style={{
+                        left: ptr.left + p.pointer.fx * ptr.width,
+                        top: ptr.top + p.pointer.fy * ROW_H,
+                      }}
+                    >
+                      <svg width="14" height="18" viewBox="0 0 14 18" className="drop-shadow-sm">
+                        <path
+                          d="M1 1l11 9.5-5.2.6L10 17l-2.4 1-3.1-6.2L1 15z"
+                          fill={p.color}
+                          stroke="white"
+                          strokeWidth="1.2"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span
+                        className="ms-3 -mt-1 inline-block rounded-sm px-1.5 py-px font-sans text-[10.5px] leading-4 font-medium whitespace-nowrap text-white"
+                        style={{ background: p.color }}
+                      >
+                        {p.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             {rows.slice(first, last).map((row, k) => {
               const r = first + k;
               const selected = selectedRows?.has(r);

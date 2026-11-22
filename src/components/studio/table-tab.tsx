@@ -11,7 +11,7 @@ import {
   Trash2Icon,
   XIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -21,6 +21,7 @@ import {
   fileStem,
 } from "#/components/share/share-export";
 import { menuItem, menuPopup, textBtn } from "#/components/share/share-ui";
+import { PresenceContext, type CellRef } from "#/lib/relay/presence";
 import {
   cellText,
   type BridgeClient,
@@ -33,7 +34,7 @@ import {
 } from "#/lib/studio-bridge";
 import { cn } from "#/lib/utils";
 
-import { DataGrid, type GridAction } from "./data-grid";
+import { DataGrid, type GridAction, type PeerMark } from "./data-grid";
 import { StructureView } from "./structure-view";
 
 const PAGE_SIZES = [50, 100, 250, 500, 1000];
@@ -149,6 +150,78 @@ export function TableTab({
     primaryKey: metaByName.get(name)?.primaryKey,
   }));
 
+  // Live presence: people are placed by row key and column name, so a cell
+  // is the same cell whatever page or sort each of them has.
+  const presence = useContext(PresenceContext);
+  const tableKey = `${table.schema}.${table.name}`;
+  const rowKeys = useMemo(() => {
+    const cols = page?.columns ?? [];
+    return (page?.rows ?? []).map((row, r) =>
+      pk.length ? JSON.stringify(pk.map((c) => row[cols.indexOf(c)] ?? null)) : `#${offset + r}`,
+    );
+  }, [page, pk, offset]);
+  const marks = useMemo<PeerMark[]>(() => {
+    if (!presence) return [];
+    const byKey = new Map(rowKeys.map((k, r) => [k, r]));
+    const at = (ref: CellRef | null) => {
+      if (!ref || ref.table !== tableKey) return null;
+      const r = byKey.get(ref.row);
+      const c = columns.indexOf(ref.col);
+      return r === undefined || c < 0 ? null : { r, c };
+    };
+    return presence.peers
+      .filter((p) => p.tab === tableKey)
+      .map((p) => {
+        const pointer = at(p.pointer);
+        const editing = at(p.editing);
+        return {
+          id: p.id,
+          name: p.name,
+          color: p.color,
+          cell: at(p.cell),
+          pointer: pointer && p.pointer ? { ...pointer, fx: p.pointer.fx, fy: p.pointer.fy } : null,
+          editing:
+            editing && p.editing
+              ? { ...editing, value: String(p.editing.value).slice(0, 500) }
+              : null,
+        };
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presence?.peers, rowKeys, tableKey, page]);
+  const toRef = (at: { r: number; c: number } | null | undefined): CellRef | null => {
+    if (!at) return null;
+    const row = rowKeys[at.r];
+    const col = columns[at.c];
+    return row === undefined || col === undefined ? null : { table: tableKey, row, col };
+  };
+  const onPresence = presence
+    ? (p: {
+        cell?: { r: number; c: number } | null;
+        pointer?: { r: number; c: number; fx: number; fy: number } | null;
+        editing?: { r: number; c: number; value: string } | null;
+      }) => {
+        const patch: Parameters<typeof presence.publish>[0] = {};
+        if ("cell" in p) patch.cell = toRef(p.cell);
+        if ("pointer" in p) {
+          const ref = toRef(p.pointer);
+          patch.pointer = ref && p.pointer ? { ...ref, fx: p.pointer.fx, fy: p.pointer.fy } : null;
+        }
+        if ("editing" in p) {
+          const ref = toRef(p.editing);
+          patch.editing =
+            ref && p.editing ? { ...ref, value: p.editing.value.slice(0, 500) } : null;
+        }
+        presence.publish(patch);
+      }
+    : undefined;
+  const announce = () => presence?.announceChanged(tableKey);
+  // Someone else saved a change to this table: show it.
+  const onChangedElsewhere = presence?.onChanged;
+  useEffect(
+    () => onChangedElsewhere?.((t) => t === tableKey && reload()),
+    [onChangedElsewhere, tableKey, reload],
+  );
+
   const keyOf = (row: unknown[]): Values =>
     Object.fromEntries(pk.map((c) => [c, row[columns.indexOf(c)]]));
 
@@ -156,6 +229,7 @@ export function TableTab({
     try {
       await client.update({ schema: table.schema, table: table.name, key: keyOf(row), set });
       reload();
+      announce();
       return true;
     } catch (e) {
       toast.error("Not saved", { description: e instanceof Error ? e.message : String(e) });
@@ -179,6 +253,7 @@ export function TableTab({
       });
       toast.success(`Deleted ${r.rowCount} row${r.rowCount === 1 ? "" : "s"}`);
       reload();
+      announce();
       onChanged?.();
     } catch (e) {
       toast.error("Not deleted", { description: e instanceof Error ? e.message : String(e) });
@@ -386,6 +461,8 @@ export function TableTab({
                 onAction={onAction}
                 selectedRows={selected}
                 onSelectRows={setSelected}
+                peers={marks}
+                onPresence={onPresence}
                 onCursor={(r) => {
                   setCursorRow(r);
                   if (r !== null && inspect?.mode === "row") setInspect({ mode: "row", index: r });
@@ -456,6 +533,7 @@ export function TableTab({
                     toast.success("Row added");
                     setInspect(null);
                     reload();
+                    announce();
                     onChanged?.();
                   } catch (e) {
                     toast.error("Not added", {
